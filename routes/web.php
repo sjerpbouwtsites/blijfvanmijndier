@@ -37,6 +37,8 @@ Route::get('animals/{id}/owner', 'AnimalController@owner');
 Route::get('owners/{id}/match', 'OwnerController@match');
 Route::get('shelters/{id}/match', 'ShelterController@match');
 
+Route::get('map', 'MapController@index');
+
 Route::post('animals/{id}/outofprojectstore', 'AnimalController@outofprojectstore');
 
 Route::resource('animals', 'AnimalController');
