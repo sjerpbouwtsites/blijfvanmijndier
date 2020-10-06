@@ -1,0 +1,164 @@
+body {
+   background-color: #fbfbfb;
+   color: #4a4f5e;
+}
+
+a {
+   color: #4a4f5e;
+}
+
+a:hover{
+   text-decoration: none;
+   color: #288cbd;
+}
+
+h7{
+   font-size: 10px;
+}
+
+.form_buttons{
+   margin-top: 10px;
+}
+
+.form-group{
+   margin-bottom: 5px;
+}
+
+.img_margin_bottom{
+   margin-bottom: 15px;
+}
+
+.header a {
+   font-size: 16px;
+   font-family: Lato,sans-serif;
+}
+
+.header img {
+   margin-left: 20px;
+}
+
+.nav {
+   margin-top: 35px;
+}
+
+.box {
+   float: left;
+   position: relative;
+   width: 12%;
+   padding-bottom: 12%;
+}
+
+.boxInner:hover {
+   background-color: #d9dee0;
+}
+
+.home-h3{
+   margin-top: 40px;
+}
+
+.table-home{
+   width: 90% !important;
+}
+
+.table {
+   border: 1px solid #ddd;
+   background-color: #fff;
+   width: 85%;
+}
+
+.control-label {
+   /*text-align: left !important;*/
+}
+
+.table>thead>tr>th {
+   border-width: 0px;
+}
+
+table {
+    border-collapse:separate;
+    border-radius:6px;
+    -moz-border-radius:6px;
+}
+
+.table>thead {
+   border-radius: 4px;
+}
+
+.table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+   background-color: #d9dee0;
+}
+
+.table-hover {
+   cursor: pointer;
+   margin-top: 30px;
+}
+
+h3 {
+   margin-bottom: 20px; 
+}
+
+.boxInner {
+   position: absolute;
+   left: 10px;
+   right: 10px;
+   top: 10px;
+   bottom: 10px;
+   overflow: hidden;
+   text-align: center;
+   padding-top: 20%;
+   border-radius: 10px 10px 10px 10px;
+   -moz-border-radius: 10px 10px 10px 10px;
+   -webkit-border-radius: 10px 10px 10px 10px;
+   border: 1px solid #4a4f5e;   
+}
+
+.box a {
+   color: #4a4f5e;
+}
+
+.wrap{
+   margin-top: 10px;
+}
+
+.card-deck {
+   margin-top: 20px;
+}
+
+.nav>li>a {
+   padding: 10px;
+}
+
+.navbar-nav>li>a:hover {
+   color: #288cbd;
+   text-decoration: none;
+   background-color: transparent;
+ }
+
+.navbar-nav>li.active>a, .navbar-nav>li.active>a:focus, .navbar-nav>li.active>a:hover {
+   color: #288cbd;
+}
+
+.new_animal{
+   background-color: #d9dee0 !important;
+   border-color: #CCC !important;
+}
+
+.panel{
+   float: left;
+   padding: 1em;
+   margin:  0.5em;
+   background-color: #fff;
+   border: 1px solid #e4e4e4;
+}
+
+.update_back{
+   background-color: #ffebeb;
+}
+
+.update_border{
+   border: 1px solid #f80d0d;
+}
+
+.card p{
+   font-size: 12px;
+}
