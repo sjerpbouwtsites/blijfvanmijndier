@@ -1,33 +1,31 @@
 @extends('layout')
 
 @section('content')
-	<div class="col-md-12">
-		<h3>Overzicht pensions</h3>
-	   	<h5><a href="{{ URL::to('shelters/create') }}" class="btn btn-primary">Toevoegen</a></h5>
+  <div class='map__outer'>
+    <div class='map__inner' id='leaflet-map'>
 
-		@if (Session::has('message'))
-	    	<div class="alert alert-info">{{ Session::get('message') }}</div>
-		@endif
+    </div>
+  </div>
 
-		<table class="table table-hover">
-			<thead>
-				<tr>
-					<th>Naam</th>
-					<th>Adres</th>
-					<th>Telefoonnummer</th>
-				</tr>
-			</thead>
-			<tbody>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <style>
+    .map__inner {
+      height: 100vh;
+      width: 100vw;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+  </style>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 
-			@foreach ($shelters as $shelter)
-				<tr onclick="window.document.location='{{ URL::to('shelters/' . $shelter->id) }}';">
-					<td>{{ $shelter->name }}</td>
-					<td>{{ $shelter->street }} {{ $shelter->house_number }} {{ $shelter->city }}</td>
-					<td>{{ $shelter->phone_number }}</td>
-				</tr>
-			@endforeach	
+  <script>
 
-			</tbody>
-		</table>
-	</div>  	
-@stop
+// initialize the map on the "map" div with a given center and zoom
+var map = L.map('leaflet-map', {
+    center: [51.505, -0.09],
+    zoom: 13
+});
+
+  </script>
+@endsection;
