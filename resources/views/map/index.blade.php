@@ -18,14 +18,10 @@
     }
   </style>
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <script src="js/app.js">
 
-  <script>
 
-// initialize the map on the "map" div with a given center and zoom
-var map = L.map('leaflet-map', {
-    center: [51.505, -0.09],
-    zoom: 13
-});
+
 
   </script>
 @endsection;

@@ -6,6 +6,9 @@ Dit is de versie werkend bij sjerpbouwtsites draaiend met:
 - Ubuntu 18.04
 - MySQL 8.0.21
 - PHP 7.4.3
+- Gulp 3.9.1
+- Node 10.x
+- Zwarte koffie
 
 ### aanpassing in laravel
 
