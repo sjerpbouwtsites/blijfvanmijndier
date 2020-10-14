@@ -127,7 +127,7 @@ const dummyData = [
     lat: 52.3156,
     lon: 4.5876,
     title: "kleine wifwaf",
-    text: "Heeft acute vinkentering.",
+    text: "Heeft een gebroken poot.",
     ...bsStraat,
   },
   {
