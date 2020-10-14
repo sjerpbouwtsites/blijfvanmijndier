@@ -55,6 +55,13 @@ function maakAlt(location) {
       },
       res: "color-red",
     },
+    {
+      key: "type",
+      check: (str) => {
+        return str === "animal";
+      },
+      res: "color-purple",
+    },
   ]
     .map((condition) => {
       const locationVal = location[condition.key];
@@ -79,34 +86,67 @@ function locationMapper(location) {
   const marker = L.marker([location.lat, location.lon], options).addTo(leafletMap);
 
   marker.bindPopup(
-    `<div class='leaflet-popup-publicatie'>
-      <header class='leaflet-popup-header'>
+    `<div class='bvmd-popup'>
+      <header class='bvmd-popup__header'>
         
-        <span class='leaflet-popup-header-left'>
+        <h3 class='bvmd-popup__header-links'>
           ${location.title}
-        </span>
+        </h3>
         
-        <div class='leaflet-popup-header-right'>
-          
-        </div>
-          
       </header>
 
-      <div class='leaflet-popup-text verborgen'>
-        ${location.text}
+      <div class='bvmd-popup__brood'>
+        <p class='bvmd-popup__tekst'>
+          ${location.text}
+        </p>
+        <address class='bvmd-popup__adres'>
+          <ul class='bvmd-popup__adres-lijst'>
+            <li class='bvmd-popup__adres-stuk'>${location.straat} ${location.huisnummer}</li>
+            <li class='bvmd-popup__adres-stuk'>${location.postcode} ${location.plaatsnaam}</li>
+          </ul>
+        </address>
       </div>
 
-      </div class='leaflet-popup-publicatie'>`
+      <footer class='bvmd-popup__voet'>
+      </footer>
+
+    </div>`
   );
 }
 
+const bsStraat = {
+  straat: "straatnaam",
+  huisnummer: "100",
+  postcode: "1000BB",
+  plaatsnaam: "Ons Dorp",
+};
+
 const dummyData = [
   {
+    type: "animal",
+    lat: 52.3156,
+    lon: 4.5876,
+    title: "kleine wifwaf",
+    text: "Heeft acute vinkentering.",
+    ...bsStraat,
+  },
+  {
     type: "vet",
-    lat: 52.2,
-    lon: 4.6,
+    lat: 52.115,
+    lon: 4.587,
     title: "harry",
-    text: "harry text",
+    text:
+      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+    ...bsStraat,
+  },
+  {
+    type: "vet",
+    lat: 52.202,
+    lon: 4.601,
+    title: "doktor Janssen",
+    text:
+      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+    ...bsStraat,
   },
   {
     type: "vet",
@@ -114,6 +154,7 @@ const dummyData = [
     lon: 4.65,
     title: "harry 2",
     text: "harry textdf dgfdg",
+    ...bsStraat,
   },
   {
     type: "bakery",
@@ -121,6 +162,7 @@ const dummyData = [
     lon: 4.65,
     title: "bakery",
     text: "bread is good",
+    ...bsStraat,
   },
 ];
 
