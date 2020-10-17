@@ -36,8 +36,7 @@ class GuestController extends Controller
 
     public function show($id)
     {
-        $guest = Guest::find($id);
-
+        $guest = Guest::findWithAddress($id);
 
         $animals = Animal::where('guest_id', $guest->id)->get();
 
