@@ -15,6 +15,8 @@ class Guest extends Model
         'street', 'postal_code', 'house_number', 'city', 'latitude', 'longitude'
     ];
 
+    public static $required_to_save = ['street', 'postal_code', 'house_number', 'name'];
+
 
 
     public function tables()
@@ -54,6 +56,11 @@ class Guest extends Model
         });
     }
 
+    /**
+     * Wrapper and 'hydrater' around find(). Locaties the Address, warns for arrors, combines the attributes on the guest.
+     * @return guest with Address
+     * @throws exception when !== 1 addresses are found.
+     */
     public static function findWithAddress(string $guestId)
     {
         $guest = Guest::find($guestId);
