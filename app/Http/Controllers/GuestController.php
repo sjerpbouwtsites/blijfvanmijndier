@@ -11,12 +11,17 @@ use Illuminate\Support\Facades\Session;
 use App\Guest;
 use App\Animal;
 use App\Table;
+use App\Address;
+
 use App\MenuItem;
+
 
 class GuestController extends Controller
 {
-    public function index(){
-        $guests = Guest::all();
+
+    public function index()
+    {
+        $guests = Guest::allWithAddress();
         $guests = $guests->sortBy('name');
 
         $menuItems = $this->GetMenuItems('guests');
@@ -29,8 +34,11 @@ class GuestController extends Controller
         return view("guest.index")->with($data);
     }
 
-    public function show($id){
+    public function show($id)
+    {
         $guest = Guest::find($id);
+
+
         $animals = Animal::where('guest_id', $guest->id)->get();
 
         foreach ($animals as $animal) {
@@ -50,7 +58,7 @@ class GuestController extends Controller
             'animals' => $animals,
             'updates' => $updates,
             'menuItems' => $menuItems,
-            'behaviourList' => $behaviourList, 
+            'behaviourList' => $behaviourList,
             'hometypeList' => $hometypeList,
             'animaltypeList' => $animaltypeList
         );
@@ -58,14 +66,16 @@ class GuestController extends Controller
         return view("guest.show")->with($data);
     }
 
-    public function edit($id){
+    public function edit($id)
+    {
         $guest = Guest::find($id);
         $data = $this->GetGuestData($guest);
 
         return view("guest.edit")->with($data);
     }
 
-    public function create(){
+    public function create()
+    {
         $guest = new Guest;
         $data = $this->GetGuestData($guest);
 
@@ -102,7 +112,8 @@ class GuestController extends Controller
         }
     }
 
-    private function GetGuestData($guest){
+    private function GetGuestData($guest)
+    {
         $behaviourList = Table::All()->where('tablegroup_id', $this->behaviourId);
         $hometypeList = Table::All()->where('tablegroup_id', $this->hometypeId);
         $animaltypeList = Table::All()->where('tablegroup_id', $this->animaltypeId);
@@ -114,31 +125,33 @@ class GuestController extends Controller
         $menuItems = $this->GetMenuItems('guests');
 
         $data = array(
-            'guest' => $guest, 
+            'guest' => $guest,
             'menuItems' => $menuItems,
-            'behaviourList' => $behaviourList, 
-            'checked_behaviours' => $checked_behaviours, 
-            'hometypeList' => $hometypeList, 
+            'behaviourList' => $behaviourList,
+            'checked_behaviours' => $checked_behaviours,
+            'hometypeList' => $hometypeList,
             'checked_hometypes' => $checked_hometypes,
-            'animaltypeList' => $animaltypeList, 
+            'animaltypeList' => $animaltypeList,
             'checked_animaltypes' => $checked_animaltypes
         );
 
         return $data;
     }
 
-    private function validateGuest(){
+    private function validateGuest()
+    {
         $rules = array(
             'name'     => 'required'
         );
-        
+
         return Validator::make(Input::all(), $rules);
     }
 
-    private function saveGuest(Request $request){
-        if($request->id !== null){
+    private function saveGuest(Request $request)
+    {
+        if ($request->id !== null) {
             $guest = Guest::find($request->id);
-        }else{
+        } else {
             $guest = new Guest;
         }
 
@@ -151,18 +164,18 @@ class GuestController extends Controller
         $guest->email_address = $request->email_address;
         $guest->max_hours_alone = $request->max_hours_alone > 0 ? $request->max_hours_alone : 0;
         $guest->text = $request->text;
-    
+
         $inputs = Input::all();
 
-        if (isset($inputs['tables'])){
+        if (isset($inputs['tables'])) {
             $tables = $inputs['tables'];
-        }else{
+        } else {
             $tables = [];
         }
 
         // extra save to get id
-        if($request->id === null){
-            $guest->save();            
+        if ($request->id === null) {
+            $guest->save();
         }
 
         $guest->tables()->sync($tables);
