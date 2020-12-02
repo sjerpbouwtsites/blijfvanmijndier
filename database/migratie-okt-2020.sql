@@ -4,12 +4,12 @@
 -- adres tabel maken
 CREATE TABLE `addresses` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `uuid` varchar(255) NOT NULL,
+  `uuid` text NOT NULL,
   `street` text NOT NULL,
   `house_number` text NOT NULL,
   `postal_code` text NOT NULL,
   `city` text,
-  `latitude` text,
+  `lattitude` text,
   `longitude` text,
   PRIMARY KEY (`id`)
 );

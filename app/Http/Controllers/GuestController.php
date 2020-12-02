@@ -163,8 +163,8 @@ class GuestController extends Controller
 
         if ($Address->address_new_or_changed($inputs, $guest['attributes'])) {
             $Address->setNewValues($inputs);
-            $guest->address_id = $Address->uuid_check($guest['attributes']);
-            $Address->geoIpRoundTrip();
+            $guest->address_id = $Address->uuid_check($inputs);
+            $Address->geoIpRoundTrip($inputs);
             $Address->save();
         }
 
@@ -185,7 +185,8 @@ class GuestController extends Controller
             $guest->save();
         }
 
-        $guest->tables()->sync($tables);
-        $guest->save();
+        dd($guest->tables());
+        // $guest->tables()->sync($tables);
+        // $guest->save();
     }
 }

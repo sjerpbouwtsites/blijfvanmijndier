@@ -12,7 +12,7 @@ class Guest extends Model
 
 
     public static $accept_attributes_from_relations = [
-        'street', 'postal_code', 'house_number', 'city', 'latitude', 'longitude'
+        'street', 'postal_code', 'house_number', 'city', 'lattitude', 'longitude'
     ];
 
     public static $required_to_save = ['street', 'postal_code', 'house_number', 'name'];
@@ -61,7 +61,7 @@ class Guest extends Model
      * @return guest with Address
      * @throws exception when !== 1 addresses are found.
      */
-    public static function findWithAddress(string $guestId)
+    public static function findWithAddress(string $guestId): Guest
     {
         $guest = Guest::find($guestId);
         $address = $guest->address();

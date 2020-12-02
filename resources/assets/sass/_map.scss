@@ -1,6 +1,6 @@
 .map__inner {
   height: 100vh;
-  width: 100vw;
+  width: calc(100vw - 450px);
   position: absolute;
   top: 0;
   left: 0;
@@ -37,10 +37,11 @@
   position: absolute;
   top: 0;
   right: 0;
+  height: 100vh;
+  width: 450px;
   z-index: 500;
   padding: 20px;
   background-color: #f5f5f5;
-  max-width: 300px;
 }
 
 .map__aside .map__heading:first-of-type {
@@ -56,13 +57,75 @@
   }
 }
 
+.map__link-style-button {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  color: rgb(81, 81, 211);
+  background-color: transparent;
+  &:focus {
+    outline: none;
+  }
+  // &::after {
+  //   content: ' 🧲 ';
+  //   font-size: .5em;
+  //   position: relative;
+  //   top: -.25em;
+  // }
+}
+
+.map__dialog {
+  position: fixed;
+  z-index: 501;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #f5f5f5;
+  padding: 20px;
+  color: #333;
+  box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.4);
+  display: none;
+  &--open {
+    display: block;
+  }
+}
+.map__dialog-inner {
+  position: relative;
+}
+.map__dialog-close {
+  position: absolute;
+  right: -20px;
+  top: -19px;
+  font-weight: bold;
+  background-color: transparent;
+  border: 0;
+
+}
+
 // leaflet overschrijvingen
-.leaflet-marker-icon[alt~="color-red"] {
-  filter: hue-rotate(140deg);
+.leaflet-marker-icon {
+  &[alt~="color-red"] {
+    filter: hue-rotate(140deg);
+  }
+  &[alt~="color-purple"] {
+    filter: hue-rotate(65deg);
+  }
+  &[alt~="color-green"] {
+    filter: hue-rotate(310deg);
+  }
+  &[alt~="is-pension"],
+  &[alt~="is-guest"] {
+    &[alt~="has-animals"] {
+      border-right: 3px solid red;
+      width: 28px !important;
+      &[alt~="multiple-animals"] {
+        border-right: 6px solid red;
+        width: 31px !important;
+      }
+    }
+  }
 }
-.leaflet-marker-icon[alt~="color-purple"] {
-  filter: hue-rotate(65deg);
-}
+
 .leaflet-popup-content-wrapper,
 .leaflet-popup-tip {
   background-color: #f5f5f5;
