@@ -94,6 +94,13 @@
   border: 0;
 }
 
+.map__filter-row {
+  display: flex;
+  font-weight: normal;
+  max-width: 200px;
+  justify-content: space-between;
+}
+
 .leaflet-marker-icon[alt~="color-red"] {
   filter: hue-rotate(140deg);
 }

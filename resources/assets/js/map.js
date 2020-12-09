@@ -34,6 +34,53 @@ function createMap() {
 function addInteractive(){
   dataActionEventHandler();
   closeDialogClickHandler();
+  populateFilterHTML();
+  filterClickHandler();
+}
+
+const filterConfig = [
+  {
+    name: 'dierenartsen',
+    rule: 'is-vet'
+  },
+  {
+    name: 'gastgezinnen',
+    rule: 'is-guest'
+  },
+  {
+    name: 'pensionnen',
+    rule: 'is-pension',
+  },
+  {
+    name: 'eigenaren',
+    rule: 'is-owner'
+  },
+  {
+    name: 'dier aanwezig',
+    rule: 'has-animals'
+  },
+  {
+    name: 'meerdere dieren aanwezig',
+    rule: 'multiple-animals'
+  }
+];
+
+function populateFilterHTML(){
+  const printTarget = document.getElementById('map-filters');
+
+  printTarget.innerHTML = filterConfig.map(configItem =>{
+    return `<label class='map__filter-row' for='filter-checkbox-${configItem.rule}'>${configItem.name}
+      <input class='map__filter-input' id='filter-checkbox-${configItem.rule}' type='checkbox' checked='checked' name='${configItem.rule}'>
+    </label>
+    `;
+  }).join('');
+}
+
+function filterClickHandler(){
+  const filterForm = document.getElementById('map-filters');
+  filterForm.addEventListener('change', function(event){
+    console.log(event);
+  });
 }
 
 function populateAnimalList(animals) {
@@ -123,7 +170,6 @@ dataActionCallbacks = {
     const animal = Animal.find(animalId);
     document.getElementById('map-own-dialog')
     .classList.add('map__dialog--open');
-
     document.getElementById('dialog-print-target').innerHTML = `
       <h3 class='map__dialog-title'>${animal.title}</h3>
       <p class='map__dialog-text'>${animal.text}</p>
@@ -147,7 +193,6 @@ dataActionCallbacks = {
   },  
   gotoMarker(event){
     document.getElementById('map-own-dialog').classList.contains('map__dialog--open') && document.getElementById('map-own-dialog').classList.remove('map__dialog--open');
-
     const targetMarker = event.target.getAttribute('data-id');
     document.querySelector(`[alt~='id-${targetMarker}']`).click();
   }

@@ -51,9 +51,19 @@
           <h2 class='map__heading map__heading--2'>
             Dieren
           </h2>
-          <ul class='map__list' id='animal-list'>
-          </ul>          
         </header>        
+        <ul class='map__list' id='animal-list'>
+        </ul>          
+      </section>
+      <section class='map__section'>
+        <header class='map__header'>
+          <h2 class='map__heading map__heading--2'>
+            Filters
+          </h2>          
+        </header>
+        <form id='map-filters' class='map__filter'>
+          
+        </form>
       </section>
     </aside>
 

@@ -99,7 +99,13 @@
   font-weight: bold;
   background-color: transparent;
   border: 0;
+}
 
+.map__filter-row {
+  display: flex;
+  font-weight: normal;
+  max-width: 200px;
+  justify-content: space-between;
 }
 
 // leaflet overschrijvingen
