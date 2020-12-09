@@ -2,9 +2,9 @@
 
 @section('content')
 <div class='map__dialog' id='animal-data-popup' >
-  <div id='dialog-print-target' class='map__dialog-inner'>
+  <div  class='map__dialog-inner'>
     <button id='map-dialog-close' class='map__dialog-close'>X</button>
-    ... hallo!
+    <div class='map__dialog-print' id='dialog-print-target'></div>
   </div>
 </div>
 <div class='map__outer'>

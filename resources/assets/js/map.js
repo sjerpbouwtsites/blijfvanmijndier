@@ -1,3 +1,5 @@
+
+
 /**
  * intialises map on roelofarendsveen and returns leaflet map instance.
  */
@@ -30,8 +32,8 @@ function createMap() {
 }
 
 function addInteractive(){
-  gotoMarker();
-  closeDialog();
+  dataActionEventHandler();
+  closeDialogClickHandler();
 }
 
 function populateAnimalList(animals) {
@@ -44,39 +46,100 @@ function populateAnimalList(animals) {
 })
   .map(animal=>{
     return `<li class='map__list-item'>
-      ${animal.title} van
-      <button class='map__link-style-button' data-action='goto-marker' data-id='${animal.owner.id}'>${animal.owner.title}</button>
+      ${animalButtonHTML(animal)} van
+      ${ownerButtonHTML(animal.owner)}
        verblijft te
-       <button class='map__link-style-button' data-action='goto-marker' data-id='${animal.staysAt.id}'>
-      ${animal.staysAt.title}</button>
+      ${staysAtButtonHTML(animal.staysAt)}
     </li>`;
   }).join(``);
   printTarget.innerHTML = animalListHTML;
 }
 
-function gotoMarker(){
-  document.body.addEventListener('click', function(event){
-    if (event.target.hasAttribute('data-action')) {
-      const action = event.target.getAttribute('data-action');
-      if (action === 'goto-marker') {
-        const targetMarker = event.target.getAttribute('data-id');
-        console.log(targetMarker)
-        document.querySelector(`[alt~='id-${targetMarker}']`).click();
-      }
-    }
-  });
+function animalButtonHTML(animal){
+  return `<button 
+    data-action='open-animal-dialog' 
+    data-id='${animal.id}'
+    class='map__link-style-button map__link-style-button--animal'>
+    ${animal.title}
+    </button>`;
 }
-function closeDialog(){
+
+function ownerButtonHTML(owner) {
+  return `<button 
+    data-action='goto-marker' 
+    data-id='${owner.id}'
+    class='map__link-style-button map__link-style-button--goto-marker map__link-style-button--owner'>
+    ${owner.title}
+    </button>`;
+}
+
+function staysAtButtonHTML(staysAt){
+  return `<button 
+    data-action='goto-marker' 
+    data-id='${staysAt.id}'
+    class='map__link-style-button map__link-style-button--goto-marker map__link-style-button--stays-at'>
+    ${staysAt.title}
+    </button>`;  
+}
+
+function dataActionEventHandler(){
+
+  const knownActions = ['open-animal-dialog', 'goto-marker'];
+  document.body.addEventListener('click', function(event){
+    if (!event.target.hasAttribute('data-action')) {
+      return;
+    }
+    const action = event.target.getAttribute('data-action');
+    if (!knownActions.includes(action)) {
+      alert(`unknown action: ${action}`);
+      return;
+    }
+
+    const camelcasedAction = action
+      .split('-')
+      .map((word, index) =>  {
+        return index > 0 
+          ? word[0].toUpperCase() + word.substring(1, word.length)
+          : word
+      })
+      .join('');
+    dataActionCallbacks[camelcasedAction](event);    
+  });  
+}
+
+dataActionCallbacks = {
+  openAnimalDialog(event){
+    closeLeafletPopupWhenOpen();
+    const animalId = event.target.getAttribute('data-id');
+    const animal = Animal.find(animalId);
+    document.getElementById('animal-data-popup')
+    .classList.add('map__dialog--open');
+    document.getElementById('dialog-print-target').innerHTML = `
+      <h3 class='map__dialog-title'>${animal.title}</h3>
+      <p class='map__dialog-text'>${animal.text}</p>
+    `;
+  },
+  
+  gotoMarker(event){
+    document.getElementById('animal-data-popup').classList.contains('map__dialog--open') && document.getElementById('animal-data-popup').classList.remove('map__dialog--open');
+
+    const targetMarker = event.target.getAttribute('data-id');
+    document.querySelector(`[alt~='id-${targetMarker}']`).click();
+  }
+}
+
+
+function closeDialogClickHandler(){
   document.getElementById('map-dialog-close')
   .addEventListener('click', function(){
-    console.log(' fdfd')
     document.getElementById('animal-data-popup')
     .classList.remove('map__dialog--open');
   });
 }
 
-function populateAnimalDialog(animalId){
-
+function closeLeafletPopupWhenOpen(){
+  const mightBeAnchorElement = document.querySelector('.leaflet-popup-close-button');
+  if (mightBeAnchorElement) mightBeAnchorElement.click();
 }
 
 /**
@@ -222,15 +285,16 @@ const markerHTML = {
   animalListItemOwner(animal) {
     return `
     <li class='bvmd-popup__animal-list-item'>
-      ${animal.title} verblijft bij
-      <button class='map__link-style-button' data-action='goto-marker' data-id='${animal.staysAt.id}'>${animal.staysAt.title}</button>
+      ${animalButtonHTML(animal)} verblijft bij
+      ${staysAtButtonHTML(animal.staysAt)}
     </li>
     `
   },
   animalListItemSafeHouse(animal) {
     return `
     <li class='bvmd-popup__animal-list-item'>
-      ${animal.title} van <button class='map__link-style-button' data-action='goto-marker' data-id='${animal.owner.id}'>${animal.owner.title}</button>
+      ${animalButtonHTML(animal)} van 
+      ${ownerButtonHTML(animal.owner)}
     </li>
     `
   }
@@ -343,7 +407,9 @@ class Animal {
       this[a] = config[a];
     }
   }
-
+  static find (animalId){
+    return dummyData.animals.find(animal => animalId === animal.id);
+  }
   get vet(){
     return dummyData.vets.find(vet => this.vetId === vet.id)
   }
