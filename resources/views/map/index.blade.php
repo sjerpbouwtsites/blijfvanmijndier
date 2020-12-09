@@ -1,7 +1,7 @@
 @extends('layout')
 
 @section('content')
-<div class='map__dialog' id='animal-data-popup' >
+<div class='map__dialog' id='map-own-dialog' >
   <div  class='map__dialog-inner'>
     <button id='map-dialog-close' class='map__dialog-close'>X</button>
     <div class='map__dialog-print' id='dialog-print-target'></div>

@@ -82,9 +82,18 @@ function staysAtButtonHTML(staysAt){
     </button>`;  
 }
 
+function vetButtonHTML(vet){
+    return `<button 
+      data-action='open-vet-dialog' 
+      data-id='${vet.id}'
+      class='map__link-style-button map__link-style-button--vet'>
+      ${vet.title}
+      </button>`;  
+}
+
 function dataActionEventHandler(){
 
-  const knownActions = ['open-animal-dialog', 'goto-marker'];
+  const knownActions = ['open-animal-dialog', 'open-vet-dialog', 'goto-marker'];
   document.body.addEventListener('click', function(event){
     if (!event.target.hasAttribute('data-action')) {
       return;
@@ -112,16 +121,32 @@ dataActionCallbacks = {
     closeLeafletPopupWhenOpen();
     const animalId = event.target.getAttribute('data-id');
     const animal = Animal.find(animalId);
-    document.getElementById('animal-data-popup')
+    document.getElementById('map-own-dialog')
     .classList.add('map__dialog--open');
+
     document.getElementById('dialog-print-target').innerHTML = `
       <h3 class='map__dialog-title'>${animal.title}</h3>
       <p class='map__dialog-text'>${animal.text}</p>
+      <div class='map__dialog-button-group'>
+        ${(animal.vet 
+          ? `<div class='map_dialog-button-row'>Arts: ${vetButtonHTML(animal.vet)}</div>`
+          : '')
+        }
+        ${(animal.staysAt 
+          ? `<div class='map_dialog-button-row'>Verblijft te: ${staysAtButtonHTML(animal.staysAt)}</div>` 
+          : '')
+        }
+      </div>
     `;
   },
-  
+  openVetDialog(event){
+    document.getElementById('map-own-dialog').classList.contains('map__dialog--open') && document.getElementById('map-own-dialog').classList.remove('map__dialog--open');    
+    const vetId = event.target.getAttribute('data-id');
+    const vet = Vet.find(vetId);
+    document.querySelector(`[alt~='id-${vet.id}']`).click();    
+  },  
   gotoMarker(event){
-    document.getElementById('animal-data-popup').classList.contains('map__dialog--open') && document.getElementById('animal-data-popup').classList.remove('map__dialog--open');
+    document.getElementById('map-own-dialog').classList.contains('map__dialog--open') && document.getElementById('map-own-dialog').classList.remove('map__dialog--open');
 
     const targetMarker = event.target.getAttribute('data-id');
     document.querySelector(`[alt~='id-${targetMarker}']`).click();
@@ -132,8 +157,8 @@ dataActionCallbacks = {
 function closeDialogClickHandler(){
   document.getElementById('map-dialog-close')
   .addEventListener('click', function(){
-    document.getElementById('animal-data-popup')
-    .classList.remove('map__dialog--open');
+    document.getElementById('map-own-dialog') &&
+    document.getElementById('map-own-dialog').classList.remove('map__dialog--open');
   });
 }
 
@@ -380,6 +405,9 @@ class Vet extends LocatedEntity {
   constructor(config) {
     super(config);
     this.type = "vet";
+  }
+  static find (vetId){
+    return dummyData.vets.find(vet => vetId === vet.id);
   }
   get animals(){
     return dummyData.animals.filter(animal => {
