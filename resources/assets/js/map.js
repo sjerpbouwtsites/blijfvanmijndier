@@ -1,3 +1,5 @@
+const filter = require("./map/filter");
+
 /**
  * intialises map on roelofarendsveen and returns leaflet map instance.
  */
@@ -32,69 +34,8 @@ function createMap() {
 function addInteractive() {
   dataActionEventHandler();
   closeDialogClickHandler();
-  populateFilterHTML();
-  filterClickHandler();
-}
-
-const filterConfig = [
-  {
-    name: "dierenartsen",
-    rule: "is-vet",
-  },
-  {
-    name: "gastgezinnen",
-    rule: "is-guest",
-  },
-  {
-    name: "pensionnen",
-    rule: "is-pension",
-  },
-  {
-    name: "eigenaren",
-    rule: "is-owner",
-  },
-];
-
-function populateFilterHTML() {
-  const printTarget = document.getElementById("map-filters");
-
-  printTarget.innerHTML = filterConfig
-    .map((configItem) => {
-      return `<label class='map__filter-row' for='filter-checkbox-${configItem.rule}'>${configItem.name}
-      <input class='map__filter-input' id='filter-checkbox-${configItem.rule}' type='checkbox' checked='checked' name='${configItem.rule}'>
-    </label>
-    `;
-    })
-    .join("");
-}
-
-function filterClickHandler() {
-  const filterForm = document.getElementById("map-filters");
-  filterForm.addEventListener("change", function (event) {
-    if (event.target && event.target.form) {
-      const formData = {};
-      Array.from(event.target.form).forEach((formInput) => {
-        formData[formInput.name] = formInput.checked;
-      });
-
-      let styleElement = document.querySelector("#filter-style");
-      if (!styleElement) {
-        styleElement = document.createElement("style");
-        styleElement.id = "filter-style";
-        document.head.appendChild(styleElement);
-      }
-
-      const formCSSRules = Object.entries(formData)
-        .map(([rule, checked]) => {
-          return `[alt~="${rule}"] {
-            opacity: ${checked ? `1` : `0.2`}
-          }`;
-        })
-        .join("");
-      console.log(formCSSRules);
-      styleElement.innerHTML = formCSSRules;
-    }
-  });
+  filter.populateFilterHTML();
+  filter.filterClickHandler();
 }
 
 function populateAnimalList(animals) {
