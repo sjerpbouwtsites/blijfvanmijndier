@@ -1,5 +1,6 @@
 const filter = require("./map/filter");
 const models = require("./map/models");
+console.log(models);
 
 /**
  * intialises map on roelofarendsveen and returns leaflet map instance.
@@ -125,7 +126,7 @@ dataActionCallbacks = {
   openAnimalDialog(event) {
     closeLeafletPopupWhenOpen();
     const animalId = event.target.getAttribute("data-id");
-    const animal = Animal.find(animalId);
+    const animal = models.Animal.find(animalId);
     document.getElementById("map-own-dialog").classList.add("map__dialog--open");
     document.getElementById("dialog-print-target").innerHTML = `
       <h3 class='map__dialog-title'>${animal.title}</h3>
@@ -144,7 +145,8 @@ dataActionCallbacks = {
     document.getElementById("map-own-dialog").classList.contains("map__dialog--open") &&
       document.getElementById("map-own-dialog").classList.remove("map__dialog--open");
     const vetId = event.target.getAttribute("data-id");
-    const vet = Vet.find(vetId);
+    const vet = models.Vet.find(vetId);
+    console.log(vet);
     document.querySelector(`[alt~='id-${vet.id}']`).click();
   },
   gotoMarker(event) {
@@ -341,6 +343,7 @@ let leafletMap;
  * then the actual markers. In order to also style the shadows
  * through the alt-as-an-array concept we apply the same alt attribute
  * to the shadow image.
+ * Must strip off id attr or conflict will arise
  */
 function linkShadowsToMarkers() {
   return new Promise((resolve, reject) => {
@@ -349,7 +352,13 @@ function linkShadowsToMarkers() {
       const shadowImages = Array.from(document.querySelectorAll(".leaflet-shadow-pane img"));
       // images and shadows correspond by their index.
       markerImages.forEach((marker, markerIndex) => {
-        shadowImages[markerIndex].setAttribute("alt", marker.alt);
+        const allowedAltValues = marker.alt
+          .split(" ")
+          .filter((altValue) => {
+            return altValue.substring(0, 3) !== "id-";
+          })
+          .join(" "); // prevent conflict strip off id
+        shadowImages[markerIndex].setAttribute("alt", allowedAltValues);
       });
     } catch (error) {
       reject(error);

@@ -1,22 +1,22 @@
 const rawData = require("./data");
+const models = {};
 
-function createDummyData() {
-  dummyData.animals = rawData.animals.map((baseAnimal) => {
+function createModels() {
+  models.animals = rawData.animals.map((baseAnimal) => {
     return new Animal(baseAnimal);
   });
-  dummyData.guests = rawData.guests.map((baseGuest) => {
+  models.guests = rawData.guests.map((baseGuest) => {
     return new Guest(baseGuest, rawData.locations);
   });
-  dummyData.pensions = rawData.pensions.map((basePension) => {
+  models.pensions = rawData.pensions.map((basePension) => {
     return new Pension(basePension, rawData.locations);
   });
-  dummyData.vets = rawData.vets.map((baseVet) => {
+  models.vets = rawData.vets.map((baseVet) => {
     return new Vet(baseVet, rawData.locations);
   });
-  dummyData.owners = rawData.owner.map((baseOwner) => {
+  models.owners = rawData.owner.map((baseOwner) => {
     return new Owner(baseOwner, rawData.locations);
   });
-  return dummyData;
 }
 
 class LocatedEntity {
@@ -43,6 +43,9 @@ class LocatedEntity {
     }
   }
 
+  static find() {
+    throw new Error("using find method of LocatedEntity, please implement in child");
+  }
   get hasAnimals() {
     return this.animals.length > 0;
   }
@@ -60,7 +63,7 @@ class Guest extends LocatedEntity {
     this.type = "guest";
   }
   get animals() {
-    return dummyData.animals.filter((animal) => {
+    return models.animals.filter((animal) => {
       return animal.locationType === "guest" && animal.locationId === this.id;
     });
   }
@@ -75,7 +78,7 @@ class Pension extends LocatedEntity {
     this.type = "pension";
   }
   get animals() {
-    return dummyData.animals.filter((animal) => {
+    return models.animals.filter((animal) => {
       return animal.locationType === "pension" && animal.locationId === this.id;
     });
   }
@@ -90,10 +93,14 @@ class Vet extends LocatedEntity {
     this.type = "vet";
   }
   static find(vetId) {
-    return dummyData.vets.find((vet) => vetId === vet.id);
+    const possibleFound = models.vets.find((vet) => vetId === vet.id);
+    if (!possibleFound) {
+      throw new Error(`no Vet found with id ${vetId}`);
+    }
+    return possibleFound;
   }
   get animals() {
-    return dummyData.animals.filter((animal) => {
+    return models.animals.filter((animal) => {
       return animal.vetId === this.id;
     });
   }
@@ -108,7 +115,7 @@ class Owner extends LocatedEntity {
     this.type = "owner";
   }
   get animals() {
-    return dummyData.animals.filter((animal) => {
+    return models.animals.filter((animal) => {
       return animal.ownerId === this.id;
     });
   }
@@ -127,20 +134,24 @@ class Animal {
     }
   }
   static find(animalId) {
-    return dummyData.animals.find((animal) => animalId === animal.id);
+    const possibleFound = models.animals.find((animal) => animalId === animal.id);
+    if (!possibleFound) {
+      throw new Error(`no animal found with id ${animalId}`);
+    }
+    return possibleFound;
   }
   get vet() {
-    return dummyData.vets.find((vet) => this.vetId === vet.id);
+    return models.vets.find((vet) => this.vetId === vet.id);
   }
   get owner() {
-    return dummyData.owners.find((owner) => this.ownerId === owner.id);
+    return models.owners.find((owner) => this.ownerId === owner.id);
   }
   get staysAt() {
     if (this.locationType === "guest") {
-      return dummyData.guests.find((guest) => guest.id === this.locationId);
+      return models.guests.find((guest) => guest.id === this.locationId);
     }
     if (this.locationType === "pension") {
-      return dummyData.pensions.find((pension) => pension.id === this.locationId);
+      return models.pensions.find((pension) => pension.id === this.locationId);
     }
   }
   get location() {
@@ -148,12 +159,13 @@ class Animal {
   }
 }
 
-const dummyData = {
-  animals: [],
-  guests: [],
-  pensions: [],
-  vets: [],
-  owners: [],
-};
+createModels();
 
-module.exports = dummyData;
+module.exports = {
+  ...models,
+  Animal,
+  Vet,
+  Guest,
+  Pension,
+  Owner,
+};
