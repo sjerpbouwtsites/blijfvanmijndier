@@ -101,6 +101,14 @@
   justify-content: space-between;
 }
 
+.leaflet-shadow-icon {
+  transition: 0.2s ease-in-out;
+}
+
+.leaflet-marker-icon {
+  transition: 0.2s ease-in-out;
+}
+
 .leaflet-marker-icon[alt~="color-red"] {
   filter: hue-rotate(140deg);
 }

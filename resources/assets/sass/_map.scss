@@ -109,7 +109,11 @@
 }
 
 // leaflet overschrijvingen
+.leaflet-shadow-icon {
+  transition: 0.2s ease-in-out;
+}
 .leaflet-marker-icon {
+  transition: 0.2s ease-in-out;
   &[alt~="color-red"] {
     filter: hue-rotate(140deg);
   }
