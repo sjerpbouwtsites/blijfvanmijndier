@@ -200,16 +200,16 @@ const markerHTML = {
   animalListItemOwner(animal) {
     return `
     <li class='bvmd-popup__animal-list-item'>
-      ${buttonRenders.animalButtonHTML(animal)} verblijft bij
-      ${buttonRenders.staysAtButtonHTML(animal.staysAt)}
+      ${buttonRenders.animal(animal)} verblijft bij
+      ${buttonRenders.staysAt(animal.staysAt)}
     </li>
     `;
   },
   animalListItemSafeHouse(animal) {
     return `
     <li class='bvmd-popup__animal-list-item'>
-      ${buttonRenders.animalButtonHTML(animal)} van 
-      ${buttonRenders.ownerButtonHTML(animal.owner)}
+      ${buttonRenders.animal(animal)} van 
+      ${buttonRenders.owner(animal.owner)}
     </li>
     `;
   },

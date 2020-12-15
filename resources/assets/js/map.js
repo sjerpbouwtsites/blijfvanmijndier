@@ -25,10 +25,10 @@ function populateAnimalList(animals) {
     })
     .map((animal) => {
       return `<li class='map__list-item'>
-      ${buttonRenders.animalButtonHTML(animal)} van
-      ${buttonRenders.ownerButtonHTML(animal.owner)}
+      ${buttonRenders.animal(animal)} van
+      ${buttonRenders.owner(animal.owner)}
        verblijft te
-      ${buttonRenders.staysAtButtonHTML(animal.staysAt)}
+      ${buttonRenders.staysAt(animal.staysAt)}
     </li>`;
     })
     .join(``);
@@ -67,12 +67,10 @@ dataActionCallbacks = {
       <h3 class='map__dialog-title'>${animal.title}</h3>
       <p class='map__dialog-text'>${animal.text}</p>
       <div class='map__dialog-button-group'>
-        ${animal.vet ? `<div class='map_dialog-button-row'>Arts: ${buttonRenders.vetButtonHTML(animal.vet)}</div>` : ""}
+        ${animal.vet ? `<div class='map_dialog-button-row'>Arts: ${buttonRenders.vet(animal.vet)}</div>` : ""}
         ${
           animal.staysAt
-            ? `<div class='map_dialog-button-row'>Verblijft te: ${buttonRenders.staysAtButtonHTML(
-                animal.staysAt
-              )}</div>`
+            ? `<div class='map_dialog-button-row'>Verblijft te: ${buttonRenders.staysAt(animal.staysAt)}</div>`
             : ""
         }
       </div>
