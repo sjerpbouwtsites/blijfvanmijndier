@@ -58,6 +58,15 @@ function dataActionEventHandler() {
   });
 }
 
+function getMarkerById(id) {
+  const marker = document.getElementById(`marker-id-${id}`);
+  if (!marker) {
+    throw new Error(`Marker for id ${id}, id attr val marker-id-${id}, not found`);
+    return false;
+  }
+  return marker;
+}
+
 dataActionCallbacks = {
   openAnimalDialog(event) {
     closeLeafletPopupWhenOpen();
@@ -82,13 +91,18 @@ dataActionCallbacks = {
       document.getElementById("map-own-dialog").classList.remove("map__dialog--open");
     const vetId = event.target.getAttribute("data-id");
     const vet = models.Vet.find(vetId);
-    document.querySelector(`[alt~='id-${vet.id}']`).click();
+    console.log(vetId);
+    const marker = getMarkerById(vet.id);
+
+    marker && marker.click();
   },
   gotoMarker(event) {
     document.getElementById("map-own-dialog").classList.contains("map__dialog--open") &&
       document.getElementById("map-own-dialog").classList.remove("map__dialog--open");
     const targetMarker = event.target.getAttribute("data-id");
-    document.querySelector(`[alt~='id-${targetMarker}']`).click();
+    console.log(targetMarker);
+    const marker = getMarkerById(targetMarker);
+    marker && marker.click();
   },
 };
 
