@@ -2,6 +2,7 @@ const filter = require("./map/filter");
 const models = require("./map/models");
 const leafletShell = require("./map/leaflet-shell");
 const buttonRenders = require("./map/buttons");
+console.clear();
 console.log(models);
 
 function addInteractive() {
@@ -81,7 +82,6 @@ dataActionCallbacks = {
       document.getElementById("map-own-dialog").classList.remove("map__dialog--open");
     const vetId = event.target.getAttribute("data-id");
     const vet = models.Vet.find(vetId);
-    console.log(vet);
     document.querySelector(`[alt~='id-${vet.id}']`).click();
   },
   gotoMarker(event) {
@@ -130,7 +130,7 @@ function init() {
       }
     });
     populateAnimalList(models.animals);
-    leafletShell.linkShadowsToMarkers();
+    leafletShell.postLeafletWork();
   });
 }
 

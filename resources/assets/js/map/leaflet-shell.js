@@ -2,32 +2,104 @@ const buttonRenders = require("./buttons");
 const { MayaModel } = require("./models");
 
 /**
- * Leaflet prints images for the shadows in a different div
- * then the actual markers. In order to also style the shadows
- * through the alt-as-an-array concept we apply the same alt attribute
- * to the shadow image.
- * Must strip off id attr or conflict will arise
+ * using the alt attribute is nice but a bit shit too.
+ * move all to data-attributes after initialization.
+ *
+ * also have to link the shadow markers to the markers
+ *
+ *
  */
-function linkShadowsToMarkers() {
-  return new Promise((resolve, reject) => {
-    try {
-      const markerImages = Array.from(document.querySelectorAll(".leaflet-marker-pane img"));
-      const shadowImages = Array.from(document.querySelectorAll(".leaflet-shadow-pane img"));
-      // images and shadows correspond by their index.
-      markerImages.forEach((marker, markerIndex) => {
-        const allowedAltValues = marker.alt
-          .split(" ")
-          .filter((altValue) => {
-            return altValue.substring(0, 3) !== "id-";
-          })
-          .join(" "); // prevent conflict strip off id
-        shadowImages[markerIndex].setAttribute("alt", allowedAltValues);
-      });
-    } catch (error) {
-      reject(error);
+function postLeafletWork() {
+  const markerImages = Array.from(document.querySelectorAll(".leaflet-marker-pane img"));
+  const shadowImages = Array.from(document.querySelectorAll(".leaflet-shadow-pane img"));
+
+  stylesheetHTMLArray = [];
+
+  markerImages.forEach((marker, markerIndex) => {
+    const shadowMarker = shadowImages[markerIndex]; // exact same index
+    const markerAltData = marker.alt.split(" ");
+
+    // MARKER ALT TO ID
+    const markerId = markerAltData.find((altPiece) => {
+      return altPiece.includes("id-");
+    });
+    if (!markerId) {
+      throw new Error(`marker Id unknown ${marker} postLeafletWork func`);
     }
-    resolve();
+    //  markerAltData.splice(markerAltData.indexOf(markerId), 1); // just delete alt in the end.
+
+    marker.setAttribute("id", `marker-${markerId}`);
+    marker.setAttribute("data-shadow-id", `shadow-${markerId}`);
+    shadowMarker.setAttribute("id", `shadow-${markerId}`);
+    shadowMarker.setAttribute("data-marker-id", `marker-${markerId}`);
+    //    marker.setAttribute("alt", markerAltData.join(" "));
+
+    // CUT INLINE STYLES TO STYLESHEET
+    const markerInlineStyle = marker.getAttribute("style");
+    const shadowInlineStyle = shadowMarker.getAttribute("style");
+    stylesheetHTMLArray.push(`
+      #marker-${markerId} {
+        ${markerInlineStyle}
+      }
+      #shadow-${markerId} {
+        ${shadowInlineStyle}
+      }      
+    `);
+    marker.removeAttribute("style");
+    shadowMarker.removeAttribute("style");
+
+    // RENAME BULKY CLASSNAMES
+    if (marker.classList.contains("leaflet-marker-icon")) {
+      marker.classList.remove("leaflet-marker-icon");
+      marker.classList.add("lmi");
+    }
+    if (marker.classList.contains("leaflet-zoom-animated")) {
+      marker.classList.remove("leaflet-zoom-animated");
+      marker.classList.add("lza");
+    }
+    if (marker.classList.contains("leaflet-interactive")) {
+      marker.classList.remove("leaflet-interactive");
+      marker.classList.add("lei");
+    }
+
+    // MOVE ALT BASED STYLES TO CLASSES
+    const markerColor = markerAltData.find((altPiece) => {
+      return altPiece.includes("color-");
+    });
+    if (markerColor) {
+      marker.classList.add(markerColor);
+    }
+
+    // MOVE TYPE ALT ENTRY TO DATA-TYPE
+    const type = markerAltData.find((altPiece) => {
+      return altPiece.includes("is-");
+    });
+    marker.setAttribute("data-type", type.replace("is-", ""));
+    //    marker.setAttribute("alt", marker.alt.replace(type, ""));
+
+    // MOVE ANIMAL QUANTITY TO DATA ATTR
+    const animalAmountData = markerAltData.filter((altPiece) => {
+      return ["has-animals", "multiple-animals", "animals-on-site"].includes(altPiece);
+    });
+    if (animalAmountData) {
+      animalAmountData.forEach((animalAD) => {
+        marker.setAttribute(`data-${animalAD}`, "true");
+      });
+    }
+
+    // DESTROY THE ALT ATTRIBUTE
+    marker.removeAttribute("alt");
+
+    // FIX THE SRC ATTRIBUTE
+    marker.src = "/img/marker.png";
+    shadowMarker.src = "/img/marker-shadow.png";
   });
+
+  // PRINT STYLES TO HEAD
+  const styleEl = document.createElement("style");
+  styleEl.id = "handmade-marker-styles";
+  styleEl.innerHTML = stylesheetHTMLArray.join("");
+  document.head.appendChild(styleEl);
 }
 
 /**
@@ -105,7 +177,7 @@ function createMap() {
   const goudaMapConfig = {
     lat: 52.2,
     lon: 4.6,
-    zoom: 9,
+    zoom: 7,
   };
 
   // initialize the map on the "map" div with a given center and zoom
@@ -228,4 +300,4 @@ const markerHTML = {
   },
 };
 
-module.exports = { linkShadowsToMarkers, maakAlt, createMap, locationMapper };
+module.exports = { postLeafletWork, maakAlt, createMap, locationMapper };

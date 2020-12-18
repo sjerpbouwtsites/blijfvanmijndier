@@ -1,3 +1,4 @@
+@import "map/leaflet";
 .map__inner {
   height: 100vh;
   width: calc(100vw - 450px);
@@ -91,6 +92,7 @@
   // }
 }
 
+@import "map/filter.scss";
 .map__dialog {
   position: fixed;
   z-index: 501;
@@ -118,38 +120,32 @@
   border: 0;
 }
 
-.map__filter-row {
-  display: flex;
-  font-weight: normal;
-  max-width: 200px;
-  justify-content: space-between;
-}
-
 // leaflet overschrijvingen
 .leaflet-shadow-icon {
   transition: 0.2s ease-in-out;
 }
-.leaflet-marker-icon {
+
+.lmi {
   transition: 0.2s ease-in-out;
-  &[alt~="color-red"] {
+  &.color-red {
     filter: hue-rotate(140deg);
   }
-  &[alt~="color-purple"] {
+  &.color-purple {
     filter: hue-rotate(65deg);
   }
-  &[alt~="color-green"] {
+  &.color-green {
     filter: hue-rotate(310deg);
   }
   &[alt~="is-shelter"],
   &[alt~="is-guest"] {
-    &[alt~="has-animals"] {
-      border-right: 3px solid red;
-      width: 28px !important;
-      &[alt~="multiple-animals"] {
-        border-right: 6px solid red;
-        width: 31px !important;
-      }
-    }
+    // &[alt~="has-animals"] {
+    //   border-right: 3px solid red;
+    //   width: 28px !important;
+    //   &[alt~="multiple-animals"] {
+    //     border-right: 6px solid red;
+    //     width: 31px !important;
+    //   }
+    // }
   }
 }
 
