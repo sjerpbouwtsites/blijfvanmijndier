@@ -13,7 +13,7 @@ const filterConfig = [
   },
   {
     name: "pensionnen",
-    rule: "is-pension",
+    rule: "is-shelter",
   },
   {
     name: "eigenaren",

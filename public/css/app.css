@@ -121,12 +121,12 @@
   filter: hue-rotate(310deg);
 }
 
-.leaflet-marker-icon[alt~="is-pension"][alt~="has-animals"], .leaflet-marker-icon[alt~="is-guest"][alt~="has-animals"] {
+.leaflet-marker-icon[alt~="is-shelter"][alt~="has-animals"], .leaflet-marker-icon[alt~="is-guest"][alt~="has-animals"] {
   border-right: 3px solid red;
   width: 28px !important;
 }
 
-.leaflet-marker-icon[alt~="is-pension"][alt~="has-animals"][alt~="multiple-animals"], .leaflet-marker-icon[alt~="is-guest"][alt~="has-animals"][alt~="multiple-animals"] {
+.leaflet-marker-icon[alt~="is-shelter"][alt~="has-animals"][alt~="multiple-animals"], .leaflet-marker-icon[alt~="is-guest"][alt~="has-animals"][alt~="multiple-animals"] {
   border-right: 6px solid red;
   width: 31px !important;
 }

@@ -1,4 +1,5 @@
 const buttonRenders = require("./buttons");
+const { LocatedEntity, Animal } = require("./models");
 
 /**
  * Leaflet prints images for the shadows in a different div
@@ -31,6 +32,7 @@ function linkShadowsToMarkers() {
 
 /**
  * create alt attribute which is a general styling & identifying attribute in this app for markers.
+ * the alt attribute of the markers is used as a data store of boolean-like / id properties.
  * loops over list of conditions
  * @param {*} locatedEntity
  */
@@ -47,7 +49,7 @@ function maakAlt(locatedEntity) {
       {
         key: "type",
         check: (str) => {
-          return str === "pension";
+          return str === "shelter";
         },
         res: "color-purple",
       },
@@ -135,9 +137,15 @@ function createMap() {
  * @param {*} locatedEntity
  */
 function locationMapper(locatedEntity, globalLeafletMap) {
-  const options = {
-    alt: maakAlt(locatedEntity),
-  };
+  let options;
+  try {
+    options = {
+      alt: maakAlt(locatedEntity),
+    };
+  } catch (error) {
+    console.error(locatedEntity);
+    throw new Error(`fout in maakAlt, ${error.message}`);
+  }
 
   const marker = L.marker([locatedEntity.location.lat, locatedEntity.location.lon], options).addTo(globalLeafletMap);
 

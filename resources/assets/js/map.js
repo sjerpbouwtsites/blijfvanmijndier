@@ -120,8 +120,13 @@ function init() {
   globalLeafletMap = leafletShell.createMap();
   addInteractive();
   getLocations().then((models) => {
-    [...models.guests, ...models.vets, ...models.pensions, ...models.owners].map(function (model) {
-      return leafletShell.locationMapper(model, globalLeafletMap);
+    [...models.guests, ...models.vets, ...models.shelters, ...models.owners].map(function (model) {
+      try {
+        return leafletShell.locationMapper(model, globalLeafletMap);
+      } catch (error) {
+        console.error(model);
+        throw new Error(`Fout in de location mapper met gelogde model`);
+      }
     });
     populateAnimalList(models.animals);
     leafletShell.linkShadowsToMarkers();

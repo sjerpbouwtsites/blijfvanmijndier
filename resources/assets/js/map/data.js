@@ -295,44 +295,44 @@ const vets = [
   },
 ];
 
-const pensions = [
+const shelters = [
   {
-    title: "Pension een",
+    title: "shelter een",
     text:
       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
     location: 13,
     id: "p-1",
   },
   {
-    title: "Pension twee",
+    title: "shelter twee",
     text:
       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
     location: 18,
     id: "p-2",
   },
   {
-    title: "Pension 3",
+    title: "shelter 3",
     text:
       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
     location: 14,
     id: "p-3",
   },
   {
-    title: "Pension 4",
+    title: "shelter 4",
     text:
       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
     id: "p-4",
     location: 15,
   },
   {
-    title: "Pension 5",
+    title: "shelter 5",
     text:
       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
     location: 16,
     id: "p-5",
   },
   {
-    title: "Pension 6",
+    title: "shelter 6",
     text:
       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
     location: 17,
@@ -403,7 +403,7 @@ const animals = [
     id: "a-2",
     vetId: "v-2",
     ownerId: "e-2",
-    locationType: "pension",
+    locationType: "shelter",
     locationId: "p-1",
   },
   {
@@ -423,7 +423,7 @@ const animals = [
     id: "a-4",
     vetId: "v-4",
     ownerId: "e-4",
-    locationType: "pension",
+    locationType: "shelter",
     locationId: "p-1",
   },
   {
@@ -453,6 +453,6 @@ module.exports = {
   guests,
   vets,
   owner,
-  pensions,
+  shelters,
   animals,
 };

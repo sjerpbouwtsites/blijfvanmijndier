@@ -8,8 +8,8 @@ function createModels() {
   models.guests = rawData.guests.map((baseGuest) => {
     return new Guest(baseGuest, rawData.locations);
   });
-  models.pensions = rawData.pensions.map((basePension) => {
-    return new Pension(basePension, rawData.locations);
+  models.shelters = rawData.shelters.map((baseshelter) => {
+    return new Shelter(baseshelter, rawData.locations);
   });
   models.vets = rawData.vets.map((baseVet) => {
     return new Vet(baseVet, rawData.locations);
@@ -72,14 +72,14 @@ class Guest extends LocatedEntity {
   }
 }
 
-class Pension extends LocatedEntity {
+class Shelter extends LocatedEntity {
   constructor(config, locations) {
     super(config, locations);
-    this.type = "pension";
+    this.type = "shelter";
   }
   get animals() {
     return models.animals.filter((animal) => {
-      return animal.locationType === "pension" && animal.locationId === this.id;
+      return animal.locationType === "shelter" && animal.locationId === this.id;
     });
   }
   get animalsOnSite() {
@@ -150,8 +150,8 @@ class Animal {
     if (this.locationType === "guest") {
       return models.guests.find((guest) => guest.id === this.locationId);
     }
-    if (this.locationType === "pension") {
-      return models.pensions.find((pension) => pension.id === this.locationId);
+    if (this.locationType === "shelter") {
+      return models.shelters.find((shelter) => shelter.id === this.locationId);
     }
   }
   get location() {
@@ -163,9 +163,10 @@ createModels();
 
 module.exports = {
   ...models,
+  LocatedEntity,
   Animal,
   Vet,
   Guest,
-  Pension,
+  Shelter,
   Owner,
 };
