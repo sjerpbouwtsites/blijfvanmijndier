@@ -32,6 +32,23 @@
   padding: 0;
   list-style-type: none;
 }
+.bvmd-popup__voet {
+  display: flex;
+  justify-content: flex-end;
+}
+.bvmd-popup__voet-link {
+  font-size: 20px;
+  filter: grayscale(100%);
+  transition: 0.2s ease-in-out;
+  margin-left: 0.5em;
+  &:hover {
+    filter: grayscale(0);
+  }
+}
+.bvmd-popup__voet-link-wrap + .bvmd-popup__voet-link-wrap {
+  position: relative; // different icon, different size.
+  top: -1px;
+}
 
 .map__aside {
   position: absolute;

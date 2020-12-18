@@ -19,8 +19,53 @@ function createModels() {
   });
 }
 
-class LocatedEntity {
-  constructor(config, locations) {
+/**
+ * Shared methods of LocatedEntity and Animal.
+ *
+ * @class MayaModel
+ */
+class MayaModel {
+  constructor(type) {
+    if (typeof type !== "string") {
+      throw new Error("Wrong 'type' of the type param.");
+    }
+    if (!type) {
+      throw new Error("please specifify a type to the MayaModel super func.");
+    }
+    this._type = type;
+  }
+  get pluralType() {
+    return this.type + "s";
+  }
+
+  get type() {
+    return this._type;
+  }
+
+  /**
+   * Creates a route to a maya-single page.
+   *
+   * @param {*} instanceId
+   * @param {*} edit bool. Get the view or the edit route.
+   * @returns route to Maya
+   * @memberof LocatedEntity
+   */
+  mayaRoute(edit = false) {
+    if (typeof edit !== "boolean") {
+      throw new Error("wrong type of edit param ");
+    }
+
+    const editPostfix = edit ? `/edit` : "";
+    return `${location.host}/${this.pluralType}/${this.id}${editPostfix}`;
+  }
+}
+
+/**
+ * Abstract Class. Only use as base Class.
+ */
+class LocatedEntity extends MayaModel {
+  constructor(type, config, locations) {
+    super(type);
     if (!config.hasOwnProperty("title")) {
       throw new Error(`title forgotten`);
     }
@@ -59,8 +104,7 @@ class LocatedEntity {
 
 class Guest extends LocatedEntity {
   constructor(config, locations) {
-    super(config, locations);
-    this.type = "guest";
+    super("guest", config, locations);
   }
   get animals() {
     return models.animals.filter((animal) => {
@@ -74,8 +118,7 @@ class Guest extends LocatedEntity {
 
 class Shelter extends LocatedEntity {
   constructor(config, locations) {
-    super(config, locations);
-    this.type = "shelter";
+    super("shelter", config, locations);
   }
   get animals() {
     return models.animals.filter((animal) => {
@@ -89,8 +132,7 @@ class Shelter extends LocatedEntity {
 
 class Vet extends LocatedEntity {
   constructor(config, locations) {
-    super(config, locations);
-    this.type = "vet";
+    super("vet", config, locations);
   }
   static find(vetId) {
     const possibleFound = models.vets.find((vet) => vetId === vet.id);
@@ -111,8 +153,7 @@ class Vet extends LocatedEntity {
 
 class Owner extends LocatedEntity {
   constructor(config, locations) {
-    super(config, locations);
-    this.type = "owner";
+    super("owner", config, locations);
   }
   get animals() {
     return models.animals.filter((animal) => {
@@ -126,13 +167,14 @@ class Owner extends LocatedEntity {
   }
 }
 
-class Animal {
+class Animal extends MayaModel {
   constructor(config) {
-    this.type = "animal";
+    super("animal");
     for (let a in config) {
       this[a] = config[a];
     }
   }
+
   static find(animalId) {
     const possibleFound = models.animals.find((animal) => animalId === animal.id);
     if (!possibleFound) {
@@ -163,6 +205,7 @@ createModels();
 
 module.exports = {
   ...models,
+  MayaModel,
   LocatedEntity,
   Animal,
   Vet,

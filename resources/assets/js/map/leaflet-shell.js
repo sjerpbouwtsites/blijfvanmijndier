@@ -1,5 +1,5 @@
 const buttonRenders = require("./buttons");
-const { LocatedEntity, Animal } = require("./models");
+const { MayaModel } = require("./models");
 
 /**
  * Leaflet prints images for the shadows in a different div
@@ -161,6 +161,11 @@ function locationMapper(locatedEntity, globalLeafletMap) {
       </div>
 
       <footer class='bvmd-popup__voet'>
+        <span class='bvmd-popup__voet-link-wrap'>
+          Naar Maya: 
+          <a class='bvmd-popup__voet-link' href='${locatedEntity.mayaRoute()}'>🔍</a>
+          <a class='bvmd-popup__voet-link' href='${locatedEntity.mayaRoute(true)}'>✍</a>
+        </span>
       </footer>
 
     </div>`

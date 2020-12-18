@@ -125,6 +125,7 @@ function init() {
         return leafletShell.locationMapper(model, globalLeafletMap);
       } catch (error) {
         console.error(model);
+        console.error(error);
         throw new Error(`Fout in de location mapper met gelogde model`);
       }
     });
