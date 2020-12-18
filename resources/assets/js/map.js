@@ -87,30 +87,30 @@ dataActionCallbacks = {
     `;
   },
   openVetDialog(event) {
-    document.getElementById("map-own-dialog").classList.contains("map__dialog--open") &&
-      document.getElementById("map-own-dialog").classList.remove("map__dialog--open");
+    closeOwnDialog();
     const vetId = event.target.getAttribute("data-id");
     const vet = models.Vet.find(vetId);
-    console.log(vetId);
     const marker = getMarkerById(vet.id);
-
     marker && marker.click();
   },
   gotoMarker(event) {
-    document.getElementById("map-own-dialog").classList.contains("map__dialog--open") &&
-      document.getElementById("map-own-dialog").classList.remove("map__dialog--open");
+    closeOwnDialog();
     const targetMarker = event.target.getAttribute("data-id");
     console.log(targetMarker);
     const marker = getMarkerById(targetMarker);
     marker && marker.click();
   },
 };
+/**
+ * own dialog as in not the one made by leaflet. Used by Animal.
+ */
+function closeOwnDialog() {
+  document.getElementById("map-own-dialog").classList.contains("map__dialog--open") &&
+    document.getElementById("map-own-dialog").classList.remove("map__dialog--open");
+}
 
 function closeDialogClickHandler() {
-  document.getElementById("map-dialog-close").addEventListener("click", function () {
-    document.getElementById("map-own-dialog") &&
-      document.getElementById("map-own-dialog").classList.remove("map__dialog--open");
-  });
+  document.getElementById("map-dialog-close").addEventListener("click", closeOwnDialog);
 }
 
 function closeLeafletPopupWhenOpen() {
