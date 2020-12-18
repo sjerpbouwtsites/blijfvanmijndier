@@ -1,32 +1,121 @@
-/**
- * intialises map on roelofarendsveen and returns leaflet map instance.
- */
-function createMap() {
-  const goudaMapConfig = {
-    lat: 52.2,
-    lon: 4.6,
-    zoom: 6,
-  };
+const filter = require("./map/filter");
+const models = require("./map/models");
+const leafletShell = require("./map/leaflet-shell");
+const buttonRenders = require("./map/buttons");
+console.clear();
+console.log(models);
 
-  // initialize the map on the "map" div with a given center and zoom
-  var leafletMap = L.map("leaflet-map", {
-    center: [goudaMapConfig.lat, goudaMapConfig.lon],
-    zoom: goudaMapConfig.zoom,
-  });
+function addInteractive() {
+  dataActionEventHandler();
+  closeDialogClickHandler();
+  filter.populateFilterHTML();
+  filter.filterClickHandler();
+}
 
-  L.tileLayer(
-    "https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1Ijoic2plcnAtdmFuLXdvdWRlbiIsImEiOiJjajh5NmExaTAxa29iMzJwbDV0eXF4eXh4In0.HVBgF1SbusJzMwmjHcHS2w",
-    {
-      attribution:
-        '<span id="map-info"></span> <strong>NOOOORD</strong>Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-      maxZoom: 18,
-      id: "mapbox/streets-v11",
-      tileSize: 512,
-      zoomOffset: -1,
-      accessToken: "your.mapbox.access.token",
+function populateAnimalList(animals) {
+  const printTarget = document.getElementById("animal-list");
+  const animalListHTML = animals
+    .sort(function (a, b) {
+      if (a.title < b.title) {
+        return -1;
+      }
+      if (a.title > b.title) {
+        return 1;
+      }
+      return 0;
+    })
+    .map((animal) => {
+      return `<li class='map__list-item'>
+      ${buttonRenders.animal(animal)} van
+      ${buttonRenders.owner(animal.owner)}
+       verblijft te
+      ${buttonRenders.staysAt(animal.staysAt)}
+    </li>`;
+    })
+    .join(``);
+  printTarget.innerHTML = animalListHTML;
+}
+
+function dataActionEventHandler() {
+  const knownActions = ["open-animal-dialog", "open-vet-dialog", "goto-marker"];
+  document.body.addEventListener("click", function (event) {
+    if (!event.target.hasAttribute("data-action")) {
+      return;
     }
-  ).addTo(leafletMap);
-  return leafletMap;
+    const action = event.target.getAttribute("data-action");
+    if (!knownActions.includes(action)) {
+      alert(`unknown action: ${action}`);
+      return;
+    }
+
+    const camelcasedAction = action
+      .split("-")
+      .map((word, index) => {
+        return index > 0 ? word[0].toUpperCase() + word.substring(1, word.length) : word;
+      })
+      .join("");
+    dataActionCallbacks[camelcasedAction](event);
+  });
+}
+
+function getMarkerById(id) {
+  const marker = document.getElementById(`marker-id-${id}`);
+  if (!marker) {
+    throw new Error(`Marker for id ${id}, id attr val marker-id-${id}, not found`);
+    return false;
+  }
+  return marker;
+}
+
+dataActionCallbacks = {
+  openAnimalDialog(event) {
+    closeLeafletPopupWhenOpen();
+    const animalId = event.target.getAttribute("data-id");
+    const animal = models.Animal.find(animalId);
+    document.getElementById("map-own-dialog").classList.add("map__dialog--open");
+    document.getElementById("dialog-print-target").innerHTML = `
+      <h3 class='map__dialog-title'>${animal.title}</h3>
+      <p class='map__dialog-text'>${animal.text}</p>
+      <div class='map__dialog-button-group'>
+        ${animal.vet ? `<div class='map_dialog-button-row'>Arts: ${buttonRenders.vet(animal.vet)}</div>` : ""}
+        ${
+          animal.staysAt
+            ? `<div class='map_dialog-button-row'>Verblijft te: ${buttonRenders.staysAt(animal.staysAt)}</div>`
+            : ""
+        }
+      </div>
+    `;
+  },
+  openVetDialog(event) {
+    closeOwnDialog();
+    const vetId = event.target.getAttribute("data-id");
+    const vet = models.Vet.find(vetId);
+    const marker = getMarkerById(vet.id);
+    marker && marker.click();
+  },
+  gotoMarker(event) {
+    closeOwnDialog();
+    const targetMarker = event.target.getAttribute("data-id");
+    console.log(targetMarker);
+    const marker = getMarkerById(targetMarker);
+    marker && marker.click();
+  },
+};
+/**
+ * own dialog as in not the one made by leaflet. Used by Animal.
+ */
+function closeOwnDialog() {
+  document.getElementById("map-own-dialog").classList.contains("map__dialog--open") &&
+    document.getElementById("map-own-dialog").classList.remove("map__dialog--open");
+}
+
+function closeDialogClickHandler() {
+  document.getElementById("map-dialog-close").addEventListener("click", closeOwnDialog);
+}
+
+function closeLeafletPopupWhenOpen() {
+  const mightBeAnchorElement = document.querySelector(".leaflet-popup-close-button");
+  if (mightBeAnchorElement) mightBeAnchorElement.click();
 }
 
 /**
@@ -36,142 +125,26 @@ function createMap() {
 function getLocations() {
   return new Promise((locationSucces, locationFailure) => {
     setTimeout(() => {
-      return locationSucces(dummyData);
+      return locationSucces(models);
     }, 250);
   });
 }
 
-/**
- * create alt attribute which is a general styling & identifying attribute in this app for markers.
- * loops over list of conditions
- * @param {*} location
- */
-function maakAlt(location) {
-  return [
-    {
-      key: "type",
-      check: (str) => {
-        return str === "vet";
-      },
-      res: "color-red",
-    },
-    {
-      key: "type",
-      check: (str) => {
-        return str === "animal";
-      },
-      res: "color-purple",
-    },
-  ]
-    .map((condition) => {
-      const locationVal = location[condition.key];
-
-      return condition.check(locationVal) ? condition.res : "";
-    })
-    .join(" ");
-}
-
-/**
- * callback for locations.map
- * refers maakAlt
- * creates marker and binds to global mapInstance
- * bindspopup.
- * @param {*} location
- */
-function locationMapper(location) {
-  const options = {
-    alt: maakAlt(location),
-  };
-
-  const marker = L.marker([location.lat, location.lon], options).addTo(leafletMap);
-
-  marker.bindPopup(
-    `<div class='bvmd-popup'>
-      <header class='bvmd-popup__header'>
-        
-        <h3 class='bvmd-popup__header-links'>
-          ${location.title}
-        </h3>
-        
-      </header>
-
-      <div class='bvmd-popup__brood'>
-        <p class='bvmd-popup__tekst'>
-          ${location.text}
-        </p>
-        <address class='bvmd-popup__adres'>
-          <ul class='bvmd-popup__adres-lijst'>
-            <li class='bvmd-popup__adres-stuk'>${location.straat} ${location.huisnummer}</li>
-            <li class='bvmd-popup__adres-stuk'>${location.postcode} ${location.plaatsnaam}</li>
-          </ul>
-        </address>
-      </div>
-
-      <footer class='bvmd-popup__voet'>
-      </footer>
-
-    </div>`
-  );
-}
-
-const bsStraat = {
-  straat: "straatnaam",
-  huisnummer: "100",
-  postcode: "1000BB",
-  plaatsnaam: "Ons Dorp",
-};
-
-const dummyData = [
-  {
-    type: "animal",
-    lat: 52.3156,
-    lon: 4.5876,
-    title: "kleine wifwaf",
-    text: "Heeft een gebroken poot.",
-    ...bsStraat,
-  },
-  {
-    type: "vet",
-    lat: 52.115,
-    lon: 4.587,
-    title: "harry",
-    text:
-      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-    ...bsStraat,
-  },
-  {
-    type: "vet",
-    lat: 52.202,
-    lon: 4.601,
-    title: "doktor Janssen",
-    text:
-      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-    ...bsStraat,
-  },
-  {
-    type: "vet",
-    lat: 52.25,
-    lon: 4.65,
-    title: "harry 2",
-    text: "harry textdf dgfdg",
-    ...bsStraat,
-  },
-  {
-    type: "bakery",
-    lat: 53.25,
-    lon: 4.65,
-    title: "bakery",
-    text: "bread is good",
-    ...bsStraat,
-  },
-];
-
-let leafletMap;
-
 function init() {
-  leafletMap = createMap();
-  getLocations().then((locations) => {
-    locations.map(locationMapper);
+  globalLeafletMap = leafletShell.createMap();
+  addInteractive();
+  getLocations().then((models) => {
+    [...models.guests, ...models.vets, ...models.shelters, ...models.owners].map(function (model) {
+      try {
+        return leafletShell.locationMapper(model, globalLeafletMap);
+      } catch (error) {
+        console.error(model);
+        console.error(error);
+        throw new Error(`Fout in de location mapper met gelogde model`);
+      }
+    });
+    populateAnimalList(models.animals);
+    leafletShell.postLeafletWork();
   });
 }
 

@@ -21,7 +21,8 @@
 			<h4>Details</h4>
 
             @include('form_text', ['field' => 'name', 'label' => 'Naam'])
-            @include('form_text', ['field' => 'street', 'label' => 'Straat'])
+						@include('form_text', ['field' => 'street', 'label' => 'Straat'])
+						@include('form_text', ['field' => 'house_number', 'label' => 'Huisnummer'])
             @include('form_text', ['field' => 'postal_code', 'label' => 'Postcode'])
             @include('form_text', ['field' => 'city', 'label' => 'Woonplaats'])
             @include('form_text', ['field' => 'phone_number', 'label' => 'Telefoonnummer'])

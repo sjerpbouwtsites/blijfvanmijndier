@@ -36,8 +36,7 @@ class GuestController extends Controller
 
     public function show($id)
     {
-        $guest = Guest::find($id);
-
+        $guest = Guest::findWithAddress($id);
 
         $animals = Animal::where('guest_id', $guest->id)->get();
 
@@ -68,7 +67,7 @@ class GuestController extends Controller
 
     public function edit($id)
     {
-        $guest = Guest::find($id);
+        $guest = Guest::findWithAddress($id);
         $data = $this->GetGuestData($guest);
 
         return view("guest.edit")->with($data);
@@ -112,6 +111,9 @@ class GuestController extends Controller
         }
     }
 
+    /**
+     * Helper van edit en create
+     */
     private function GetGuestData($guest)
     {
         $behaviourList = Table::All()->where('tablegroup_id', $this->behaviourId);
@@ -140,32 +142,37 @@ class GuestController extends Controller
 
     private function validateGuest()
     {
-        $rules = array(
-            'name'     => 'required'
-        );
-
-        return Validator::make(Input::all(), $rules);
+        // @TODO HIER CONTROLE OP ADRES SCHRIJVEN.
+        return Validator::make(Input::all(), Guest::$required_to_save);
     }
 
     private function saveGuest(Request $request)
     {
+        // create new guest or use existing.
+
         if ($request->id !== null) {
-            $guest = Guest::find($request->id);
+            $guest = Guest::findWithAddress($request->id);
         } else {
             $guest = new Guest;
         }
 
+        // the form.
+        $inputs = Input::all();
+
+        $Address = new Address();
+
+        if ($Address->address_new_or_changed($inputs, $guest['attributes'])) {
+            $Address->setNewValues($inputs);
+            $guest->address_id = $Address->uuid_check($inputs);
+            $Address->geoIpRoundTrip($inputs);
+            $Address->save();
+        }
+
         $guest->name = $request->name;
-        $guest->street = $request->street;
-        $guest->house_number = $request->house_number;
-        $guest->postal_code = $request->postal_code;
-        $guest->city = $request->city;
         $guest->phone_number = $request->phone_number;
         $guest->email_address = $request->email_address;
         $guest->max_hours_alone = $request->max_hours_alone > 0 ? $request->max_hours_alone : 0;
         $guest->text = $request->text;
-
-        $inputs = Input::all();
 
         if (isset($inputs['tables'])) {
             $tables = $inputs['tables'];
@@ -178,7 +185,8 @@ class GuestController extends Controller
             $guest->save();
         }
 
-        $guest->tables()->sync($tables);
-        $guest->save();
+        dd($guest->tables());
+        // $guest->tables()->sync($tables);
+        // $guest->save();
     }
 }
