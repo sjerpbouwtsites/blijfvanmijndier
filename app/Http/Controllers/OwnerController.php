@@ -17,9 +17,22 @@ class OwnerController extends Controller
 
     public $menuItems = null;
 
+    protected $required = [
+        'name',
+        'phone_number',
+        'email_address',
+        'city',
+        'house_number',
+        'street',
+        'postal_code'
+    ];
+
+    private $validator_rules = [];
+
     function __construct()
     {
         $this->menuItems = $this->GetMenuItems('owners');
+        $this->set_validator_rules();
     }
 
     // view func
@@ -103,7 +116,7 @@ class OwnerController extends Controller
 
     public function store(Request $request)
     {
-        $validator = $this->validateOwner();
+        $validator = Validator::make(Input::all(), $this->validator_rules);
 
         if ($validator->fails()) {
             return Redirect::to('owners/create')
@@ -123,7 +136,7 @@ class OwnerController extends Controller
 
     public function update(Request $request)
     {
-        $validator = $this->validateOwner();
+        $validator = Validator::make(Input::all(), $this->validator_rules);
 
         if ($validator->fails()) {
             return redirect()->action('OwnerController@edit', $request->id)
@@ -160,29 +173,32 @@ class OwnerController extends Controller
         return $ai;
     }
 
-    private function validateOwner()
-    {
-        $rules = array(
-            'name'          => 'required',
-            'phone_number'  => 'required',
-            'email_address' => 'required',
-            'city' => 'required',
-            'house_number' => 'required',
-            'street' => 'required',
-            'postal_code' => 'required',
-        );
 
-        return Validator::make(Input::all(), $rules);
+    /**
+     * on init creates validator rules based on $this->required;
+     */
+    private function set_validator_rules(): void
+    {
+        foreach ($this->required as $r) {
+            $this->validator_rules[$r] = 'required';
+        }
     }
 
-    private function create_or_save_owner(Request $request, $address_id): bool
+    /**
+     * creates new owner if request does not non-null id prop
+     * references Model's own attributes to set request values to self
+     * @return bool for success
+     * @param Request request the incoming post according to laravel
+     * @param string address_id the uuid of the related Address
+     */
+    private function create_or_save_owner(Request $request, string $address_id): bool
     {
         // bestaat de owner al?
         $owner = $request->id !== null
             ? Owner::find($request->id)
             : new Owner;
 
-        foreach (['name', 'prefix', 'surname', 'phone_number', 'email_address'] as $key) {
+        foreach ($owner->own_attributes as $key) {
             $owner->$key = $request->$key;
         }
         $owner->address_id = $address_id;

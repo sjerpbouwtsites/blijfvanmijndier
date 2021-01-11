@@ -10,6 +10,11 @@ use Illuminate\Database\Eloquent\Collection;
 class Owner extends Model
 {
 
+    /**
+     * Those properties not coming from the address model.
+     */
+    protected $own_attributes = ['name', 'prefix', 'surname', 'phone_number', 'email_address'];
+
     public $fillable = [
         'street', 'house_number', 'postal_code', 'city', 'lattitude', 'longitude', 'address_id'
     ];
