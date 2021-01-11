@@ -15,6 +15,7 @@ use App\TableGroup;
 use App\MenuItem;
 use App\Guest;
 use App\History;
+use Exception;
 
 class AnimalController extends Controller
 {
@@ -24,15 +25,13 @@ class AnimalController extends Controller
         parent::__construct('animals');
     }
 
+    // START GENERAL VIEWS
     public function index()
     {
         $animals = Animal::all();
 
         foreach ($animals as $animal) {
-            $animal->breedDesc = $this->getDescription($animal->breed_id);
-            $animal->animalImage = $this->getAnimalImage($animal->id);
-            $animal->animaltypeDesc = $this->getDescription($animal->animaltype_id);
-            $animal->needUpdate = $this->animalNeedUpdate($animal->id);
+            $animal = $this->hydrate_animal($animal);
         }
 
         $animals = $animals->sortBy('name');
@@ -52,6 +51,52 @@ class AnimalController extends Controller
             'animalsOld' => $animalsOld,
         ]);
     }
+
+    /**
+     * single view.
+     */
+    public function show($id)
+    {
+        $animal = $this->hydrate_animal(Animal::find($id));
+
+        $updates = UpdateController::getUpdatesByLinkType('animals', $animal->id, 2);
+
+        if ($animal->end_date != null) {
+            $animal->end_date = $this->FormatDate($animal->end_date);
+        }
+
+        return view("animal.show", [
+            'animal' => $animal,
+            'updates' => $updates,
+            'behaviourList' => $this->animal_meta($animal, $this->behaviourId),
+            'vaccinationList' => $this->animal_meta($animal, $this->vaccinationId),
+            'hometypeList' => $this->animal_meta($animal, $this->hometypeId)
+        ]);
+    }
+
+    /**
+     * generic function for getting behaviourList, vaccinationList, hometypeList.
+     */
+    private function animal_meta(Animal $animal, $tablegroup_id)
+    {
+        return $animal->tables->where('tablegroup_id', $tablegroup_id);
+    }
+
+    /**
+     * generic hydrater for use in show / index views.
+     */
+    private function hydrate_animal(Animal $animal): Animal
+    {
+        $animal->breedDesc = $this->getDescription($animal->breed_id);
+        $animal->animaltypeDesc = $this->getDescription($animal->animaltype_id);
+        $animal->gendertypeDesc = $this->getDescription($animal->gendertype_id);
+        $animal->endtypeDesc = $this->getDescription($animal->endtype_id);
+        $animal->needUpdate = $this->animalNeedUpdate($animal->id);
+        $animal->animalImage = $this->getAnimalImage($animal->id);
+        return $animal;
+    }
+
+    // END GENERAL VIEWS
 
     public function shelter($id)
     {
@@ -188,8 +233,8 @@ class AnimalController extends Controller
         $guestList = array();
         $tmpGuestList = array();
 
-        $behaviourList = Table::All()->where('tablegroup_id', $this->behaviourId);
-        $hometypeList = Table::All()->where('tablegroup_id', $this->hometypeId);
+        $behaviourList = $this->animal_meta($animal, $this->behaviourId);
+        $hometypeList = $this->animal_meta($animal, $this->hometypeId);
 
         if (Input::has('isSearchAction') && Input::get('isSearchAction') == "true") {
             $checked_hometypes = Input::has('hometypeList') ? Input::get('hometypeList') : [];
@@ -240,42 +285,7 @@ class AnimalController extends Controller
 
 
 
-    public function show($id)
-    {
 
-        $animal = Animal::find($id);
-
-        $animal->breedDesc = $this->getDescription($animal->breed_id);
-        $animal->animaltypeDesc = $this->getDescription($animal->animaltype_id);
-        $animal->gendertypeDesc = $this->getDescription($animal->gendertype_id);
-        $animal->endtypeDesc = $this->getDescription($animal->endtype_id);
-        $animal->needUpdate = $this->animalNeedUpdate($animal->id);
-
-        $behaviourList = $animal->tables->where('tablegroup_id', $this->behaviourId);
-        $vaccinationList = $animal->tables->where('tablegroup_id', $this->vaccinationId);
-        $hometypeList = $animal->tables->where('tablegroup_id', $this->hometypeId);
-
-        $animal->abused = $animal->abused ? 'Ja' : 'Nee';
-        $animal->witnessed_abuse = $animal->witnessed_abuse ? 'Ja' : 'Nee';
-        $animal->updates = $animal->updates ? 'Ja' : 'Nee';
-        $animal->registration_date = $this->FormatDate($animal->registration_date);
-        $animal->birth_date = $this->FormatDate($animal->birth_date);
-        $animal->animalImage = $this->getAnimalImage($animal->id);
-
-        $updates = UpdateController::getUpdatesByLinkType('animals', $animal->id, 2);
-
-        if ($animal->end_date != null) {
-            $animal->end_date = $this->FormatDate($animal->end_date);
-        }
-
-        return view("animal.show", [
-            'animal' => $animal,
-            'updates' => $updates,
-            'behaviourList' => $behaviourList,
-            'vaccinationList' => $vaccinationList,
-            'hometypeList' => $hometypeList
-        ]);
-    }
 
     public function edit($id)
     {
@@ -385,47 +395,35 @@ class AnimalController extends Controller
         return Validator::make(Input::all(), $rules);
     }
 
+    /**
+     * checkboxes and databases no love lost.
+     * @return int;
+     */
+    private function checkbox_fix($checkbox_val): int
+    {
+        if (empty($checkbox_val)) return 0;
+        if ($checkbox_val === 1 || $checkbox_val === 0) return $checkbox_val;
+        if ($checkbox_val === '1' || $checkbox_val == 'on') return 1;
+        return 0;
+    }
+
     private function saveAnimal(Request $request)
     {
-        if ($request->id !== null) {
-            $animal = Animal::find($request->id);
-        } else {
-            $animal = new Animal;
-        }
-
+        $animal = $this->get_model_instance($request, Animal::class);
         $inputs = Input::all();
-
-        $animal->breed_id = $request->breed_id;
-        $animal->animaltype_id = $request->animaltype_id;
-        $animal->gendertype_id = $request->gendertype_id;
-        $animal->name = $request->name;
-        $animal->chip_number = $request->chip_number;
-        $animal->passport_number = $request->passport_number;
-        $animal->witnessed_abuse = $request->witnessed_abuse ? 1 : 0;
-        $animal->abused = $request->abused ? 1 : 0;
-        $animal->updates = $request->updates ? 1 : 0;
-        $animal->max_hours_alone = $request->max_hours_alone;
-
-        if (isset($request->registration_date) && $request->registration_date != '') {
-            $animal->registration_date = $request->registration_date;
+        // if checkbox, correct; if not allowed empty... set null
+        $chkbox_keys = ['witnessed_abuse', 'abused', 'updates'];
+        $not_null_keys = ['birth_date', 'registration_date'];
+        // set vals from request to animal.
+        foreach (['breed_id', 'animaltype_id', 'gendertype_id', 'name', 'chip_number', 'passport_number', 'max_hours_alone', 'witnessed_abuse', 'abused', 'updates', 'registration_date', 'birth_date'] as $key) {
+            $animal[$key] = in_array($key, $chkbox_keys)
+                ? $this->checkbox_fix($request->$key)
+                : (in_array($key, $not_null_keys) && empty($request->$key)
+                    ? null
+                    : $request->$key);
         }
 
-        if (isset($request->birth_date) && $request->birth_date != '') {
-            $animal->birth_date = $request->birth_date;
-        }
-
-        // extra save to get id
-        if ($request->id === null) {
-            $animal->save();
-        }
-
-        if (isset($inputs['tables'])) {
-            $tables = $inputs['tables'];
-        } else {
-            $tables = [];
-        }
-
-        $animal->tables()->sync($tables);
+        $animal->tables()->sync(isset($inputs['tables']) ? $inputs['tables'] : []);
         $animal->save();
 
         if ($request->hasFile('animal_image')) {

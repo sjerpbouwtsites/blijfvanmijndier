@@ -177,12 +177,9 @@ class OwnerController extends Controller
      */
     private function create_or_save_owner(Request $request, string $address_id): bool
     {
-        // bestaat de owner al?
-        $owner = $request->id !== null
-            ? Owner::find($request->id)
-            : new Owner;
+        $owner = $this->get_model_instance($request, Owner::class);
 
-        foreach ($owner->own_attributes as $key) {
+        foreach ($owner['own_attributes'] as $key) {
             $owner->$key = $request->$key;
         }
         $owner->address_id = $address_id;

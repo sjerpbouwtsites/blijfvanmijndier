@@ -30,9 +30,16 @@
             @include('show_row', ['label' => 'Chipnummer', 'value' => $animal->chip_number])
             @include('show_row', ['label' => 'Paspoortnummer', 'value' => $animal->passport_number])
             @include('show_row', ['label' => 'Aantal uur alleen', 'value' => $animal->max_hours_alone])
-            @include('show_row', ['label' => 'Zelf mishandeld', 'value' => $animal->abused])
-            @include('show_row', ['label' => 'Getuige van mishandeling', 'value' => $animal->witnessed_abuse])
-            @include('show_row', ['label' => 'Updates', 'value' => $animal->updates])
+            <?php if ($animal->abused) {?>
+                @include('show_row', ['label' => 'Zelf mishandeld', 'value' => "ja"])
+            <?php } ?>
+            <?php if ($animal->witnessed_abuse) {?>
+                @include('show_row', ['label' => 'Getuige van mishandeling', 'value' => "ja"])
+            <?php } ?>
+            <?php if ($animal->updates) {?>
+                @include('show_row', ['label' => 'Updates', 'value' => "Ja"])
+            <?php } ?>            
+
 
         </div>
         <div class="col-md-6">

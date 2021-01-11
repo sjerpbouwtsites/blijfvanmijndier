@@ -14,6 +14,8 @@ use App\Animal;
 use DateTime;
 use Exception;
 use \Illuminate\View\View;
+use Illuminate\Database\Eloquent\Model;
+use Symfony\Component\HttpFoundation\Request;
 
 class Controller extends BaseController
 {
@@ -72,6 +74,22 @@ class Controller extends BaseController
         return view($view_name)->with(array_merge($data, [
             'menuItems' => $this->menuItems
         ]));
+    }
+
+    /**
+     * if the request has an id, it is assumed that it exists in the db
+     * then this returns $Model->find($id)
+     * else, return new Model
+     * @return Model (new) instance of model
+     * @param Request the post according to laravel
+     * @param Model a reference to a model class
+     */
+    public function get_model_instance(Request $request, $Model)
+    {
+        // bestaat de model al? aanname dat id dat niet null is. // @TODO legacy
+        return $request->id !== null
+            ? $Model::find($request->id)
+            : new $Model;
     }
 
     public function getUpdateDate()
