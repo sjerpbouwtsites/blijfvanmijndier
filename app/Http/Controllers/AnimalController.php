@@ -36,7 +36,6 @@ class AnimalController extends Controller
         }
 
         $animals = $animals->sortBy('name');
-        $menuItems = $this->GetMenuItems('animals');
         $animalsOld = array();
         $animalsNew = array();
 
@@ -51,105 +50,102 @@ class AnimalController extends Controller
         return $this->get_view("animal.index", [
             'animalsNew' => $animalsNew,
             'animalsOld' => $animalsOld,
-            'menuItems' => $menuItems
         ]);
     }
 
     public function shelter($id)
     {
-        $animal = Animal::find($id);
-        if ($animal->shelter_id == 0) {
-            return redirect()->action('ShelterController@match', $animal->id);
-        } else {
-            return redirect()->action('ShelterController@show', $animal->shelter_id);
-        }
-    }
-
-    public function matchshelter($id, $shelter_id)
-    {
-        $animal = Animal::find($id);
-        $animal->shelter_id = $shelter_id;
-        $animal->save();
-
-        HistoryController::saveHistory('animals', $animal->id, 'shelters', $animal->shelter_id, 'connect');
-
-        Session::flash('message', 'Pension succesvol gekoppeld!');
-        return redirect()->action('AnimalController@show', $animal->id);
-    }
-
-    public function unconnectshelter($id)
-    {
-        $animal = Animal::find($id);
-
-        HistoryController::saveHistory('animals', $animal->id, 'shelters', $animal->shelter_id, 'unconnect');
-
-        $animal->shelter_id = null;
-        $animal->save();
-
-        Session::flash('message', 'Pension succesvol ontkoppeld!');
-        return redirect()->action('AnimalController@show', $animal->id);
+        return $this->match_or_show($id, 'shelter');
     }
 
     public function owner($id)
     {
+        return $this->match_or_show($id, 'owner');
+    }
 
-        $animal = Animal::find($id);
-        if ($animal->owner_id == 0) {
-            return redirect()->action('OwnerController@match', $animal->id);
-        } else {
-            return redirect()->action('OwnerController@show', $animal->owner_id);
-        }
+    /**
+     * wrapper function to wrap $this->shelter and $this->owner
+     */
+    private function match_or_show($animal_id, $model_name)
+    {
+        $animal = Animal::find($animal_id);
+        $reference_key = $model_name . '_id';
+        $reference_key_value = $animal->$reference_key;
+        $controller_name = ucfirst($model_name) . "Controller";
+        // like owner_id or shelter_id;
+        // direct toward OwnerController@match, etc.
+        return $reference_key_value == 0
+            ? redirect()->action($controller_name . "@match", $animal->id)
+            : redirect()->action($controller_name . "@show", $reference_key_value);
+    }
+
+    // START MATCHING
+    public function matchshelter($id, $shelter_id)
+    {
+        return $this->match_generic($id, 'shelter', $shelter_id, 'Pensioen');
     }
 
     public function matchowner($id, $owner_id)
     {
-        $animal = Animal::find($id);
-        $animal->owner_id = $owner_id;
-        $animal->save();
-
-        HistoryController::saveHistory('animals', $animal->id, 'owners', $animal->owner_id, 'connect');
-
-        Session::flash('message', 'Eigenaar succesvol gekoppeld!');
-        return redirect()->action('AnimalController@show', $animal->id);
-    }
-
-    public function unconnectowner($id)
-    {
-        $animal = Animal::find($id);
-
-        HistoryController::saveHistory('animals', $animal->id, 'owners', $animal->owner_id, 'unconnect');
-
-        $animal->owner_id = null;
-        $animal->save();
-
-        Session::flash('message', 'Eigenaar succesvol ontkoppeld!');
-        return redirect()->action('AnimalController@show', $animal->id);
+        return $this->match_generic($id, 'owner', $owner_id, 'Eigenaar');
     }
 
     public function matchguest($id, $guest_id)
     {
-        $animal = Animal::find($id);
-        $animal->guest_id = $guest_id;
+        return $this->match_generic($id, 'guest', $guest_id, 'Gastgezin');
+    }
+
+    /**
+     * Generic matching function. 
+     */
+    private function match_generic($animal_id, $controller_name, $model_id, $nl_name)
+    {
+        $animal = Animal::find($animal_id);
+        $reference_key = $controller_name . "_id";
+        $animal->$reference_key = $model_id; // $animal->owner_id = $model_id.
         $animal->save();
 
-        HistoryController::saveHistory('animals', $animal->id, 'guests', $animal->guest_id, 'connect');
-
-        Session::flash('message', 'Gastgezin succesvol gekoppeld!');
+        HistoryController::saveHistory('animals', $animal->id, $controller_name, $animal->$reference_key, 'connect');
+        Session::flash('message', $nl_name . ' succesvol gekoppeld!');
         return redirect()->action('AnimalController@show', $animal->id);
+    }
+    // END MATCHING
+
+    // START UNCONNECTING
+    public function unconnectshelter($id)
+    {
+        return $this->generic_unconnect($id, 'shelter', 'Pension');
+    }
+
+    public function unconnectowner($id)
+    {
+        return $this->generic_unconnect($id, 'owner', 'Eigenaar');
     }
 
     public function unconnectguest($id)
     {
-        $animal = Animal::find($id);
+        return $this->generic_unconnect($id, 'guest', 'Gastgezin');
+    }
 
-        HistoryController::saveHistory('animals', $animal->id, 'guests', $animal->guest_id, 'unconnect');
+    /**
+     * generic unconnecting wrapper
+     */
+    private function generic_unconnect($animal_id, $model_name_singular, $nl_name)
+    {
+        $animal = Animal::find($animal_id);
+        $reference_key = $model_name_singular . "_id";
 
-        $animal->guest_id = null;
+        HistoryController::saveHistory('animals', $animal->id, $model_name_singular . "s", $animal->$reference_key, 'unconnect');
+
+        $animal->$reference_key = null;
         $animal->save();
 
-        Session::flash('message', 'Gastgezin succesvol ontkoppeld!');
+        Session::flash('message', $nl_name . ' succesvol ontkoppeld!');
         return redirect()->action('AnimalController@show', $animal->id);
     }
+    // END UNCONNECTING
+
+
 
     public function outofproject($id)
     {
@@ -185,7 +181,6 @@ class AnimalController extends Controller
             return redirect()->action('AnimalController@show', $request->id);
         }
     }
-
 
     public function match($id)
     {
@@ -243,36 +238,7 @@ class AnimalController extends Controller
         ]);
     }
 
-    public function match2($id)
-    {
-        $animal = Animal::find($id);
-        $animal->breedDesc = $this->getDescription($animal->breed_id);
 
-        $animaltypeList = Table::All()->where('tablegroup_id', $this->animaltypeId);
-        $checked_animaltypes = Input::has('animaltypeList') ? Input::get('animaltypeList') : [];
-
-        if (Input::has('isSearchAction')) {
-            $guestList = collect();
-            foreach ($animaltypeList as $table) {
-                if (in_array($table->id, $checked_animaltypes)) {
-                    foreach ($table->guests as $guest) {
-                        if (!$guestList->contains('id', $guest->id)) {
-                            $guestList->push($guest);
-                        }
-                    }
-                }
-            }
-        } else {
-            $guestList = Guest::all();
-        }
-
-        return $this->get_view("animal.match", [
-            'guests' => $guestList->sortBy('name'),
-            'animal' => $animal,
-            'animaltypeList' => $animaltypeList,
-            'checked_animaltypes' => $checked_animaltypes
-        ]);
-    }
 
     public function show($id)
     {
