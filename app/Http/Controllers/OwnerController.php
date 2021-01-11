@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
@@ -12,7 +11,6 @@ use App\Owner;
 use App\Animal;
 use App\Address;
 use \Illuminate\View\View;
-use Exception;
 
 class OwnerController extends Controller
 {
