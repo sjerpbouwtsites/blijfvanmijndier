@@ -20,6 +20,7 @@
 		<div class="col-md-6">
 			<h4>Details</h4>
 
+            <input type='hidden' name='address_id' value="<?=$owner['address_id']?>" >
             @include('form_text', ['field' => 'name', 'label' => 'Voornaam'])
             @include('form_text', ['field' => 'prefix', 'label' => 'Tussenvoegsel'])
             @include('form_text', ['field' => 'surname', 'label' => 'Achternaam'])

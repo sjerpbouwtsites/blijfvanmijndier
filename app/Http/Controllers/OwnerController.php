@@ -10,13 +10,14 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use App\Owner;
 use App\Animal;
+use App\Address;
 use App\MenuItem;
 
 class OwnerController extends Controller
 {
     public function index()
     {
-        $owners = Owner::all();
+        $owners = Owner::allWithAddress();
         $owners = $owners->sortBy('name');
 
         $menuItems = $this->GetMenuItems('owners');
@@ -67,7 +68,8 @@ class OwnerController extends Controller
 
     public function edit($id)
     {
-        $owner = Owner::find($id);
+        $nude_owner = Owner::find($id);
+        $owner = Owner::hydrateWithAddress($nude_owner);
         $data = $this->GetOwnerData($owner);
 
         return view("owner.edit")->with($data);
@@ -89,11 +91,17 @@ class OwnerController extends Controller
             return Redirect::to('owners/create')
                 ->withErrors($validator)
                 ->withInput();
-        } else {
-            $this->saveOwner($request);
-            Session::flash('message', 'Eigenaar succesvol toegevoegd!');
-            return redirect()->action('OwnerController@index');
         }
+
+        $postdata = Input::all();
+        $Address = new Address();
+        $Address->setNewValues($postdata);
+        $ai = $Address->uuid_check($postdata);
+        $Address->geoIpRoundTrip($postdata);
+        $Address->save();
+        $this->saveOwner($request, $ai);
+        Session::flash('message', 'Eigenaar succesvol toegevoegd!');
+        return redirect()->action('OwnerController@index');
     }
 
     public function update(Request $request)
@@ -104,11 +112,24 @@ class OwnerController extends Controller
             return redirect()->action('OwnerController@edit', $request->id)
                 ->withErrors($validator)
                 ->withInput();
-        } else {
-            $this->saveOwner($request);
-            Session::flash('message', 'Eigenaar succesvol gewijzigd!');
-            return redirect()->action('OwnerController@show', $request->id);
         }
+
+        try {
+
+            $postdata = Input::all();
+            $Address = Address::find($postdata['address_id']);
+            $Address->setNewValues($postdata);
+            $ai = $Address->uuid_check($postdata); // dit is een beetje rommelig
+            $Address->geoIpRoundTrip($postdata);
+            $Address->save();
+            $this->saveOwner($request, $ai);
+            Session::flash('message', 'Eigenaar succesvol gewijzigd!');
+        } catch (\Exception $error) {
+            echo "error met ...";
+            dd($postdata);
+            throw $error;
+        }
+        return redirect()->action('OwnerController@show', $request->id);
     }
 
     private function GetOwnerData($owner)
@@ -134,7 +155,7 @@ class OwnerController extends Controller
         return Validator::make(Input::all(), $rules);
     }
 
-    private function saveOwner(Request $request)
+    private function saveOwner(Request $request, $address_id)
     {
         if ($request->id !== null) {
             $owner = Owner::find($request->id);
@@ -145,6 +166,7 @@ class OwnerController extends Controller
         $owner->name = $request->name;
         $owner->prefix = $request->prefix;
         $owner->surname = $request->surname;
+        $owner->address_id = $address_id;
         // $owner->street = $request->street;
         // $owner->house_number = $request->house_number;
         // $owner->postal_code = $request->postal_code;

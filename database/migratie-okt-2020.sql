@@ -4,14 +4,14 @@
 -- adres tabel maken
 CREATE TABLE `addresses` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `uuid` text NOT NULL,
+  `uuid` text NOT NULL DEFAULT UUID() UNIQUE PRIMARY KEY,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT NOW() ON UPDATE NOW(),
   `street` text NOT NULL,
   `house_number` text NOT NULL,
   `postal_code` text NOT NULL,
   `city` text,
   `lattitude` text,
-  `longitude` text,
-  PRIMARY KEY (`id`)
+  `longitude` text
 );
 -- alle niet null van street, postal_code en house_number op herkenbare STRING
 -- ook nodig voor verhasing ivm concat.
@@ -138,3 +138,15 @@ ALTER TABLE guests DROP COLUMN street;
 ALTER TABLE guests DROP COLUMN house_number;
 ALTER TABLE guests DROP COLUMN postal_code;
 ALTER TABLE guests DROP COLUMN city;
+-- views
+CREATE VIEW bvmd.oa_join AS
+SELECT o.name,
+  o.updated_at as ua,
+  a.street,
+  a.house_number as nr,
+  a.postal_code as pc,
+  a.city,
+  a.lattitude,
+  a.longitude
+FROM addresses a
+  RIGHT OUTER JOIN owners o ON a.uuid = o.address_id;

@@ -28,6 +28,8 @@ class Address extends Model
      */
     protected $table = 'addresses';
 
+    protected $primaryKey = 'uuid';
+
     public $timestamps = false;
 
     public $required = [
@@ -43,6 +45,11 @@ class Address extends Model
         'uuid', 'lattitude', 'longtitude'
     ];
 
+    public function owner()
+    {
+        return $this->belongsTo('App\Owner', 'address_id', 'uuid');
+    }
+
     public function guest()
     {
         return $this->belongsTo('App\Guest', 'address_id', 'uuid');
@@ -56,6 +63,7 @@ class Address extends Model
         for ($i = 0; $i < count($this->required); $i++) {
             $key = $this->required[$i];
             $this->$key = $formInput[$key];
+            $this->attributes[$key] = $formInput[$key];
         }
     }
 
@@ -70,11 +78,13 @@ class Address extends Model
             && !empty($attributesList['address_id'])
         ) {
             $this->uuid = $attributesList['address_id'];
+            $this->attributes['uuid'] = $attributesList['address_id'];
             return $attributesList['address_id'];
         }
 
         $uuid = preg_replace('/\W/', '-', uniqid('', true)) . '-' . preg_replace('/\W/', '-', uniqid('', true));
         $this->uuid = $uuid;
+        $this->attributes['uuid'] = $uuid;
         return $uuid;
     }
 
@@ -105,8 +115,10 @@ class Address extends Model
         } elseif (count($curl->response) === 0) {
             throw new \Exception("Geen geolocatie gevonden voor dit adres");
         } elseif (count($curl->response) > 1) {
-            throw new \Exception(count($curl->response) . " geolocatie registraties gevonden voor dit adres. Klopt het adres? Zo ja, contacteer de developer");
+            throw new \Exception(count($curl->response) . " geolocatie registraties gevonden voor dit adres. Klopt het adres? Zo ja, contacteer de developer.\n url: $url");
         } else {
+            $this->attributes['longitude'] = $curl->response[0]->lon;
+            $this->attributes['lattitude'] = $curl->response[0]->lat;
             $this->longitude = $curl->response[0]->lon;
             $this->lattitude = $curl->response[0]->lat;
         }
