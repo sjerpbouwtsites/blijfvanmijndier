@@ -11,7 +11,6 @@
 
         <div class="col-md-6  form-horizontal">
             <h4>Details</h4>
-
             @include('show_row', ['label' => 'Voornaam', 'value' => $owner->name])
             @include('show_row', ['label' => 'Tussenvoegsel', 'value' => $owner->prefix])
             @include('show_row', ['label' => 'Achternaam', 'value' => $owner->surname])

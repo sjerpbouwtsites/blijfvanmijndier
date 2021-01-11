@@ -11,77 +11,97 @@ use Illuminate\Support\Facades\Session;
 use App\Owner;
 use App\Animal;
 use App\Address;
-use App\MenuItem;
+use \Illuminate\View\View;
+use Exception;
 
 class OwnerController extends Controller
 {
-    public function index()
+
+    public $menuItems = null;
+
+    function __construct()
     {
-        $owners = Owner::allWithAddress();
-        $owners = $owners->sortBy('name');
-
-        $menuItems = $this->GetMenuItems('owners');
-
-        $data = array(
-            'owners' => $owners,
-            'menuItems' => $menuItems
-        );
-
-        return view("owner.index")->with($data);
+        $this->menuItems = $this->GetMenuItems('owners');
     }
 
+    // view func
+    public function index()
+    {
+        return $this->get_view("owner.index", [
+            'owners' => Owner::allWithAddress()->sortBy('name'),
+        ]);
+    }
+
+    // view func    
     public function match($id)
     {
         $animal = Animal::find($id);
-        $owners = Owner::all();
         $animal->breedDesc = $this->getDescription($animal->breed_id);
 
-        $menuItems = $this->GetMenuItems('owners');
-
-        $data = array(
-            'owners' => $owners,
+        return $this->get_view("owner.match", [
+            'owners' => Owner::all(),
             'animal' => $animal,
-            'menuItems' => $menuItems
-        );
-
-        return view("owner.match")->with($data);
+        ]);
     }
 
+    // view func    
     public function show($id)
     {
-        $owner = Owner::find($id);
+        $owner = $this->get_hydrated($id);
         $animals  = Animal::where('owner_id', $owner->id)->get();
-        $menuItems = $this->GetMenuItems('owners');
 
         foreach ($animals as $animal) {
             $animal->animalImage = $this->getAnimalImage($animal->id);
         }
 
-        $data = array(
+        return $this->get_view("owner.show", [
             'owner' => $owner,
             'animals' => $animals,
-            'menuItems' => $menuItems
-        );
-
-        return view("owner.show")->with($data);
+        ]);
     }
 
+    // view func
     public function edit($id)
+    {
+        return $this->get_view('owner.edit', [
+            'owner' => $this->get_hydrated($id),
+        ]);
+    }
+
+    // view func
+    public function create()
+    {
+        return $this->get_view("owner.edit", [
+            'owner' => new Owner,
+        ]);
+    }
+
+    /**
+     * wrapper around view and -> with
+     * so no every time include menuItems and shortening
+     * @param string name of the view
+     * @param array to be loaded into view besides menuItems
+     * @return loaded views.
+     */
+    private function get_view(string $view_name, array $data): View
+    {
+        return view($view_name)->with(array_merge($data, [
+            'menuItems' => $this->menuItems
+        ]));
+    }
+
+    /**
+     * finds owner by id and hydrates the owner.
+     * @return Owner
+     * @param string id
+     */
+    public function get_hydrated(string $id): Owner
     {
         $nude_owner = Owner::find($id);
         $owner = Owner::hydrateWithAddress($nude_owner);
-        $data = $this->GetOwnerData($owner);
-
-        return view("owner.edit")->with($data);
+        return $owner;
     }
 
-    public function create()
-    {
-        $owner = new Owner;
-        $data = $this->GetOwnerData($owner);
-
-        return view("owner.edit")->with($data);
-    }
 
     public function store(Request $request)
     {
@@ -93,15 +113,14 @@ class OwnerController extends Controller
                 ->withInput();
         }
 
-        $postdata = Input::all();
-        $Address = new Address();
-        $Address->setNewValues($postdata);
-        $ai = $Address->uuid_check($postdata);
-        $Address->geoIpRoundTrip($postdata);
-        $Address->save();
-        $this->saveOwner($request, $ai);
-        Session::flash('message', 'Eigenaar succesvol toegevoegd!');
-        return redirect()->action('OwnerController@index');
+        $ai = $this->save_or_create_address(true);
+        if ($this->create_or_save_owner($request, $ai)) {
+            Session::flash('message', 'Eigenaar succesvol toegevoegd!');
+            return redirect()->action('OwnerController@index');
+        } else {
+            Session::flash('message', 'Fout bij het opslaan!');
+            return redirect()->action('OwnerController@index');
+        }
     }
 
     public function update(Request $request)
@@ -114,34 +133,33 @@ class OwnerController extends Controller
                 ->withInput();
         }
 
-        try {
-
-            $postdata = Input::all();
-            $Address = Address::find($postdata['address_id']);
-            $Address->setNewValues($postdata);
-            $ai = $Address->uuid_check($postdata); // dit is een beetje rommelig
-            $Address->geoIpRoundTrip($postdata);
-            $Address->save();
-            $this->saveOwner($request, $ai);
+        $ai = $this->save_or_create_address(false);
+        if ($this->create_or_save_owner($request, $ai)) {
             Session::flash('message', 'Eigenaar succesvol gewijzigd!');
-        } catch (\Exception $error) {
-            echo "error met ...";
-            dd($postdata);
-            throw $error;
+            return redirect()->action('OwnerController@show', $request->id);
+        } else {
+            Session::flash('message', 'Dat is een fout!');
         }
-        return redirect()->action('OwnerController@show', $request->id);
     }
 
-    private function GetOwnerData($owner)
+    /**
+     * Wrapper around saving the address. 
+     * calls address model methodes
+     * @return string address_id
+     * @param bool create: required. whether or not to save or create the address.
+     */
+    private function save_or_create_address($create): string
     {
-        $menuItems = $this->GetMenuItems('owners');
-
-        $data = array(
-            'owner' => $owner,
-            'menuItems' => $menuItems
-        );
-
-        return $data;
+        if (!is_bool($create)) {
+            throw new \Exception('save or create address without craate param');
+        }
+        $postdata = Input::all();
+        $Address = $create ? new Address() : Address::find($postdata['address_id']);
+        $Address->setNewValues($postdata);
+        $ai = $Address->uuid_check($postdata);
+        $Address->geoIpRoundTrip($postdata);
+        $Address->save();
+        return $ai;
     }
 
     private function validateOwner()
@@ -150,30 +168,27 @@ class OwnerController extends Controller
             'name'          => 'required',
             'phone_number'  => 'required',
             'email_address' => 'required',
+            'city' => 'required',
+            'house_number' => 'required',
+            'street' => 'required',
+            'postal_code' => 'required',
         );
 
         return Validator::make(Input::all(), $rules);
     }
 
-    private function saveOwner(Request $request, $address_id)
+    private function create_or_save_owner(Request $request, $address_id): bool
     {
-        if ($request->id !== null) {
-            $owner = Owner::find($request->id);
-        } else {
-            $owner = new Owner;
+        // bestaat de owner al?
+        $owner = $request->id !== null
+            ? Owner::find($request->id)
+            : new Owner;
+
+        foreach (['name', 'prefix', 'surname', 'phone_number', 'email_address'] as $key) {
+            $owner->$key = $request->$key;
         }
-
-        $owner->name = $request->name;
-        $owner->prefix = $request->prefix;
-        $owner->surname = $request->surname;
         $owner->address_id = $address_id;
-        // $owner->street = $request->street;
-        // $owner->house_number = $request->house_number;
-        // $owner->postal_code = $request->postal_code;
-        // $owner->city = $request->city;
-        $owner->phone_number = $request->phone_number;
-        $owner->email_address = $request->email_address;
-
         $owner->save();
+        return true;
     }
 }
