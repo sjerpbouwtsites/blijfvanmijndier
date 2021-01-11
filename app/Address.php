@@ -7,25 +7,12 @@ namespace App;
 require __DIR__ . '/../vendor/autoload.php';
 
 use Curl\Curl;
-use Exception;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
-use PhpParser\Node\Stmt\TryCatch;
+use Illuminate\Database\Eloquent\Collection;
 
 class Address extends Model
 {
 
-    private $street;
-    private $house_number;
-    private $postal_code;
-    private $city;
-    private $longitude;
-    private $lattitude;
-    private $uuid;
-
-    /**
-     * mag niet getyped zijn van eloquent 😣
-     */
     protected $table = 'addresses';
 
     protected $primaryKey = 'uuid';
@@ -38,6 +25,13 @@ class Address extends Model
 
     public $fillable = [
         'street', 'house_number', 'postal_code', 'city', 'uuid', 'lattitude', 'longitude'
+    ];
+
+    /**
+     * to be written onto the 'primary' objects like Owner, Guest
+     */
+    public array $exported_keys = [
+        'street', 'house_number', 'postal_code', 'city', 'lattitude', 'longitude'
     ];
 
 
@@ -56,9 +50,9 @@ class Address extends Model
     }
 
     /**
-     * stores required values from form directly on class in orde to be saved.
+     * used this' required array to push form input values as both attributes' keys and direct properties onto this. 
      */
-    public function setNewValues($formInput): void
+    public function setNewValues(array $formInput): void
     {
         for ($i = 0; $i < count($this->required); $i++) {
             $key = $this->required[$i];
@@ -148,5 +142,52 @@ class Address extends Model
             }
         }
         return $verandering;
+    }
+
+    public static function validate_address_collection(Collection $collection, string $className): bool
+    {
+
+        if ($collection->count() > 1) {
+            throw new \Exception('Meerdere adressen voor ' . $className . ' gevonden', E_USER_NOTICE);
+        }
+        if ($collection->count() < 0) {
+            throw new \Exception('Geen bijpassend adres voor ' . $className, E_USER_NOTICE);
+        }
+
+        return true;
+    }
+
+    /**
+     * adds current address attributes to the given model and returns.
+     * uses address->exported_keys for this list.
+     * @throws Error when model empty, does not have attributes
+     * @return Model 
+     * @param Model
+     * @param string modelName
+     */
+    public function hydrate_model(Model $model, string $modelName = null): Model
+    {
+
+        $mn = empty($modelName) ? 'geen modelnaam meegegeven' : $modelName;
+
+        if (empty($model) || !property_exists($model, 'attributes')) {
+            echo "<pre>";
+            var_dump($model);
+            echo "<pre>";
+            throw new \Exception('model ' . $mn . ' leeg of heeft geen attributes');
+        }
+
+        try {
+            $transplant_address = $this['attributes'];
+            foreach ($this->exported_keys as $address_key) {
+                $model->$address_key = $transplant_address[$address_key];
+            }
+        } catch (\Error $error) {
+            echo "fout bij overzetten adresgegevens naar $mn " . $model->id . "<br>";
+            echo $error . "<br>";
+            throw $error;
+        }
+
+        return $model;
     }
 }
