@@ -10,12 +10,10 @@ use Illuminate\Support\Facades\Session;
 use App\Owner;
 use App\Animal;
 use App\Address;
-use \Illuminate\View\View;
+
 
 class OwnerController extends Controller
 {
-
-    public $menuItems = null;
 
     protected $required = [
         'name',
@@ -31,7 +29,7 @@ class OwnerController extends Controller
 
     function __construct()
     {
-        $this->menuItems = $this->GetMenuItems('owners');
+        parent::__construct('owners');
         $this->set_validator_rules();
     }
 
@@ -85,20 +83,6 @@ class OwnerController extends Controller
         return $this->get_view("owner.edit", [
             'owner' => new Owner,
         ]);
-    }
-
-    /**
-     * wrapper around view and -> with
-     * so no every time include menuItems and shortening
-     * @param string name of the view
-     * @param array to be loaded into view besides menuItems
-     * @return loaded views.
-     */
-    private function get_view(string $view_name, array $data): View
-    {
-        return view($view_name)->with(array_merge($data, [
-            'menuItems' => $this->menuItems
-        ]));
     }
 
     /**

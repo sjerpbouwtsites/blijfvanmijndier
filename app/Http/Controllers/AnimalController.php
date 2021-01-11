@@ -18,8 +18,15 @@ use App\History;
 
 class AnimalController extends Controller
 {
-    public function index(){
-    	$animals = Animal::all();
+
+    function __construct()
+    {
+        parent::__construct('animals');
+    }
+
+    public function index()
+    {
+        $animals = Animal::all();
 
         foreach ($animals as $animal) {
             $animal->breedDesc = $this->getDescription($animal->breed_id);
@@ -34,34 +41,32 @@ class AnimalController extends Controller
         $animalsNew = array();
 
         foreach ($animals as $animal) {
-            if($animal->end_date != null){
-                $animalsOld[] = $animal; 
-            }
-            else{
-                $animalsNew[] = $animal; 
+            if ($animal->end_date != null) {
+                $animalsOld[] = $animal;
+            } else {
+                $animalsNew[] = $animal;
             }
         }
 
-        $data = array(
+        return $this->get_view("animal.index", [
             'animalsNew' => $animalsNew,
             'animalsOld' => $animalsOld,
             'menuItems' => $menuItems
-        );
-
-    	return view("animal.index")->with($data);
+        ]);
     }
 
-    public function shelter($id){
+    public function shelter($id)
+    {
         $animal = Animal::find($id);
-        if($animal->shelter_id == 0){
+        if ($animal->shelter_id == 0) {
             return redirect()->action('ShelterController@match', $animal->id);
-        }
-        else{
+        } else {
             return redirect()->action('ShelterController@show', $animal->shelter_id);
         }
     }
 
-    public function matchshelter($id, $shelter_id){
+    public function matchshelter($id, $shelter_id)
+    {
         $animal = Animal::find($id);
         $animal->shelter_id = $shelter_id;
         $animal->save();
@@ -72,7 +77,8 @@ class AnimalController extends Controller
         return redirect()->action('AnimalController@show', $animal->id);
     }
 
-    public function unconnectshelter($id){
+    public function unconnectshelter($id)
+    {
         $animal = Animal::find($id);
 
         HistoryController::saveHistory('animals', $animal->id, 'shelters', $animal->shelter_id, 'unconnect');
@@ -84,17 +90,19 @@ class AnimalController extends Controller
         return redirect()->action('AnimalController@show', $animal->id);
     }
 
-    public function owner($id){
+    public function owner($id)
+    {
+
         $animal = Animal::find($id);
-        if($animal->owner_id == 0){
+        if ($animal->owner_id == 0) {
             return redirect()->action('OwnerController@match', $animal->id);
-        }
-        else{
+        } else {
             return redirect()->action('OwnerController@show', $animal->owner_id);
         }
     }
 
-    public function matchowner($id, $owner_id){
+    public function matchowner($id, $owner_id)
+    {
         $animal = Animal::find($id);
         $animal->owner_id = $owner_id;
         $animal->save();
@@ -105,7 +113,8 @@ class AnimalController extends Controller
         return redirect()->action('AnimalController@show', $animal->id);
     }
 
-    public function unconnectowner($id){
+    public function unconnectowner($id)
+    {
         $animal = Animal::find($id);
 
         HistoryController::saveHistory('animals', $animal->id, 'owners', $animal->owner_id, 'unconnect');
@@ -117,7 +126,8 @@ class AnimalController extends Controller
         return redirect()->action('AnimalController@show', $animal->id);
     }
 
-    public function matchguest($id, $guest_id){
+    public function matchguest($id, $guest_id)
+    {
         $animal = Animal::find($id);
         $animal->guest_id = $guest_id;
         $animal->save();
@@ -128,7 +138,8 @@ class AnimalController extends Controller
         return redirect()->action('AnimalController@show', $animal->id);
     }
 
-    public function unconnectguest($id){
+    public function unconnectguest($id)
+    {
         $animal = Animal::find($id);
 
         HistoryController::saveHistory('animals', $animal->id, 'guests', $animal->guest_id, 'unconnect');
@@ -140,26 +151,23 @@ class AnimalController extends Controller
         return redirect()->action('AnimalController@show', $animal->id);
     }
 
-    public function outofproject($id){
+    public function outofproject($id)
+    {
         $animal = Animal::find($id);
         $animal->end_date = date('Y-m-d');
 
         $endtypes = $this->GetTableList($this->endtypeId);
-        $endtypes->prepend('Selecteer afmeldreden','0');
+        $endtypes->prepend('Selecteer afmeldreden', '0');
 
-        $menuItems = $this->GetMenuItems('animals');
-        
-        $data = array(
+
+        return $this->get_view("animal.outofproject", [
             'animal' => $animal,
-            'menuItems' => $menuItems,
             'endtypes' => $endtypes
-        );
-
-        return view("animal.outofproject")->with($data);
-
+        ]);
     }
 
-    public function outofprojectstore(Request $request){
+    public function outofprojectstore(Request $request)
+    {
         $validator = $this->validateOutOfProject();
 
         if ($validator->fails()) {
@@ -179,7 +187,8 @@ class AnimalController extends Controller
     }
 
 
-    public function match($id){
+    public function match($id)
+    {
         $animal = Animal::find($id);
         $guestList = array();
         $tmpGuestList = array();
@@ -187,96 +196,88 @@ class AnimalController extends Controller
         $behaviourList = Table::All()->where('tablegroup_id', $this->behaviourId);
         $hometypeList = Table::All()->where('tablegroup_id', $this->hometypeId);
 
-        if(Input::has('isSearchAction') && Input::get('isSearchAction') == "true"){
+        if (Input::has('isSearchAction') && Input::get('isSearchAction') == "true") {
             $checked_hometypes = Input::has('hometypeList') ? Input::get('hometypeList') : [];
             $checked_behaviours = Input::has('behaviourList') ? Input::get('behaviourList') : [];
-        }
-        else{
+        } else {
             $checked_hometypes = $animal->tables()->where('tablegroup_id', $this->hometypeId)->pluck('tables.id')->toArray();
             $checked_behaviours = $animal->tables()->where('tablegroup_id', $this->behaviourId)->pluck('tables.id')->toArray();
         }
 
         foreach ($behaviourList as $table) {
-            if(in_array($table->id, $checked_behaviours)){
-                foreach ($table->guests as $guest) {
-                    $tmpGuestList[] = $guest;
-                }
-            }
-        }    
-
-        foreach ($hometypeList as $table) {
-            if(in_array($table->id, $checked_hometypes)){
+            if (in_array($table->id, $checked_behaviours)) {
                 foreach ($table->guests as $guest) {
                     $tmpGuestList[] = $guest;
                 }
             }
         }
 
-        if($tmpGuestList != null){
+        foreach ($hometypeList as $table) {
+            if (in_array($table->id, $checked_hometypes)) {
+                foreach ($table->guests as $guest) {
+                    $tmpGuestList[] = $guest;
+                }
+            }
+        }
+
+        if ($tmpGuestList != null) {
             sort($tmpGuestList);
         }
 
         $oldId = 0;
         foreach ($tmpGuestList as $guest) {
-            if($oldId != $guest->id){
+            if ($oldId != $guest->id) {
                 $guestList[] = $guest;
                 $oldId = $guest->id;
             }
         }
 
-        $menuItems = $this->GetMenuItems('animals');
-
-        $data = array(
-            'behaviourList' => $behaviourList, 
-            'checked_behaviours' => $checked_behaviours, 
-            'hometypeList' => $hometypeList, 
+        return $this->get_view("animal.match", [
+            'behaviourList' => $behaviourList,
+            'checked_behaviours' => $checked_behaviours,
+            'hometypeList' => $hometypeList,
             'checked_hometypes' => $checked_hometypes,
             'guests' => $guestList,
-            'menuItems' => $menuItems,
             'tables' => $animal->tables,
             'animal' => $animal
-        );
-
-        return view("animal.match")->with($data);
+        ]);
     }
 
-    public function match2($id){
+    public function match2($id)
+    {
         $animal = Animal::find($id);
         $animal->breedDesc = $this->getDescription($animal->breed_id);
-        $menuItems = $this->GetMenuItems('animals');
-        
-        $animaltypeList = Table::All()->where('tablegroup_id', $this->animaltypeId);        
+
+        $animaltypeList = Table::All()->where('tablegroup_id', $this->animaltypeId);
         $checked_animaltypes = Input::has('animaltypeList') ? Input::get('animaltypeList') : [];
 
-        if(Input::has('isSearchAction')){
+        if (Input::has('isSearchAction')) {
             $guestList = collect();
             foreach ($animaltypeList as $table) {
-                if(in_array($table->id, $checked_animaltypes)){
+                if (in_array($table->id, $checked_animaltypes)) {
                     foreach ($table->guests as $guest) {
-                        if(!$guestList->contains('id',$guest->id)){
+                        if (!$guestList->contains('id', $guest->id)) {
                             $guestList->push($guest);
                         }
                     }
                 }
             }
-        }
-        else{
+        } else {
             $guestList = Guest::all();
         }
 
-        $data = array(
+        return $this->get_view("animal.match", [
             'guests' => $guestList->sortBy('name'),
-            'menuItems' => $menuItems,
             'animal' => $animal,
             'animaltypeList' => $animaltypeList,
             'checked_animaltypes' => $checked_animaltypes
-        );
-
-        return view("animal.match")->with($data);
+        ]);
     }
 
-    public function show($id){
-    	$animal = Animal::find($id);
+    public function show($id)
+    {
+
+        $animal = Animal::find($id);
 
         $animal->breedDesc = $this->getDescription($animal->breed_id);
         $animal->animaltypeDesc = $this->getDescription($animal->animaltype_id);
@@ -288,8 +289,6 @@ class AnimalController extends Controller
         $vaccinationList = $animal->tables->where('tablegroup_id', $this->vaccinationId);
         $hometypeList = $animal->tables->where('tablegroup_id', $this->hometypeId);
 
-        $menuItems = $this->GetMenuItems('animals');
-
         $animal->abused = $animal->abused ? 'Ja' : 'Nee';
         $animal->witnessed_abuse = $animal->witnessed_abuse ? 'Ja' : 'Nee';
         $animal->updates = $animal->updates ? 'Ja' : 'Nee';
@@ -299,34 +298,29 @@ class AnimalController extends Controller
 
         $updates = UpdateController::getUpdatesByLinkType('animals', $animal->id, 2);
 
-        if($animal->end_date != null){
+        if ($animal->end_date != null) {
             $animal->end_date = $this->FormatDate($animal->end_date);
         }
 
-        $data = array(
+        return view("animal.show", [
             'animal' => $animal,
             'updates' => $updates,
-            'menuItems' => $menuItems,
-            'behaviourList' => $behaviourList, 
+            'behaviourList' => $behaviourList,
             'vaccinationList' => $vaccinationList,
             'hometypeList' => $hometypeList
-        );
-
-    	return view("animal.show")->with($data);
+        ]);
     }
 
-    public function edit($id){
+    public function edit($id)
+    {
         $animal = Animal::find($id);
-        $data = $this->GetAnimalData($animal);
-
-        return view("animal.edit")->with($data);
+        return view("animal.edit")->with($this->GetAnimalData($animal));
     }
 
-    public function create(){
+    public function create()
+    {
         $animal = new Animal;
-        $data = $this->GetAnimalData($animal);
-
-        return view("animal.edit")->with($data);
+        return view("animal.edit")->with($this->GetAnimalData($animal));
     }
 
     public function store(Request $request)
@@ -358,11 +352,14 @@ class AnimalController extends Controller
             return redirect()->action('AnimalController@show', $request->id);
         }
     }
-    public static function getAnimalName($animal_id){
+
+    public static function getAnimalName($animal_id)
+    {
         return Animal::find($animal_id)->name;
     }
 
-    private function GetAnimalData($animal){
+    private function GetAnimalData($animal)
+    {
         $breeds = $this->GetTableList($this->breedId);
         $animaltypes = $this->GetTableList($this->animaltypeId);
         $gendertypes = $this->GetTableList($this->gendertypeId);
@@ -375,42 +372,41 @@ class AnimalController extends Controller
         $checked_vaccinations = $animal->tables()->where('tablegroup_id', $this->vaccinationId)->pluck('tables.id')->toArray();
         $checked_hometypes = $animal->tables()->where('tablegroup_id', $this->hometypeId)->pluck('tables.id')->toArray();
 
-        $breeds->prepend('Selecteer ras','0');
-        $animaltypes->prepend('Selecteer soort dier','0');
-        $gendertypes->prepend('Selecteer geslacht','0');
+        $breeds->prepend('Selecteer ras', '0');
+        $animaltypes->prepend('Selecteer soort dier', '0');
+        $gendertypes->prepend('Selecteer geslacht', '0');
 
-        $menuItems = $this->GetMenuItems('animals');
-        
         $animal->animalImage = $this->getAnimalImage($animal->id);
 
         $data = array(
-            'animal' => $animal, 
-            'breeds' => $breeds, 
+            'animal' => $animal,
+            'breeds' => $breeds,
             'animaltypes' => $animaltypes,
             'gendertypes' => $gendertypes,
-            'menuItems' => $menuItems, 
-            'behaviourList' => $behaviourList, 
-            'checked_behaviours' => $checked_behaviours, 
-            'vaccinationList' => $vaccinationList, 
+            'behaviourList' => $behaviourList,
+            'checked_behaviours' => $checked_behaviours,
+            'vaccinationList' => $vaccinationList,
             'checked_vaccinations' => $checked_vaccinations,
-            'hometypeList' => $hometypeList, 
+            'hometypeList' => $hometypeList,
             'checked_hometypes' => $checked_hometypes
         );
 
         return $data;
     }
 
-    private function validateOutOfProject(){
+    private function validateOutOfProject()
+    {
         $rules = array(
             'end_date'        => 'required',
             'endtype_id'      => 'required|numeric|min:1',
             'end_description' => 'required',
         );
-        
+
         return Validator::make(Input::all(), $rules);
     }
 
-    private function validateAnimal(){
+    private function validateAnimal()
+    {
         $rules = array(
             'name'              => 'required',
             'animaltype_id'     => 'required|numeric|min:1',
@@ -419,17 +415,18 @@ class AnimalController extends Controller
             'registration_date' => 'required|date',
             'animal_image'      => 'image|mimes:jpg,jpeg|max:1024',
         );
-        
+
         return Validator::make(Input::all(), $rules);
     }
 
-    private function saveAnimal(Request $request){
-        if($request->id !== null){
+    private function saveAnimal(Request $request)
+    {
+        if ($request->id !== null) {
             $animal = Animal::find($request->id);
-        }else{
+        } else {
             $animal = new Animal;
         }
-    
+
         $inputs = Input::all();
 
         $animal->breed_id = $request->breed_id;
@@ -443,32 +440,32 @@ class AnimalController extends Controller
         $animal->updates = $request->updates ? 1 : 0;
         $animal->max_hours_alone = $request->max_hours_alone;
 
-        if(isset($request->registration_date) && $request->registration_date != ''){
+        if (isset($request->registration_date) && $request->registration_date != '') {
             $animal->registration_date = $request->registration_date;
         }
 
-        if(isset($request->birth_date) && $request->birth_date != ''){
+        if (isset($request->birth_date) && $request->birth_date != '') {
             $animal->birth_date = $request->birth_date;
         }
 
         // extra save to get id
-        if($request->id === null){
+        if ($request->id === null) {
             $animal->save();
         }
 
-        if (isset($inputs['tables'])){
+        if (isset($inputs['tables'])) {
             $tables = $inputs['tables'];
-        }else{
+        } else {
             $tables = [];
         }
 
         $animal->tables()->sync($tables);
         $animal->save();
 
-        if($request->hasFile('animal_image')){
+        if ($request->hasFile('animal_image')) {
             $imageName = 'animal_' . $animal->id . '.' . $request->file('animal_image')->getClientOriginalExtension();
             $imageName = strtolower($imageName);
-            $request->file('animal_image')->move( base_path() . '/public/img/', $imageName );
+            $request->file('animal_image')->move(base_path() . '/public/img/', $imageName);
         }
     }
 }

@@ -12,6 +12,8 @@ use App\Table;
 use App\Update;
 use App\Animal;
 use DateTime;
+use Exception;
+use \Illuminate\View\View;
 
 class Controller extends BaseController
 {
@@ -29,8 +31,16 @@ class Controller extends BaseController
     public $updatetypeId;
     public $updatetypeOwner;
 
-    public function __construct()
+    public string $model_name;
+    public $menuItems = null;
+
+    public function __construct($model_name = '')
     {
+        if (empty($model_name)) {
+            throw new Exception('geen model naam gegeven. \n Verget je de constructor?', E_WARNING);
+        }
+        $this->menuItems = $this->GetMenuItems($model_name);
+
         $this->breedId = 1;
         $this->behaviourId = 2;
         $this->vaccinationId = 3;
@@ -42,6 +52,26 @@ class Controller extends BaseController
         $this->endtypeId = 9;
         $this->updatetypeId = 10;
         $this->updatetypeOwner = 179;
+    }
+
+
+
+    /**
+     * wrapper around view and -> with
+     * so no every time include menuItems and shortening
+     * @param string name of the view
+     * @param array to be loaded into view besides menuItems
+     * @throws E_NOTICE if menu items empty
+     * @return loaded views.
+     */
+    public function get_view(string $view_name, array $data): View
+    {
+        if (empty($this->menuItems)) {
+            throw new \Exception('menu items leeg', E_NOTICE);
+        }
+        return view($view_name)->with(array_merge($data, [
+            'menuItems' => $this->menuItems
+        ]));
     }
 
     public function getUpdateDate()
