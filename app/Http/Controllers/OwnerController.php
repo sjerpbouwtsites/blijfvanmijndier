@@ -14,7 +14,8 @@ use App\MenuItem;
 
 class OwnerController extends Controller
 {
-    public function index(){
+    public function index()
+    {
         $owners = Owner::all();
         $owners = $owners->sortBy('name');
 
@@ -28,7 +29,8 @@ class OwnerController extends Controller
         return view("owner.index")->with($data);
     }
 
-    public function match($id){
+    public function match($id)
+    {
         $animal = Animal::find($id);
         $owners = Owner::all();
         $animal->breedDesc = $this->getDescription($animal->breed_id);
@@ -44,7 +46,8 @@ class OwnerController extends Controller
         return view("owner.match")->with($data);
     }
 
-    public function show($id){
+    public function show($id)
+    {
         $owner = Owner::find($id);
         $animals  = Animal::where('owner_id', $owner->id)->get();
         $menuItems = $this->GetMenuItems('owners');
@@ -62,14 +65,16 @@ class OwnerController extends Controller
         return view("owner.show")->with($data);
     }
 
-    public function edit($id){
+    public function edit($id)
+    {
         $owner = Owner::find($id);
         $data = $this->GetOwnerData($owner);
 
         return view("owner.edit")->with($data);
     }
 
-    public function create(){
+    public function create()
+    {
         $owner = new Owner;
         $data = $this->GetOwnerData($owner);
 
@@ -106,41 +111,44 @@ class OwnerController extends Controller
         }
     }
 
-    private function GetOwnerData($owner){
+    private function GetOwnerData($owner)
+    {
         $menuItems = $this->GetMenuItems('owners');
 
         $data = array(
-            'owner' => $owner, 
+            'owner' => $owner,
             'menuItems' => $menuItems
         );
 
         return $data;
     }
 
-    private function validateOwner(){
+    private function validateOwner()
+    {
         $rules = array(
             'name'          => 'required',
             'phone_number'  => 'required',
             'email_address' => 'required',
         );
-        
+
         return Validator::make(Input::all(), $rules);
     }
 
-    private function saveOwner(Request $request){
-        if($request->id !== null){
+    private function saveOwner(Request $request)
+    {
+        if ($request->id !== null) {
             $owner = Owner::find($request->id);
-        }else{
+        } else {
             $owner = new Owner;
         }
 
         $owner->name = $request->name;
         $owner->prefix = $request->prefix;
         $owner->surname = $request->surname;
-        $owner->street = $request->street;
-        $owner->house_number = $request->house_number;
-        $owner->postal_code = $request->postal_code;
-        $owner->city = $request->city;
+        // $owner->street = $request->street;
+        // $owner->house_number = $request->house_number;
+        // $owner->postal_code = $request->postal_code;
+        // $owner->city = $request->city;
         $owner->phone_number = $request->phone_number;
         $owner->email_address = $request->email_address;
 
