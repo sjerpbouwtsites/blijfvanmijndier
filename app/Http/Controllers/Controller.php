@@ -16,6 +16,7 @@ use Exception;
 use \Illuminate\View\View;
 use Illuminate\Database\Eloquent\Model;
 use Symfony\Component\HttpFoundation\Request;
+use Illuminate\Support\Collection;
 
 class Controller extends BaseController
 {
@@ -172,11 +173,13 @@ class Controller extends BaseController
         return "Onbekend";
     }
 
-    public function GetTableList($tablegroupId)
+    /**
+     * @return Collection associative array with * from tables -> tables.id => description
+     */
+    public function GetTableList($tablegroupId): Collection
     {
         $tableList = Table::All()->where('tablegroup_id', $tablegroupId)->sortBy('description');
         $tableList = $tableList->pluck('description', 'id');
-
         return $tableList;
     }
 }

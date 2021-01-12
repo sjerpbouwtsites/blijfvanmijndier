@@ -3,19 +3,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use App\Animal;
-use App\Breed;
 use App\Table;
-use App\TableGroup;
-use App\MenuItem;
-use App\Guest;
-use App\History;
-use Exception;
+
 
 class AnimalController extends Controller
 {
@@ -29,15 +23,13 @@ class AnimalController extends Controller
     public function index()
     {
         $animals = Animal::all();
-
         foreach ($animals as $animal) {
-            $animal = $this->hydrate_animal($animal);
+            $animal = $this->index_show_hydrate_animal($animal);
         }
-
         $animals = $animals->sortBy('name');
+        // animals old apparaently from 'project'?
         $animalsOld = array();
         $animalsNew = array();
-
         foreach ($animals as $animal) {
             if ($animal->end_date != null) {
                 $animalsOld[] = $animal;
@@ -45,10 +37,12 @@ class AnimalController extends Controller
                 $animalsNew[] = $animal;
             }
         }
-
+        $animals_old_view = count($animalsOld) > 0
+            ? $this->get_view('animal.old', ['old_animals' => $animalsOld])
+            : '';
         return $this->get_view("animal.index", [
-            'animalsNew' => $animalsNew,
-            'animalsOld' => $animalsOld,
+            'animals' => $animalsNew,
+            'animalsOldView' => $animals_old_view,
         ]);
     }
 
@@ -57,35 +51,22 @@ class AnimalController extends Controller
      */
     public function show($id)
     {
-        $animal = $this->hydrate_animal(Animal::find($id));
+        $animal = $this->index_show_hydrate_animal(Animal::find($id));
 
         $updates = UpdateController::getUpdatesByLinkType('animals', $animal->id, 2);
 
-        if ($animal->end_date != null) {
-            $animal->end_date = $this->FormatDate($animal->end_date);
-        }
-
-        return view("animal.show", [
-            'animal' => $animal,
-            'updates' => $updates,
-            'behaviourList' => $this->animal_meta($animal, $this->behaviourId),
-            'vaccinationList' => $this->animal_meta($animal, $this->vaccinationId),
-            'hometypeList' => $this->animal_meta($animal, $this->hometypeId)
-        ]);
+        return $this->get_view("animal.show", array_merge(
+            [
+                'updates' => $updates
+            ],
+            $this->animal_meta($animal)
+        ));
     }
 
     /**
-     * generic function for getting behaviourList, vaccinationList, hometypeList.
+     * helper to show / index views. 
      */
-    private function animal_meta(Animal $animal, $tablegroup_id)
-    {
-        return $animal->tables->where('tablegroup_id', $tablegroup_id);
-    }
-
-    /**
-     * generic hydrater for use in show / index views.
-     */
-    private function hydrate_animal(Animal $animal): Animal
+    private function index_show_hydrate_animal(Animal $animal): Animal
     {
         $animal->breedDesc = $this->getDescription($animal->breed_id);
         $animal->animaltypeDesc = $this->getDescription($animal->animaltype_id);
@@ -94,6 +75,37 @@ class AnimalController extends Controller
         $animal->needUpdate = $this->animalNeedUpdate($animal->id);
         $animal->animalImage = $this->getAnimalImage($animal->id);
         return $animal;
+    }
+
+
+    /**
+     * single edit view.
+     */
+    public function edit($id)
+    {
+        $animal = Animal::find($id);
+        $animal->animalImage = $this->getAnimalImage($animal->id);
+        return $this->create_or_edit($animal);
+    }
+
+    /**
+     * single create new animal view.
+     */
+    public function create()
+    {
+        return $this->create_or_edit(new Animal);
+    }
+
+    /**
+     * helper to create and edit
+     * @param Animal create gives a new Animal, edit passes a found animal
+     */
+    private function create_or_edit(Animal $animal)
+    {
+        return $this->get_view("animal.edit", array_merge(
+            $this->animal_meta($animal),
+            $this->get_table_lists()
+        ));
     }
 
     // END GENERAL VIEWS
@@ -192,6 +204,10 @@ class AnimalController extends Controller
 
 
 
+    /**
+     * single animal remove from project... 
+     * end_date property is effectively a boolean!
+     */
     public function outofproject($id)
     {
         $animal = Animal::find($id);
@@ -200,13 +216,16 @@ class AnimalController extends Controller
         $endtypes = $this->GetTableList($this->endtypeId);
         $endtypes->prepend('Selecteer afmeldreden', '0');
 
-
         return $this->get_view("animal.outofproject", [
             'animal' => $animal,
             'endtypes' => $endtypes
         ]);
     }
 
+    /**
+     * single animal store remove from project... 
+     * end_date property is effectively a boolean!
+     */
     public function outofprojectstore(Request $request)
     {
         $validator = $this->validateOutOfProject();
@@ -227,14 +246,16 @@ class AnimalController extends Controller
         }
     }
 
+    /**
+     * @TODO dit moet nog nagelopen worden!
+     */
     public function match($id)
     {
         $animal = Animal::find($id);
         $guestList = array();
         $tmpGuestList = array();
 
-        $behaviourList = $this->animal_meta($animal, $this->behaviourId);
-        $hometypeList = $this->animal_meta($animal, $this->hometypeId);
+        $animal_meta = $this->animal_meta($animal, ['vaccination']);
 
         if (Input::has('isSearchAction') && Input::get('isSearchAction') == "true") {
             $checked_hometypes = Input::has('hometypeList') ? Input::get('hometypeList') : [];
@@ -244,7 +265,7 @@ class AnimalController extends Controller
             $checked_behaviours = $animal->tables()->where('tablegroup_id', $this->behaviourId)->pluck('tables.id')->toArray();
         }
 
-        foreach ($behaviourList as $table) {
+        foreach ($animal_meta['behaviourList'] as $table) {
             if (in_array($table->id, $checked_behaviours)) {
                 foreach ($table->guests as $guest) {
                     $tmpGuestList[] = $guest;
@@ -252,7 +273,7 @@ class AnimalController extends Controller
             }
         }
 
-        foreach ($hometypeList as $table) {
+        foreach ($animal_meta['hometypeList'] as $table) {
             if (in_array($table->id, $checked_hometypes)) {
                 foreach ($table->guests as $guest) {
                     $tmpGuestList[] = $guest;
@@ -273,9 +294,8 @@ class AnimalController extends Controller
         }
 
         return $this->get_view("animal.match", [
-            'behaviourList' => $behaviourList,
+            ...$animal_meta,
             'checked_behaviours' => $checked_behaviours,
-            'hometypeList' => $hometypeList,
             'checked_hometypes' => $checked_hometypes,
             'guests' => $guestList,
             'tables' => $animal->tables,
@@ -283,22 +303,9 @@ class AnimalController extends Controller
         ]);
     }
 
-
-
-
-
-    public function edit($id)
-    {
-        $animal = Animal::find($id);
-        return view("animal.edit")->with($this->GetAnimalData($animal));
-    }
-
-    public function create()
-    {
-        $animal = new Animal;
-        return view("animal.edit")->with($this->GetAnimalData($animal));
-    }
-
+    /**
+     * single animal create endpoint
+     */
     public function store(Request $request)
     {
         $validator = $this->validateAnimal();
@@ -314,6 +321,9 @@ class AnimalController extends Controller
         }
     }
 
+    /**
+     * single existing animal updates endpoint
+     */
     public function update(Request $request)
     {
         $validator = $this->validateAnimal();
@@ -329,45 +339,63 @@ class AnimalController extends Controller
         }
     }
 
-    public static function getAnimalName($animal_id)
+    /**
+     * generic function for getting behaviourList, vaccinationList, hometypeList and their checked ones.
+     * @param Animal animal instance
+     * @param Array skip. which of behaviour, vaccination or hometype to skip.
+     * @return Array with behaviourList, vaccinationList, hometypeList and their id/description collections; also behaviourListChecked, etc. 
+     */
+    private function animal_meta(Animal $animal, $skip = array()): array
     {
-        return Animal::find($animal_id)->name;
+        $to_return = [];
+        foreach (['behaviour', 'vaccination', 'hometype'] as $group) {
+            if (in_array($group, $skip)) continue;
+            $list_name = $group . "List";
+            $id_name = $group . "Id";
+
+            // all in this group.
+            $all_in_group = Table::All()->where(
+                'tablegroup_id',
+                $this->$id_name
+            );
+            $to_return[$list_name] = $all_in_group;
+
+            // all in this group checked, complete objects
+            $all_checked_ids = $animal->tables->where('tablegroup_id', $this->$id_name)->pluck('id')->toArray();
+            $complete_and_checked = [];
+            foreach ($all_in_group as $one_of_all) {
+                if (in_array($one_of_all['attributes']['id'], $all_checked_ids)) {
+                    $complete_and_checked[] = $one_of_all;
+                }
+            }
+            $to_return[$list_name . 'Checked'] = collect($complete_and_checked);
+
+            // all checked in this group, id list.
+            $to_return['checked_' . $group . 's'] = $all_checked_ids;
+        }
+        $to_return['animal'] = $animal;
+        return $to_return;
     }
 
-    private function GetAnimalData($animal)
+    /**
+     * creates lists of all possible breeds, animalTypes, gendertypes
+     * @return Array see above k
+     */
+    private function get_table_lists()
     {
+        // lijsten uit tables tabel met id => description data.
+        // prepend lege optie zodat geen optie ook kan. 
         $breeds = $this->GetTableList($this->breedId);
         $animaltypes = $this->GetTableList($this->animaltypeId);
         $gendertypes = $this->GetTableList($this->gendertypeId);
-
-        $behaviourList = Table::All()->where('tablegroup_id', $this->behaviourId);
-        $vaccinationList = Table::All()->where('tablegroup_id', $this->vaccinationId);
-        $hometypeList = Table::All()->where('tablegroup_id', $this->hometypeId);
-
-        $checked_behaviours = $animal->tables()->where('tablegroup_id', $this->behaviourId)->pluck('tables.id')->toArray();
-        $checked_vaccinations = $animal->tables()->where('tablegroup_id', $this->vaccinationId)->pluck('tables.id')->toArray();
-        $checked_hometypes = $animal->tables()->where('tablegroup_id', $this->hometypeId)->pluck('tables.id')->toArray();
-
         $breeds->prepend('Selecteer ras', '0');
         $animaltypes->prepend('Selecteer soort dier', '0');
         $gendertypes->prepend('Selecteer geslacht', '0');
-
-        $animal->animalImage = $this->getAnimalImage($animal->id);
-
-        $data = array(
-            'animal' => $animal,
+        return [
             'breeds' => $breeds,
             'animaltypes' => $animaltypes,
             'gendertypes' => $gendertypes,
-            'behaviourList' => $behaviourList,
-            'checked_behaviours' => $checked_behaviours,
-            'vaccinationList' => $vaccinationList,
-            'checked_vaccinations' => $checked_vaccinations,
-            'hometypeList' => $hometypeList,
-            'checked_hometypes' => $checked_hometypes
-        );
-
-        return $data;
+        ];
     }
 
     private function validateOutOfProject()
@@ -421,6 +449,11 @@ class AnimalController extends Controller
                 : (in_array($key, $not_null_keys) && empty($request->$key)
                     ? null
                     : $request->$key);
+        }
+
+        // extra save to get id //TODO 
+        if ($request->id === null) {
+            $animal->save();
         }
 
         $animal->tables()->sync(isset($inputs['tables']) ? $inputs['tables'] : []);

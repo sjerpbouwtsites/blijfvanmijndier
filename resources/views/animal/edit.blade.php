@@ -20,10 +20,27 @@
 		<div class="col-md-6">
 			<h4>Details</h4>
 
-            @include('form_text', ['field' => 'name', 'label' => 'Naam'])
-            @include('form_select', ['field' => 'animaltype', 'label' => 'Soort dier', 'id' => 'animaltype_id', 'types' => $animaltypes])
-            @include('form_select', ['field' => 'breed', 'label' => 'Ras', 'id' => 'breed_id', 'types' => $breeds])
-            @include('form_select', ['field' => 'gendertype', 'label' => 'Geslacht', 'id' => 'gendertype_id', 'types' => $gendertypes])
+						@include('form_text', 
+						['field' => 'name', 'label' => 'Naam']
+						)
+						@include('form_select', 
+						['field' => 'animaltype',
+						 'label' => 'Soort dier',
+							'id' => 'animaltype_id',
+							'types' => $animaltypes,
+						])
+						@include('form_select', 
+						['field' => 'breed', 
+						'label' => 'Ras', 
+						'id' => 'breed_id', 
+						'types' => $breeds]
+						)
+						@include('form_select', 
+						['field' => 'gendertype', 
+						'label' => 'Geslacht', 
+						'id' => 'gendertype_id', 
+						'types' => $gendertypes]
+						)
             @include('form_date', ['field' => 'registration_date', 'label' => 'Aanmelddatum', 'value' => Input::old('start_date')])
             @include('form_date', ['field' => 'birth_date', 'label' => 'Geboortedatum', 'value' => Input::old('start_date')])
             @include('form_text', ['field' => 'chip_number', 'label' => 'Chipnummer'])

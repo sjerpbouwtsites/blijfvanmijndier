@@ -139,6 +139,7 @@ ALTER TABLE guests DROP COLUMN house_number;
 ALTER TABLE guests DROP COLUMN postal_code;
 ALTER TABLE guests DROP COLUMN city;
 -- views
+-- adressen en owners samen
 CREATE VIEW bvmd.oa_join AS
 SELECT o.name,
   o.updated_at as ua,
@@ -150,3 +151,14 @@ SELECT o.name,
   a.longitude
 FROM addresses a
   RIGHT OUTER JOIN owners o ON a.uuid = o.address_id;
+-- tabellen / tabel groepen samen
+CREATE VIEW bvmd.tables_join as
+SELECT tg.type,
+  t.description,
+  t.id,
+  t.tablegroup_id,
+  t.updated_at
+FROM tables t
+  JOIN tablegroups tg ON tg.id = t.tablegroup_id
+ORDER BY t.tablegroup_id
+LIMIT 500;

@@ -47,11 +47,11 @@
                     <img class="img_margin_bottom" src="{{ URL::asset($animal->animalImage) }}" alt="{{ $animal->name }}" width="175" height="175">
                 </div>
             <div class="col-md-6">
-                @include('show_checkbox_list', ['title' => 'Gedrag', 'list' => $behaviourList])
-                @include('show_checkbox_list', ['title' => 'Vaccinaties', 'list' => $vaccinationList])
+                @include('show_checkbox_list', ['title' => 'Gedrag', 'list' => $behaviourListChecked])
+                @include('show_checkbox_list', ['title' => 'Vaccinaties', 'list' => $vaccinationListChecked])
             </div>
             <div class="col-md-6">
-                @include('show_checkbox_list', ['title' => 'Wonen', 'list' => $hometypeList])
+                @include('show_checkbox_list', ['title' => 'Wonen', 'list' => $hometypeListChecked])
             </div>
         
         </div>
