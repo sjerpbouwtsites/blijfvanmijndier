@@ -47,9 +47,9 @@ class OwnerController extends Controller
     /**
      * single match & endpoint
      */
-    public function match($id)
+    public function match($owner_id)
     {
-        $animal = Animal::find($id);
+        $animal = Animal::find($owner_id);
         $animal->breedDesc = $this->getDescription($animal->breed_id);
 
         return $this->get_view("owner.match", [
@@ -61,9 +61,9 @@ class OwnerController extends Controller
     /**
      * single show view & endpoint
      */
-    public function show($id)
+    public function show($owner_id)
     {
-        $owner = $this->get_hydrated($id);
+        $owner = $this->get_hydrated($owner_id);
         $animals  = Animal::where('owner_id', $owner->id)->get();
 
         foreach ($animals as $animal) {
@@ -79,10 +79,10 @@ class OwnerController extends Controller
     /**
      * single edit view & endpoint
      */
-    public function edit($id)
+    public function edit($owner_id)
     {
         return $this->get_view('owner.edit', [
-            'owner' => $this->get_hydrated($id),
+            'owner' => $this->get_hydrated($owner_id),
         ]);
     }
 
@@ -101,9 +101,9 @@ class OwnerController extends Controller
      * @return Owner
      * @param string id
      */
-    public function get_hydrated(string $id): Owner
+    public function get_hydrated(string $owner_id): Owner
     {
-        $nude_owner = Owner::find($id);
+        $nude_owner = Owner::find($owner_id);
         return Address::hydrateWithAddress($nude_owner);
     }
 
