@@ -123,33 +123,46 @@ class Address extends Model
         }
 
         // no response.
-        if (!property_exists($curl, 'response') || is_null($curl->response)) {
-            $basis_ret['reason'] = "curl response does not exist or is null";
-            $status = 'fail';
+        if ($status !== 'fail') {
+            if (!property_exists($curl, 'response') || is_null($curl->response)) {
+                $basis_ret['reason'] = "curl response does not exist or is null";
+                $status = 'fail';
+            }
         }
 
-        // geoIq error: response has error.
-        if (array_key_exists('error', $curl->response) && !empty($curl->response['error'])) {
-            $basis_ret['reason'] = "error in geoIq system: $curl->response['error']";
-            $status = 'fail';
+        // geoIq error: response has error. response error is protected btw
+        if ($status !== 'fail') {
+            if (property_exists('error', $curl->response) && !empty($curl->response['error'])) {
+                $basis_ret['reason'] = "error in geoIq system: $curl->response['error']";
+                $status = 'fail';
+            }
         }
+
 
         // de reactie is geen array?
-        if (!is_array($curl->response)) {
-            $basis_ret['reason'] = "geo iq response is not an array.";
-            $status = 'fail';
-        }
-        // alweer niets gevonden door geo iq?
-        $response = $curl->response;
-        if (empty($response)) {
-            $basis_ret['reason'] = "geo iq did not find anything.";
-            $status = 'fail';
+        if ($status !== 'fail') {
+            if (!is_array($curl->response)) {
+                $basis_ret['reason'] = "geo iq response is not an array.";
+                $status = 'fail';
+            }
         }
 
-        if (!property_exists($response[0], 'lat') || !property_exists($response[0], 'lon')) {
-            $basis_ret['reason'] = 'lat and or lon not set on response[0].';
-            $status = 'fail';
-        };
+        // alweer niets gevonden door geo iq?
+
+        $response = $curl->response;
+        if ($status !== 'fail') {
+            if (empty($response)) {
+                $basis_ret['reason'] = "geo iq did not find anything.";
+                $status = 'fail';
+            }
+        }
+
+        if ($status !== 'fail') {
+            if (!property_exists($response[0], 'lat') || !property_exists($response[0], 'lon')) {
+                $basis_ret['reason'] = 'lat and or lon not set on response[0].';
+                $status = 'fail';
+            }
+        }
 
         // we laten het hierbij!
         $curl->close();
