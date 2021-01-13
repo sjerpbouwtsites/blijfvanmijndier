@@ -91,7 +91,6 @@ class Controller extends BaseController
      */
     public function get_model_instance(Request $request, $Model)
     {
-        // bestaat de model al? aanname dat id dat niet null is. // @TODO legacy
         return $request->id !== null
             ? $Model::find($request->id)
             : new $Model;

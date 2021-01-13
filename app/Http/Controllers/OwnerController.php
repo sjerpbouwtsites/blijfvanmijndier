@@ -14,9 +14,7 @@ use App\Address;
 
 class OwnerController extends AbstractController
 {
-    // @TODO doorvoeren in alle relevante models. required combo met validator
-    // @TODO required attr op inputs zetten als relevant
-    protected $required = [
+    public $required = [
         'name',
         'phone_number',
         'email_address',

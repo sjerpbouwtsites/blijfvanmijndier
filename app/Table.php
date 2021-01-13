@@ -7,13 +7,15 @@ use App\TableGroup;
 
 class Table extends Model
 {
-	private $tableGroupDesc;
+    private $tableGroupDesc;
 
-    public function animals() {
+    public function animals()
+    {
         return $this->belongsToMany(Animal::class);
     }
 
-    public function guests() {
+    public function guests()
+    {
         return $this->belongsToMany(Guest::class);
     }
 }

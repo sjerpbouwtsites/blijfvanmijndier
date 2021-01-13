@@ -9,10 +9,16 @@ use App\Address;
 class LocationController extends AbstractController
 {
 
-    protected $required = [
-        'name'     => 'required',
-        'email_address' => 'email'
+    public $required = [
+        'name',
+        'phone_number',
+        'email_address',
+        'city',
+        'house_number',
+        'street',
+        'postal_code'
     ];
+
     function __construct()
     {
         parent::__construct('locations');
@@ -21,7 +27,6 @@ class LocationController extends AbstractController
     /**
      * new single edit view & endpoint
      */
-    // @TODO Waarom wordt deze niet gevonden in abstract?
     public function create()
     {
         return $this->get_view("location.edit", [

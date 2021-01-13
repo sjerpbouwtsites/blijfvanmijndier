@@ -5,9 +5,6 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
 
-// @TODO create abstract class to extend from
-// that implements own_attributes and address()
-// also use in owner etc. 
 class Vet extends Model
 {
     protected $own_attributes = [
@@ -22,8 +19,6 @@ class Vet extends Model
     {
         return $this->belongsToMany(Table::class);
     }
-
-
 
     /**
      * Get the address record collection associated with the owner.

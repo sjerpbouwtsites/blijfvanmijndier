@@ -12,22 +12,22 @@ use App\Shelter;
 use App\Animal;
 use App\Address;
 
-class ShelterController extends Controller
+class ShelterController extends AbstractController
 {
+
+    public $required = [
+        'name',
+        'phone_number',
+        'email_address',
+        'city',
+        'house_number',
+        'street',
+        'postal_code'
+    ];
 
     function __construct()
     {
         parent::__construct('shelters');
-    }
-
-    /**
-     * plenary view & root endpoint
-     */
-    public function index()
-    {
-        return $this->get_view("shelter.index", [
-            'shelters' => Address::allWithAddress('App\Shelter')->sortBy('name'),
-        ]);
     }
 
     /**
@@ -42,6 +42,17 @@ class ShelterController extends Controller
         return $this->get_view("shelter.match", [
             'shelters' => $shelters,
             'animal' => $animal,
+        ]);
+    }
+
+    /**
+     * overridden because laravel cant find Shelter in AbstractController.
+     * single create view & endpoint
+     */
+    public function create()
+    {
+        return $this->get_view("shelter.edit", [
+            'shelter' => new Shelter,
         ]);
     }
 
@@ -71,76 +82,9 @@ class ShelterController extends Controller
         ]);
     }
 
-    /**
-     * single create view & endpoint
-     */
-    public function create($shelter_id)
-    {
-        return $this->get_view('shelter.edit', [
-            'shelter' => new Shelter,
-        ]);
-    }
 
-    /**
-     * where is posted to on create
-     */
-    public function store(Request $request)
-    {
-        $validator = $this->validateshelter();
 
-        if ($validator->fails()) {
-            return Redirect::to('shelters/create')
-                ->withErrors($validator)
-                ->withInput();
-        }
-        $add_res = Address::save_or_create_address(true);
-        if ($add_res['geo_res']['status'] !== 'success') {
-            // error in curl / geo iq
-            Session::flash('message', 'geolocatie faal: ' . $add_res['geo_res']['reason']);
-            echo $add_res['geo_res']['return_html'];
-            echo $add_res['geo_res']['console'];
-            return $this->create($request->id);
-        }
 
-        $this->create_or_save_shelter($request, $add_res['address_id']);
-        Session::flash('message', 'Succesvol toegevoegd!');
-        return redirect()->action($this->model_name . 'Controller@index');
-    }
-
-    /**
-     * where is posted to on update
-     */
-    public function update(Request $request)
-    {
-        $validator = $this->validateShelter();
-
-        if ($validator->fails()) {
-            return redirect()->action('ShelterController@edit', $request->id)
-                ->withErrors($validator)
-                ->withInput();
-        }
-        $add_res = Address::save_or_create_address(false);
-        if ($add_res['geo_res']['status'] !== 'success') {
-            // error in curl / geo iq
-            Session::flash('message', 'geolocatie faal: ' . $add_res['geo_res']['reason']);
-            echo $add_res['geo_res']['return_html'];
-            echo $add_res['geo_res']['console'];
-            return $this->edit($request->id);
-        }
-        $this->create_or_save_shelter($request, $add_res['address_id']);
-        Session::flash('message', 'Succesvol gewijzigd!');
-        return redirect()->action($this->model_name . 'Controller@show', $request->id);
-    }
-
-    private function validateShelter()
-    {
-        $rules = array(
-            'name'     => 'required',
-            'email_address' => 'email'
-        );
-
-        return Validator::make(Input::all(), $rules);
-    }
 
     /**
      * finds shelter by id and hydrates the shelter.
@@ -161,7 +105,7 @@ class ShelterController extends Controller
      * @param Request request the incoming post according to laravel
      * @param string address_id the uuid of the related Address
      */
-    private function create_or_save_shelter(Request $request, string $address_id): bool
+    public function create_or_save(Request $request, string $address_id): bool
     {
         $shelter = $this->get_model_instance($request, Shelter::class);
         foreach ($shelter['own_attributes'] as $key) {

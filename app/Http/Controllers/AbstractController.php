@@ -23,11 +23,11 @@ abstract class AbstractController extends Controller
   public string $plural;
   public string $model_name;
   public $validator;
+  // set in setValidator
+  public $validator_config = [];
 
-  /**
-   * please override me.
-   */
-  public array $validator_rules = [];
+  // please override.
+  public $required = [];
 
   function __construct($name)
   {
@@ -85,7 +85,20 @@ abstract class AbstractController extends Controller
 
   public function setValidator(): void
   {
-    $this->validator = Validator::make(Input::all(), $this->validator_rules);
+
+    foreach ($this->required as $key) {
+      switch ($key) {
+        case 'email':
+          $this->validator_config[$key] = "required|email:rfc";
+          break;
+        case 'phone_number':
+          $this->validator_config[$key] = "required|min:10";
+          break;
+        default:
+          $this->validator_config[$key] = 'required';
+      }
+    }
+    $this->validator = Validator::make(Input::all(), $this->validator_config);
   }
 
   /**
@@ -94,6 +107,7 @@ abstract class AbstractController extends Controller
   public function store(Request $request)
   {
     $this->setValidator();
+
     if ($this->validator->fails()) {
       return Redirect::to($this->plural . '/create')
         ->withErrors($this->validator)

@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Input;
 class GuestController extends AbstractController
 {
 
-    protected $required = [
+    public $required = [
         'name',
         'phone_number',
         'email_address',
@@ -53,11 +53,6 @@ class GuestController extends AbstractController
     public function edit($guest_id)
     {
         $guest = $this->get_hydrated($guest_id);
-        //$view_data = $this->GetGuestData($guest);
-        // $meta_data = $this->guest_meta($guest);
-        // $behaviourList = Table::All()->where('tablegroup_id', $this->behaviourId);
-        // dump($meta_data);
-        // dd($behaviourList);
         return $this->get_view(
             'guest.edit',
             $this->guest_meta($guest)
@@ -86,6 +81,9 @@ class GuestController extends AbstractController
     }
 
     /**
+     * one day move to Tablemodel. but requires moving of lots of
+     * reaaally confused data / methods. 
+     * 
      * generic function for getting behaviourList, vaccinationList, hometypeList and their checked ones.
      * @param Guest guest instance
      * @param Array skip. which of behaviour, vaccination or hometype to skip.

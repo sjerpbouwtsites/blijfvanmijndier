@@ -10,7 +10,15 @@ use App\Http\Controllers\AbstractController;
 class VetController extends AbstractController
 {
 
-    public array $validator_rules = ['name'     => 'required'];
+    public $required = [
+        'name',
+        'phone_number',
+        'email_address',
+        'city',
+        'house_number',
+        'street',
+        'postal_code'
+    ];
 
     function __construct()
     {
