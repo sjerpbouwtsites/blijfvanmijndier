@@ -123,7 +123,7 @@ class LocationController extends Controller
      * @param Request request the incoming post according to laravel
      * @param string address_id the uuid of the related Address
      */
-    private function create_or_save_location(Request $request, string $address_id)
+    private function create_or_save_location(Request $request, string $address_id): bool
     {
         $location = $this->get_model_instance($request, Location::class);
         foreach ($location['own_attributes'] as $key) {
@@ -131,5 +131,6 @@ class LocationController extends Controller
         }
         $location->address_id = $address_id;
         $location->save();
+        return true;
     }
 }

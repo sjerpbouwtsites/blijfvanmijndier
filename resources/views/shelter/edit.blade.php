@@ -20,6 +20,7 @@
 		<div class="col-md-6">
 			<h4>Details</h4>
 
+			<input type='hidden' name='address_id' value="<?=$shelter['address_id']?>" >
             @include('form_text', ['field' => 'name', 'label' => 'Naam'])
             @include('form_text', ['field' => 'street', 'label' => 'Straat'])
             @include('form_text', ['field' => 'house_number', 'label' => 'Huisnummer'])

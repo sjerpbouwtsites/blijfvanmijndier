@@ -9,6 +9,9 @@ require("./bootstrap");
 // this is sjerps map.
 require("./map");
 
+// this is varia
+require("./generic");
+
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application

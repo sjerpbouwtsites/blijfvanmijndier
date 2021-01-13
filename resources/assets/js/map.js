@@ -2,8 +2,6 @@ const filter = require("./map/filter");
 const models = require("./map/models");
 const leafletShell = require("./map/leaflet-shell");
 const buttonRenders = require("./map/buttons");
-console.clear();
-console.log(models);
 
 function addInteractive() {
   dataActionEventHandler();
@@ -131,6 +129,10 @@ function getLocations() {
 }
 
 function init() {
+  if (!location.href.includes("/map")) {
+    console.log("no map here");
+    return;
+  }
   globalLeafletMap = leafletShell.createMap();
   addInteractive();
   getLocations().then((models) => {

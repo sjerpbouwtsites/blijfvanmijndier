@@ -14,7 +14,8 @@ use App\Address;
 
 class OwnerController extends Controller
 {
-
+    // @TODO doorvoeren in alle relevante models. required combo met validator
+    // @TODO required attr op inputs zetten als relevant
     protected $required = [
         'name',
         'phone_number',
@@ -171,7 +172,6 @@ class OwnerController extends Controller
     private function create_or_save_owner(Request $request, string $address_id): bool
     {
         $owner = $this->get_model_instance($request, Owner::class);
-
         foreach ($owner['own_attributes'] as $key) {
             $owner->$key = $request->$key;
         }

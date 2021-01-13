@@ -20,14 +20,23 @@
 		<div class="col-md-6">
 			<h4>Details</h4>
 
+			<input type='hidden' name='address_id' value="<?=$guest['address_id']?>" >
             @include('form_text', ['field' => 'name', 'label' => 'Naam'])
 						@include('form_text', ['field' => 'street', 'label' => 'Straat'])
 						@include('form_text', ['field' => 'house_number', 'label' => 'Huisnummer'])
             @include('form_text', ['field' => 'postal_code', 'label' => 'Postcode'])
             @include('form_text', ['field' => 'city', 'label' => 'Woonplaats'])
             @include('form_text', ['field' => 'phone_number', 'label' => 'Telefoonnummer'])
-            @include('form_text', ['field' => 'email_address', 'label' => 'Emailadres'])
-            @include('form_text', ['field' => 'max_hours_alone', 'label' => 'Aantal uur alleen'])
+						@include('form_text', ['field' => 'email_address', 'label' => 'Emailadres'])
+						
+						<!-- dirty in de turbo 👹-->
+						<div class="form-group">
+							<label for="max_hours_alone" class="control-label col-md-4">max uren alleen</label>
+							<div class="col-md-8">
+								<input min="0" class="form-control" required name="max_hours_alone" type="number" value="<?=$guest['address_id']?>" id="max_hours_alone">
+							</div>
+					</div>
+
 
 		    <div class="form-group">
     			{{ Form::label('text', 'Opmerking', array('class' => 'control-label col-md-4')) }}

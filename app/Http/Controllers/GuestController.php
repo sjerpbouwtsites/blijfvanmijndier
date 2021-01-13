@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
@@ -13,9 +12,6 @@ use App\Animal;
 use App\Table;
 use App\Address;
 
-use App\MenuItem;
-
-
 class GuestController extends Controller
 {
 
@@ -24,68 +20,59 @@ class GuestController extends Controller
         parent::__construct('guests');
     }
 
+    /**
+     * plenary view & root endpoint
+     */
     public function index()
     {
-        $guests = Guest::allWithAddress();
-        $guests = $guests->sortBy('name');
-
-        $menuItems = $this->GetMenuItems('guests');
-
-        $data = array(
-            'guests' => $guests,
-            'menuItems' => $menuItems
-        );
-
-        return view("guest.index")->with($data);
+        return $this->get_view("guest.index", [
+            'guests' => Address::allWithAddress('App\Guest')->sortBy('name'),
+        ]);
     }
 
-    public function show($id)
+    /**
+     * single show view & endpoint
+     */
+    public function show($guest_id)
     {
-        $guest = Guest::findWithAddress($id);
-
+        $guest = $this->get_hydrated($guest_id);
         $animals = Animal::where('guest_id', $guest->id)->get();
-
         foreach ($animals as $animal) {
             $animal->animalImage = $this->getAnimalImage($animal->id);
         }
-
-        $behaviourList = $guest->tables->where('tablegroup_id', $this->behaviourId);
-        $hometypeList = $guest->tables->where('tablegroup_id', $this->hometypeId);
-        $animaltypeList = $guest->tables->where('tablegroup_id', $this->animaltypeId);
-
-        $menuItems = $this->GetMenuItems('guests');
-
-        $updates = UpdateController::getUpdatesByLinkType('guests', $guest->id, 2);
-
-        $data = array(
+        return $this->get_view("guest.show", [
             'guest' => $guest,
             'animals' => $animals,
-            'updates' => $updates,
-            'menuItems' => $menuItems,
-            'behaviourList' => $behaviourList,
-            'hometypeList' => $hometypeList,
-            'animaltypeList' => $animaltypeList
-        );
-
-        return view("guest.show")->with($data);
+            'updates' => UpdateController::getUpdatesByLinkType('guests', $guest->id, 2),
+            'behaviourList' => $guest->tables->where('tablegroup_id', $this->behaviourId),
+            'hometypeList' => $guest->tables->where('tablegroup_id', $this->hometypeId),
+            'animaltypeList' => $guest->tables->where('tablegroup_id', $this->animaltypeId)
+        ]);
     }
 
-    public function edit($id)
+    /**
+     * single edit view & endpoint
+     */
+    public function edit($guest_id)
     {
-        $guest = Guest::findWithAddress($id);
-        $data = $this->GetGuestData($guest);
-
-        return view("guest.edit")->with($data);
+        $d = $this->get_hydrated($guest_id);
+        $dd = $this->GetGuestData($d);
+        return $this->get_view('guest.edit', $dd);
     }
-
+    /**
+     * new single edit view & endpoint
+     */
     public function create()
     {
-        $guest = new Guest;
-        $data = $this->GetGuestData($guest);
-
-        return view("guest.edit")->with($data);
+        return $this->get_view(
+            "guest.edit",
+            $this->GetGuestData(new Guest),
+        );
     }
 
+    /**
+     * where is posted to on create
+     */
     public function store(Request $request)
     {
         $validator = $this->validateGuest();
@@ -94,9 +81,13 @@ class GuestController extends Controller
             return Redirect::to('guests/create')
                 ->withErrors($validator)
                 ->withInput();
+        }
+        $ai = Address::save_or_create_address(true);
+        if ($this->create_or_save_guest($request, $ai)) {
+            Session::flash('message', 'gastgezin succesvol toegevoegd!');
+            return redirect()->action('GuestController@index');
         } else {
-            $this->saveGuest($request);
-            Session::flash('message', 'Gastgezin succesvol toegevoegd!');
+            Session::flash('message', 'Fout bij het opslaan!');
             return redirect()->action('GuestController@index');
         }
     }
@@ -109,11 +100,26 @@ class GuestController extends Controller
             return redirect()->action('GuestController@edit', $request->id)
                 ->withErrors($validator)
                 ->withInput();
-        } else {
-            $this->saveGuest($request);
-            Session::flash('message', 'Gastgezin succesvol gewijzigd!');
-            return redirect()->action('GuestController@show', $request->id);
         }
+        $ai = Address::save_or_create_address(false);
+        if ($this->create_or_save_guest($request, $ai)) {
+            Session::flash('message', 'gastgezin succesvol opgeslagen!');
+            return redirect()->action('GuestController@index');
+        } else {
+            Session::flash('message', 'Fout bij het opslaan!');
+            return redirect()->action('GuestController@index');
+        }
+    }
+
+    /**
+     * finds guest by id and hydrates the guest.
+     * @return Guest
+     * @param string id
+     */
+    public function get_hydrated(string $id): Guest
+    {
+        $nude_guest = Guest::find($id);
+        return Address::hydrateWithAddress($nude_guest);
     }
 
     /**
@@ -148,36 +154,32 @@ class GuestController extends Controller
     private function validateGuest()
     {
         // @TODO HIER CONTROLE OP ADRES SCHRIJVEN.
-        return Validator::make(Input::all(), Guest::$required_to_save);
+        return Validator::make(Input::all(), [
+            'name',
+            'phone_number',
+            'email_address',
+            'city',
+            'house_number',
+            'street',
+            'postal_code'
+        ]);
     }
 
-    private function saveGuest(Request $request)
+    /**
+     * creates new guest if request does not non-null id prop
+     * references Model's own attributes to set request values to self
+     * @return bool for success
+     * @param Request request the incoming post according to laravel
+     * @param string address_id the uuid of the related Address
+     */
+    private function create_or_save_guest(Request $request, string $address_id): bool
     {
         // create new guest or use existing.
-
-        if ($request->id !== null) {
-            $guest = Guest::findWithAddress($request->id);
-        } else {
-            $guest = new Guest;
+        $guest = $this->get_model_instance($request, Guest::class);
+        foreach ($guest['own_attributes'] as $key) {
+            $guest->$key = $request->$key;
         }
-
-        // the form.
-        $inputs = Input::all();
-
-        $Address = new Address();
-
-        if ($Address->address_new_or_changed($inputs, $guest['attributes'])) {
-            $Address->setNewValues($inputs);
-            $guest->address_id = $Address->uuid_check($inputs);
-            $Address->geoIpRoundTrip($inputs);
-            $Address->save();
-        }
-
-        $guest->name = $request->name;
-        $guest->phone_number = $request->phone_number;
-        $guest->email_address = $request->email_address;
-        $guest->max_hours_alone = $request->max_hours_alone > 0 ? $request->max_hours_alone : 0;
-        $guest->text = $request->text;
+        $guest->address_id = $address_id;
 
         if (isset($inputs['tables'])) {
             $tables = $inputs['tables'];
@@ -185,13 +187,13 @@ class GuestController extends Controller
             $tables = [];
         }
 
-        // extra save to get id
-        if ($request->id === null) {
-            $guest->save();
-        }
+        // // extra save to get id
+        // if ($request->id === null) {
+        //     $guest->save();
+        // }
 
-        dd($guest->tables());
-        // $guest->tables()->sync($tables);
-        // $guest->save();
+        $guest->tables()->sync($tables);
+        $guest->save();
+        return true;
     }
 }
