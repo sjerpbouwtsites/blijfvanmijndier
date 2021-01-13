@@ -19,6 +19,11 @@ use App\MenuItem;
 class GuestController extends Controller
 {
 
+    function __construct()
+    {
+        parent::__construct('guests');
+    }
+
     public function index()
     {
         $guests = Guest::allWithAddress();

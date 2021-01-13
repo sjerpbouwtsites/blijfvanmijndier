@@ -15,6 +15,11 @@ use App\MenuItem;
 class MapController extends Controller
 {
 
+    function __construct()
+    {
+        parent::__construct('maps', 'animals');
+    }
+
     public function index()
     {
 

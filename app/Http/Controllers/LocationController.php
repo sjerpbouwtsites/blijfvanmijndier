@@ -13,10 +13,16 @@ use App\MenuItem;
 
 class LocationController extends Controller
 {
-    public function index(){
-    	$locations = Location::all();
+    function __construct()
+    {
+        parent::__construct('locations');
+    }
+
+    public function index()
+    {
+        $locations = Location::all();
         $locations = $locations->sortBy('name');
-        
+
         $menuItems = $this->GetMenuItems('locations');
 
         $data = array(
@@ -24,11 +30,12 @@ class LocationController extends Controller
             'menuItems' => $menuItems
         );
 
-    	return view("location.index")->with($data);
+        return view("location.index")->with($data);
     }
 
-    public function show($id){
-    	$location = Location::find($id);
+    public function show($id)
+    {
+        $location = Location::find($id);
         $menuItems = $this->GetMenuItems('`locations');
 
         $data = array(
@@ -36,17 +43,19 @@ class LocationController extends Controller
             'menuItems' => $menuItems
         );
 
-    	return view("location.show")->with($data);
+        return view("location.show")->with($data);
     }
 
-    public function edit($id){
+    public function edit($id)
+    {
         $location = Location::find($id);
         $data = $this->GetLocationData($location);
 
         return view("location.edit")->with($data);
     }
 
-    public function create(){
+    public function create()
+    {
         $location = new Location;
         $data = $this->GetLocationData($location);
 
@@ -83,30 +92,33 @@ class LocationController extends Controller
         }
     }
 
-    private function GetLocationData($location){
+    private function GetLocationData($location)
+    {
         $menuItems = $this->GetMenuItems('locations');
 
         $data = array(
-            'location' => $location, 
+            'location' => $location,
             'menuItems' => $menuItems
         );
 
         return $data;
     }
 
-    private function validateLocation(){
+    private function validateLocation()
+    {
         $rules = array(
             'name'     => 'required',
             'email_address' => 'email'
         );
-        
+
         return Validator::make(Input::all(), $rules);
     }
 
-    private function saveLocation(Request $request){
-        if($request->id !== null){
+    private function saveLocation(Request $request)
+    {
+        if ($request->id !== null) {
             $location = Location::find($request->id);
-        }else{
+        } else {
             $location = new Location;
         }
 

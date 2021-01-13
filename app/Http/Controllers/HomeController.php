@@ -10,8 +10,15 @@ use DateTime;
 
 class HomeController extends Controller
 {
-    public function home(){
-    	
+
+    function __construct()
+    {
+        parent::__construct('homes', '');
+    }
+
+    public function home()
+    {
+
         // Latest updates
         $updates = UpdateController::getLatestUpdates(true, 80, null);
 
@@ -23,8 +30,8 @@ class HomeController extends Controller
             $animal->breedDesc = $this->getDescription($animal->breed_id);
             $animal->animaltypeDesc = $this->getDescription($animal->animaltype_id);
 
-            $update = Update::where([['link_type', 'animals'],['link_id', $animal->id]])->orderBy('start_date', 'desc')->first();                    
-            if($update != null){
+            $update = Update::where([['link_type', 'animals'], ['link_id', $animal->id]])->orderBy('start_date', 'desc')->first();
+            if ($update != null) {
                 $animal->lastUpdate = $this->FormatDate($update->start_date);
             }
         }
@@ -35,19 +42,19 @@ class HomeController extends Controller
         $collection = collect();
 
         foreach ($animalsAll as $animal) {
-            
-            if(!$animal->updates){
+
+            if (!$animal->updates) {
                 continue;
             }
 
-            if ($this->animalNeedUpdate($animal->id)){
+            if ($this->animalNeedUpdate($animal->id)) {
 
                 $animal->breedDesc = $this->getDescription($animal->breed_id);
                 $animal->animaltypeDesc = $this->getDescription($animal->animaltype_id);
 
-                $update = Update::where([['updatetype_id', $this->updatetypeOwner],['link_type', 'animals'],['link_id', $animal->id]])->orderBy('start_date', 'desc')->first();    
+                $update = Update::where([['updatetype_id', $this->updatetypeOwner], ['link_type', 'animals'], ['link_id', $animal->id]])->orderBy('start_date', 'desc')->first();
 
-                if($update != null){
+                if ($update != null) {
                     $animal->lastUpdate = $this->FormatDate($update->start_date);
                     $animal->lastUpdateSort = $update->start_date;
                 }
@@ -56,6 +63,7 @@ class HomeController extends Controller
             }
         }
 
+        // @TODO ????
         $menuItems = $this->GetMenuItems('');
 
         $data = array(
@@ -65,6 +73,6 @@ class HomeController extends Controller
             'tiles' => $menuItems,
         );
 
-    	return view("home")->with($data);
+        return view("home")->with($data);
     }
 }

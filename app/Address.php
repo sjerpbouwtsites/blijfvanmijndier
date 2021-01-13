@@ -1,7 +1,5 @@
 <?php
 
-
-
 namespace App;
 
 require __DIR__ . '/../vendor/autoload.php';
@@ -9,6 +7,7 @@ require __DIR__ . '/../vendor/autoload.php';
 use Curl\Curl;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
+use types\ExceptionBoolUnion;
 
 class Address extends Model
 {
@@ -150,7 +149,7 @@ class Address extends Model
         if ($collection->count() > 1) {
             throw new \Exception('Meerdere adressen voor ' . $className . ' gevonden', E_USER_NOTICE);
         }
-        if ($collection->count() < 0) {
+        if ($collection->count() < 1) {
             throw new \Exception('Geen bijpassend adres voor ' . $className, E_USER_NOTICE);
         }
 

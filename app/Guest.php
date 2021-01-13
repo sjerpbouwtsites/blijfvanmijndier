@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
+
 class Guest extends Model
 {
     private $guestStatusDesc;
@@ -26,6 +27,7 @@ class Guest extends Model
 
     public static function combineAttributes($guest, $newAttributesHolder)
     {
+
         foreach (Guest::$accept_attributes_from_relations as $accepted) {
             $guest->attributes[$accepted] = $newAttributesHolder->all()[0]->attributes[$accepted];
         }
@@ -38,22 +40,27 @@ class Guest extends Model
     public static function allWithAddress()
     {
         $nakedGuests = Guest::all();
+        $no_address_found_ids = [];
+        $no_address_found_names = [];
 
-        return  $nakedGuests->map(function ($guest) {
+        $rg = $nakedGuests->map(function ($guest) {
 
             $address = $guest->address();
-            if ($address->count() > 1) {
-                throw new \Exception('Meedere adressen voor guest gevonden', E_USER_NOTICE);
-            }
-            if ($address->count() < 0) {
-                throw new \Exception('Geen adres voor guest', E_USER_NOTICE);
+            $validatie = Address::validate_address_collection($address, 'guest');
+            if ($validatie instanceof \Exception) {
+                $no_address_found_ids[] = $guest->id;
+                $no_address_found_names[] = $guest->name;
                 return null;
+            } else {
+                $guest = Guest::combineAttributes($guest, $address);
             }
-
-            $guest = Guest::combineAttributes($guest, $address);
-
             return $guest;
         });
+        if (count($no_address_found_ids) > 0) {
+            echo $no_address_found_ids;
+            //            Guest::destroy($no_address_found_ids);
+            throw new \Exception('Er zijn gastgezinnen gevonden zonder bijpassen adres. Ze zijn hierom uit de database gehaald. Het betreft: ' . implode("; ", $no_address_found_names)) . ".";
+        }
     }
 
     /**

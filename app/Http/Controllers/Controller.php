@@ -37,12 +37,13 @@ class Controller extends BaseController
     public string $model_name;
     public $menuItems = null;
 
-    public function __construct($model_name = '')
+    /**
+     * @param string model_name. Naam van de model.... wordt gebruikt om de menu items te zetten.
+     * @param string menu_items_source_override. Bv. in history zijn de menu items animals.
+     */
+    public function __construct($model_name, $menu_items_source = null)
     {
-        if (empty($model_name)) {
-            throw new Exception('geen model naam gegeven. \n Verget je de constructor?', E_WARNING);
-        }
-        $this->menuItems = $this->GetMenuItems($model_name);
+        $this->set_model_name_and_menu_items($model_name, $menu_items_source);
 
         $this->breedId = 1;
         $this->behaviourId = 2;
@@ -57,6 +58,16 @@ class Controller extends BaseController
         $this->updatetypeOwner = 179;
     }
 
+    private function set_model_name_and_menu_items($model_name, $menu_items_source = null)
+    {
+        if (empty($model_name)) {
+            throw new Exception('geen model naam gegeven. \n Verget je de constructor? Nodig voor de menu items', E_WARNING);
+        }
+
+        // $menu items source mag overschrijven. Ook als het '' is... alleen null mag niet.
+        $menu_items_model = !is_null($menu_items_source) ? $menu_items_source : $model_name;
+        $this->menuItems = $this->GetMenuItems($menu_items_model);
+    }
 
 
     /**

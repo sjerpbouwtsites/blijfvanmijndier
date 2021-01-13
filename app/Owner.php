@@ -40,6 +40,7 @@ class Owner extends Model
     }
 
     /**
+     * // @TODO naar address model zit ook in guest
      * This is rather messy. It smashed the Address relation onto the Owner.
      */
     public static function allWithAddress()

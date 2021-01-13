@@ -14,10 +14,17 @@ use App\MenuItem;
 
 class ShelterController extends Controller
 {
-    public function index(){
-    	$shelters = Shelter::all();
+
+    function __construct()
+    {
+        parent::__construct('shelters');
+    }
+
+    public function index()
+    {
+        $shelters = Shelter::all();
         $shelters = $shelters->sortBy('name');
-        
+
         $menuItems = $this->GetMenuItems('shelters');
 
         $data = array(
@@ -25,10 +32,11 @@ class ShelterController extends Controller
             'menuItems' => $menuItems
         );
 
-    	return view("shelter.index")->with($data);
+        return view("shelter.index")->with($data);
     }
 
-    public function match($id){
+    public function match($id)
+    {
         $animal = Animal::find($id);
         $shelters = Shelter::all();
         $animal->breedDesc = $this->getDescription($animal->breed_id);
@@ -44,8 +52,9 @@ class ShelterController extends Controller
         return view("shelter.match")->with($data);
     }
 
-    public function show($id){
-    	$shelter = Shelter::find($id);
+    public function show($id)
+    {
+        $shelter = Shelter::find($id);
         $animals  = Animal::where('shelter_id', $shelter->id)->get();
         $menuItems = $this->GetMenuItems('`shelters');
 
@@ -62,17 +71,19 @@ class ShelterController extends Controller
             'menuItems' => $menuItems
         );
 
-    	return view("shelter.show")->with($data);
+        return view("shelter.show")->with($data);
     }
 
-    public function edit($id){
+    public function edit($id)
+    {
         $shelter = Shelter::find($id);
         $data = $this->GetShelterData($shelter);
 
         return view("shelter.edit")->with($data);
     }
 
-    public function create(){
+    public function create()
+    {
         $shelter = new Shelter;
         $data = $this->GetShelterData($shelter);
 
@@ -109,30 +120,33 @@ class ShelterController extends Controller
         }
     }
 
-    private function GetShelterData($shelter){
+    private function GetShelterData($shelter)
+    {
         $menuItems = $this->GetMenuItems('shelters');
 
         $data = array(
-            'shelter' => $shelter, 
+            'shelter' => $shelter,
             'menuItems' => $menuItems
         );
 
         return $data;
     }
 
-    private function validateShelter(){
+    private function validateShelter()
+    {
         $rules = array(
             'name'     => 'required',
             'email_address' => 'email'
         );
-        
+
         return Validator::make(Input::all(), $rules);
     }
 
-    private function saveShelter(Request $request){
-        if($request->id !== null){
+    private function saveShelter(Request $request)
+    {
+        if ($request->id !== null) {
             $shelter = Shelter::find($request->id);
-        }else{
+        } else {
             $shelter = new Shelter;
         }
 

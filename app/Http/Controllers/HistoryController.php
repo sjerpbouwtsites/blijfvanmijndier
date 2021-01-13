@@ -17,17 +17,24 @@ use DateTime;
 
 class HistoryController extends Controller
 {
-    public function indexanimals(Request $request, $source_id){
-        $source_type = $this->GetLinkType($request);   
-        $histories = History::where([['source_type', $source_type],['source_id', $source_id]])->orderBy('history_date', 'desc')->get();
 
-        $source_object = $this->GetObjectData($source_type, $source_id); 
+    function __construct()
+    {
+        parent::__construct('histories', 'animals');
+    }
+
+    public function indexanimals(Request $request, $source_id)
+    {
+        $source_type = $this->GetLinkType($request);
+        $histories = History::where([['source_type', $source_type], ['source_id', $source_id]])->orderBy('history_date', 'desc')->get();
+
+        $source_object = $this->GetObjectData($source_type, $source_id);
 
         foreach ($histories as $history) {
-            $link_object = $this->GetObjectData($history->link_type, $history->link_id); 
+            $link_object = $this->GetObjectData($history->link_type, $history->link_id);
 
             $history->history_date = $this->FormatDate($history->history_date);
-            $history->link_label = $link_object['name_label']; 
+            $history->link_label = $link_object['name_label'];
             $history->link_name = $link_object['name'];
             $history->urlType = $link_object['link_type'];
             $history->urlId = $link_object['link_id'];
@@ -48,17 +55,18 @@ class HistoryController extends Controller
         return view("history.index")->with($data);
     }
 
-    public function index(Request $request, $source_id){
-        $source_type = $this->GetLinkType($request);   
-        $histories = History::where([['link_type', $source_type],['link_id', $source_id]])->orderBy('history_date', 'desc')->get();
+    public function index(Request $request, $source_id)
+    {
+        $source_type = $this->GetLinkType($request);
+        $histories = History::where([['link_type', $source_type], ['link_id', $source_id]])->orderBy('history_date', 'desc')->get();
 
-        $source_object = $this->GetObjectData($source_type, $source_id); 
+        $source_object = $this->GetObjectData($source_type, $source_id);
 
         foreach ($histories as $history) {
-            $link_object = $this->GetObjectData($history->source_type, $history->source_id); 
+            $link_object = $this->GetObjectData($history->source_type, $history->source_id);
 
             $history->history_date = $this->FormatDate($history->history_date);
-            $history->link_label = $link_object['name_label']; 
+            $history->link_label = $link_object['name_label'];
             $history->link_name = $link_object['name'];
             $history->urlType = $link_object['link_type'];
             $history->urlId = $link_object['link_id'];
@@ -79,13 +87,15 @@ class HistoryController extends Controller
         return view("history.index")->with($data);
     }
 
-    private function GetLinkType(Request $request){
+    private function GetLinkType(Request $request)
+    {
 
         list($link_type) = explode("/", $request->path());
         return $link_type;
     }
 
-    private function GetActionDescription($action){
+    private function GetActionDescription($action)
+    {
         switch ($action) {
             case 'connect':
                 $actionDesc = 'Gekoppeld';
@@ -98,7 +108,8 @@ class HistoryController extends Controller
         return $actionDesc;
     }
 
-    private function GetObjectData($link_type, $link_id){
+    private function GetObjectData($link_type, $link_id)
+    {
 
         switch ($link_type) {
             case 'animals':
@@ -132,8 +143,8 @@ class HistoryController extends Controller
         }
 
         $data = array(
-            'name_label' => $name_label, 
-            'name' => $name, 
+            'name_label' => $name_label,
+            'name' => $name,
             'link_type' => $link_type,
             'link_id' => $link_id
         );
@@ -141,7 +152,8 @@ class HistoryController extends Controller
         return $data;
     }
 
-    public static function saveHistory($source_type, $source_id, $link_type, $link_id, $action){
+    public static function saveHistory($source_type, $source_id, $link_type, $link_id, $action)
+    {
         $history = new History;
 
         $history->source_id = $source_id;

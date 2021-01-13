@@ -13,10 +13,16 @@ use App\MenuItem;
 
 class VetController extends Controller
 {
-    public function index(){
-    	$vets = Vet::all();
-        $vets = $vets->sortBy('name');          
-        
+    function __construct()
+    {
+        parent::__construct('vets');
+    }
+
+    public function index()
+    {
+        $vets = Vet::all();
+        $vets = $vets->sortBy('name');
+
         $menuItems = $this->GetMenuItems('vets');
 
         $data = array(
@@ -24,11 +30,12 @@ class VetController extends Controller
             'menuItems' => $menuItems
         );
 
-    	return view("vet.index")->with($data);
+        return view("vet.index")->with($data);
     }
 
-    public function show($id){
-    	$vet = Vet::find($id);
+    public function show($id)
+    {
+        $vet = Vet::find($id);
         $menuItems = $this->GetMenuItems('`vets');
 
         $data = array(
@@ -36,17 +43,19 @@ class VetController extends Controller
             'menuItems' => $menuItems
         );
 
-    	return view("vet.show")->with($data);
+        return view("vet.show")->with($data);
     }
 
-    public function edit($id){
+    public function edit($id)
+    {
         $vet = Vet::find($id);
         $data = $this->GetVetData($vet);
 
         return view("vet.edit")->with($data);
     }
 
-    public function create(){
+    public function create()
+    {
         $vet = new Vet;
         $data = $this->GetVetData($vet);
 
@@ -83,29 +92,32 @@ class VetController extends Controller
         }
     }
 
-    private function GetVetData($vet){
+    private function GetVetData($vet)
+    {
         $menuItems = $this->GetMenuItems('vets');
 
         $data = array(
-            'vet' => $vet, 
+            'vet' => $vet,
             'menuItems' => $menuItems
         );
 
         return $data;
     }
 
-    private function validateVet(){
+    private function validateVet()
+    {
         $rules = array(
             'name'     => 'required'
         );
-        
+
         return Validator::make(Input::all(), $rules);
     }
 
-    private function saveVet(Request $request){
-        if($request->id !== null){
+    private function saveVet(Request $request)
+    {
+        if ($request->id !== null) {
             $vet = Vet::find($request->id);
-        }else{
+        } else {
             $vet = new Vet;
         }
 

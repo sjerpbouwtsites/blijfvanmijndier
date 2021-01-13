@@ -16,8 +16,16 @@ use DateTime;
 
 class UpdateController extends Controller
 {
-    public function showall($type){
+
+    function __construct()
+    {
+        parent::__construct('updates', 'animals'); // this controller is more bespoke with menu items.
+    }
+
+    public function showall($type)
+    {
         $updates = $this->getLatestUpdates(false, 70, $type);
+        // KEEP THIS BUT MODERNIZE
         $menuItems = $this->GetMenuItems('animals');
 
         $selection = $type == "selection" ? "active" : "";
@@ -33,12 +41,13 @@ class UpdateController extends Controller
         return view("update.showall")->with($data);
     }
 
-    public function index(Request $request, $link_id){
+    public function index(Request $request, $link_id)
+    {
 
-        $link_type = $this->GetLinkType($request, $link_id);   
-        $object = $this->GetObjectData($link_type, $link_id); 
+        $link_type = $this->GetLinkType($request, $link_id);
+        $object = $this->GetObjectData($link_type, $link_id);
 
-        $updates  = Update::where([['link_type', $link_type],['link_id', $link_id]])->orderBy('start_date', 'desc')->orderBy('id', 'desc')->get();
+        $updates  = Update::where([['link_type', $link_type], ['link_id', $link_id]])->orderBy('start_date', 'desc')->orderBy('id', 'desc')->get();
 
         foreach ($updates as $update) {
             $update->start_date = $this->FormatDate($update->start_date);
@@ -46,6 +55,7 @@ class UpdateController extends Controller
             $update->updatetypeDesc = $this->getDescription($update->updatetype_id);
         }
 
+        // KEEP THIS BUT MODERNIZE
         $menuItems = $this->GetMenuItems($link_type);
 
         $data = array(
@@ -56,20 +66,21 @@ class UpdateController extends Controller
             'link_id' => $link_id
         );
 
-    	return view("update.index")->with($data);
+        return view("update.index")->with($data);
     }
 
-    public function show(Request $request, $link_id, $id){
-    	$update = Update::find($id);
+    public function show(Request $request, $link_id, $id)
+    {
+        $update = Update::find($id);
         $update->start_date = $this->FormatDate($update->start_date);
         $employeeName = $this->getDescription($update->employee_id);
         $update->updatetypeDesc = $this->getDescription($update->updatetype_id);
 
-        $link_type = $this->GetLinkType($request, $link_id);   
-        $object = $this->GetObjectData($link_type, $link_id); 
-
+        $link_type = $this->GetLinkType($request, $link_id);
+        $object = $this->GetObjectData($link_type, $link_id);
+        // KEEP THIS BUT MODERNIZE
         $menuItems = $this->GetMenuItems($link_type);
-  
+
         $data = array(
             'update' => $update,
             'menuItems' => $menuItems,
@@ -80,17 +91,19 @@ class UpdateController extends Controller
             'employeeName' => $employeeName
         );
 
-    	return view("update.show")->with($data);
+        return view("update.show")->with($data);
     }
 
-    public function edit(Request $request, $link_id, $id){
+    public function edit(Request $request, $link_id, $id)
+    {
         $update = Update::find($id);
         $data = $this->GetUpdateData($update);
 
         return view("update.edit")->with($data);
     }
 
-    public function create(Request $request, $link_id){
+    public function create(Request $request, $link_id)
+    {
 
         $link_type = $this->GetLinkType($request);
 
@@ -133,16 +146,16 @@ class UpdateController extends Controller
         }
     }
 
-    public static function getUpdatesByLinkType($link_type, $link_id, $limit){
+    public static function getUpdatesByLinkType($link_type, $link_id, $limit)
+    {
 
-        $updates = Update::where([['link_type', $link_type],['link_id', $link_id]])->orderBy('start_date', 'desc')->limit($limit)->get();
+        $updates = Update::where([['link_type', $link_type], ['link_id', $link_id]])->orderBy('start_date', 'desc')->limit($limit)->get();
         $length = 70;
 
         foreach ($updates as $update) {
-            if(strlen($update->text) <= $length){
+            if (strlen($update->text) <= $length) {
                 $update->smallText = $update->text;
-            }
-            else{
+            } else {
                 $update->smallText = substr($update->text, 0, $length) . ' ...';
             }
 
@@ -153,17 +166,17 @@ class UpdateController extends Controller
         return $updates;
     }
 
-    public static function getLatestUpdates($limit, $length, $type){
-        if($limit){
+    public static function getLatestUpdates($limit, $length, $type)
+    {
+        if ($limit) {
             $updates = Update::orderBy('start_date', 'desc')->orderBy('id', 'desc')->limit(5)->get();
-        }elseif($type == "selection"){
+        } elseif ($type == "selection") {
             $date = new DateTime();
             $date->modify('-14 day');
             $formatted_date = $date->format('Y-m-d H:i:s');
 
             $updates = Update::where('start_date', '>', $formatted_date)->orderBy('start_date', 'desc')->orderBy('id', 'desc')->get();
-        }
-        else{
+        } else {
             $updates = Update::orderBy('start_date', 'desc')->orderBy('id', 'desc')->get();
         }
 
@@ -172,10 +185,9 @@ class UpdateController extends Controller
             $update->employeeName = HelperController::getDescription($update->employee_id);
             $update->name_label = UpdateController::GetObjectData($update->link_type, $update->link_id)['name_label'];
             $update->name = UpdateController::GetObjectData($update->link_type, $update->link_id)['name'];
-            if(strlen($update->text) <= $length){
+            if (strlen($update->text) <= $length) {
                 $update->smallText = $update->text;
-            }
-            else{
+            } else {
                 $update->smallText = substr($update->text, 0, $length) . ' ...';
             }
         }
@@ -183,16 +195,18 @@ class UpdateController extends Controller
         return $updates;
     }
 
-    private function GetUpdateData($update){
-        
+    private function GetUpdateData($update)
+    {
+
         $object = $this->GetObjectData($update->link_type, $update->link_id);
+        // KEEP THIS BUT MODERNIZE
         $menuItems = $this->GetMenuItems($object['link_type']);
-        
+
         $employees = $this->GetTableList($this->employeeId);
-        $employees->prepend('Selecteer medewerker','0');
+        $employees->prepend('Selecteer medewerker', '0');
 
         $updatetypes = $this->GetTableList($this->updatetypeId);
-        $updatetypes->prepend('Selecteer soort update','0');
+        $updatetypes->prepend('Selecteer soort update', '0');
 
         $data = array(
             'update' => $update,
@@ -207,18 +221,20 @@ class UpdateController extends Controller
         return $data;
     }
 
-    private function validateUpdate(){
+    private function validateUpdate()
+    {
         $rules = array(
             'updatetype_id' => 'required|numeric|min:1',
             'employee_id' => 'required|numeric|min:1',
             'start_date'  => 'required',
             'text'        => 'required',
         );
-        
+
         return Validator::make(Input::all(), $rules);
     }
 
-    private static function GetObjectData($link_type, $link_id){
+    private static function GetObjectData($link_type, $link_id)
+    {
 
         switch ($link_type) {
             case 'animals':
@@ -245,8 +261,8 @@ class UpdateController extends Controller
         }
 
         $data = array(
-            'name_label' => $name_label, 
-            'name' => $name, 
+            'name_label' => $name_label,
+            'name' => $name,
             'link_type' => $link_type,
             'link_id' => $link_id
         );
@@ -254,16 +270,18 @@ class UpdateController extends Controller
         return $data;
     }
 
-    private function GetLinkType(Request $request){
+    private function GetLinkType(Request $request)
+    {
 
         list($link_type) = explode("/", $request->path());
         return $link_type;
     }
 
-    private function saveUpdate(Request $request, $link_id, $update_id){
-        if($update_id !== null){
+    private function saveUpdate(Request $request, $link_id, $update_id)
+    {
+        if ($update_id !== null) {
             $update = Update::find($update_id);
-        }else{
+        } else {
             $update = new Update;
         }
 

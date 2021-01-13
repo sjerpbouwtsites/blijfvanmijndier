@@ -13,7 +13,14 @@ use App\Animal;
 
 class DocumentController extends Controller
 {
-    public function index($link_id){
+
+    function __construct()
+    {
+        parent::__construct('documents', 'animals');
+    }
+
+    public function index($link_id)
+    {
         $animal = Animal::find($link_id);
         //$documents = Document::where('link_id', $link_id)->orderBy('date', 'desc')->get();
         $documents = Document::where('link_id', $link_id)->get();
@@ -33,18 +40,19 @@ class DocumentController extends Controller
             'animal' => $animal
         );
 
-    	return view("document.index")->with($data);
+        return view("document.index")->with($data);
     }
 
-    public function show($link_id, $document_id){
-    	$document = Document::find($document_id);
+    public function show($link_id, $document_id)
+    {
+        $document = Document::find($document_id);
         $document->date = $this->FormatDate($document->date);
         $document->documentLink = 'documents/' . 'document_' . $document_id . '.pdf';
         $animal = Animal::find($document->link_id);
         $doctypeName = $this->getDescription($document->doctype_id);
 
         $menuItems = $this->GetMenuItems('animals');
-  
+
         $data = array(
             'document' => $document,
             'menuItems' => $menuItems,
@@ -52,17 +60,19 @@ class DocumentController extends Controller
             'doctypeName' => $doctypeName
         );
 
-    	return view("document.show")->with($data);
+        return view("document.show")->with($data);
     }
 
-    public function edit($link_id, $document_id){
+    public function edit($link_id, $document_id)
+    {
         $document = Document::find($document_id);
         $data = $this->GetDocumentData($document);
 
         return view("document.edit")->with($data);
     }
 
-    public function create($link_id){
+    public function create($link_id)
+    {
         $document = new Document;
         $document->link_id = $link_id;
         $document->date = date('Y-m-d');
@@ -101,12 +111,13 @@ class DocumentController extends Controller
         }
     }
 
-    private function GetDocumentData($document){
+    private function GetDocumentData($document)
+    {
         $menuItems = $this->GetMenuItems('animals');
         $animal = Animal::find($document->link_id);
         $doctypes = $this->GetTableList($this->doctypeId);
 
-        $doctypes->prepend('Selecteer documentsoort','0');
+        $doctypes->prepend('Selecteer documentsoort', '0');
 
         $data = array(
             'document' => $document,
@@ -118,28 +129,29 @@ class DocumentController extends Controller
         return $data;
     }
 
-    private function validateDocument($documentRequired){
-        if($documentRequired){
+    private function validateDocument($documentRequired)
+    {
+        if ($documentRequired) {
             $rules = array(
                 'doctype_id' => 'required|numeric|min:1',
                 'date'       => 'required',
                 'document'   => 'required|mimes:pdf|max:1024',
             );
-        }
-        else{
+        } else {
             $rules = array(
                 'doctype_id' => 'required|numeric|min:1',
                 'date'       => 'required',
             );
         }
-        
+
         return Validator::make(Input::all(), $rules);
     }
 
-    private function saveDocument(Request $request, $link_id, $document_id){
-        if($document_id !== null){
+    private function saveDocument(Request $request, $link_id, $document_id)
+    {
+        if ($document_id !== null) {
             $document = Document::find($document_id);
-        }else{
+        } else {
             $document = new Document;
         }
 
@@ -150,13 +162,13 @@ class DocumentController extends Controller
         $document->text = $request->text;
 
         // extra save to get id
-        if($request->id === null){
+        if ($request->id === null) {
             $document->save();
         }
 
-        if($request->hasFile('document')){
+        if ($request->hasFile('document')) {
             $documentName = 'document_' . $document->id . '.' . $request->file('document')->getClientOriginalExtension();
-            $request->file('document')->move( base_path() . '/public/documents/', $documentName );
+            $request->file('document')->move(base_path() . '/public/documents/', $documentName);
         }
 
         $document->save();
