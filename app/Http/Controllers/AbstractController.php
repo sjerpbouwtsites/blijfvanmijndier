@@ -7,12 +7,6 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Input;
-use Illuminate\Database\Eloquent\Model;
-use App\Vet;
-use App\Owner;
-use App\Guest;
-use App\Location;
-use App\Shelter;
 use App\Address;
 
 /**

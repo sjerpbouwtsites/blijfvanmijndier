@@ -18,6 +18,7 @@ class VetController extends AbstractController
     }
 
     /**
+     * override of abstract placeholder
      * finds instance by id and hydrates it with addrress!.
      * @return Model what currently on offer.
      * @param string id
@@ -30,6 +31,7 @@ class VetController extends AbstractController
     }
 
     /**
+     * override of abstract placeholder
      * creates new model instance if request does not non-null id prop
      * references Model's own attributes to set request values to self
      * @return bool for success
