@@ -131,8 +131,8 @@ class Address extends Model
         }
 
         // geoIq error: response has error. response error is protected btw
-        if ($status !== 'fail') {
-            if (property_exists('error', $curl->response) && !empty($curl->response['error'])) {
+        if ($status !== 'fail' && is_array($curl->response)) {
+            if (!empty($curl->response['error'])) {
                 $basis_ret['reason'] = "error in geoIq system: $curl->response['error']";
                 $status = 'fail';
             }

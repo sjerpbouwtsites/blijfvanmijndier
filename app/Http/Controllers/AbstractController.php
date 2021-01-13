@@ -87,12 +87,16 @@ abstract class AbstractController extends Controller
   {
 
     foreach ($this->required as $key) {
+
       switch ($key) {
-        case 'email':
+        case 'email_address':
           $this->validator_config[$key] = "required|email:rfc";
           break;
         case 'phone_number':
           $this->validator_config[$key] = "required|min:10";
+          break;
+        case 'postal_code':
+          $this->validator_config[$key] = "required|max:7|regex:/^([0-9]{4}[ ]+[a-zA-Z]{2})$/";
           break;
         default:
           $this->validator_config[$key] = 'required';
