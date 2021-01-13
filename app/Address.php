@@ -7,7 +7,7 @@ require __DIR__ . '/../vendor/autoload.php';
 use Curl\Curl;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
-use types\ExceptionBoolUnion;
+use Illuminate\Support\Facades\Input;
 
 class Address extends Model
 {
@@ -108,13 +108,23 @@ class Address extends Model
         } elseif (count($curl->response) === 0) {
             throw new \Exception("Geen geolocatie gevonden voor dit adres");
         } elseif (count($curl->response) > 1) {
-            throw new \Exception(count($curl->response) . " geolocatie registraties gevonden voor dit adres. Klopt het adres? Zo ja, contacteer de developer.\n url: $url");
+            // kan nog zijn dat hij ook een weg heeft gevonden.
+            $iets_gevonden = array_filter($curl->response, function ($adres) {
+                return in_array($adres->osm_type, ['way']);
+            });
+            if (count($iets_gevonden) !== 1) {
+                dd($curl->response, false);
+                throw new \Exception(count($curl->response) . " geolocatie registraties gevonden voor dit adres. Shit! \nKlopt het adres? Zo ja, contacteer de developer.\n Ik had al gekeken of er niet een weg meekwam, daarna waren er nog " . count($iets_gevonden) . " locaties gevonden.");
+            } else {
+                $adres = $iets_gevonden[0];
+            }
         } else {
-            $this->attributes['longitude'] = $curl->response[0]->lon;
-            $this->attributes['lattitude'] = $curl->response[0]->lat;
-            $this->longitude = $curl->response[0]->lon;
-            $this->lattitude = $curl->response[0]->lat;
+            $adres = $curl->response[0];
         }
+        $this->attributes['longitude'] = $adres->lon;
+        $this->attributes['lattitude'] = $adres->lat;
+        $this->longitude = $adres->lon;
+        $this->lattitude = $adres->lat;
     }
 
     /**
@@ -188,5 +198,49 @@ class Address extends Model
         }
 
         return $model;
+    }
+
+    /**
+     * Wrapper around saving the address. 
+     * calls address model methodes
+     * @return string address_id
+     * @param bool create: required. whether or not to save or create the address.
+     */
+    public static function save_or_create_address($create): string
+    {
+        if (!is_bool($create)) {
+            throw new \Exception('save or create address without craate param');
+        }
+        $postdata = Input::all();
+        $Address = $create ? new Address() : Address::find($postdata['address_id']);
+        $Address->setNewValues($postdata);
+        $ai = $Address->uuid_check($postdata);
+        $Address->geoIpRoundTrip($postdata);
+        $Address->save();
+        return $ai;
+    }
+
+    /**
+     * This is rather messy. It smashed the Address relation onto the Owner.
+     * @param string $model_name for PHP, models are also strings 😕
+     */
+    public static function allWithAddress($model_name)
+    {
+
+        $naked = $model_name::all();
+        return $naked->map(function ($nude) {
+            return Address::hydrateWithAddress($nude);
+        });
+    }
+
+    /**
+     * hydrates model with address data. 
+     */
+    public static function hydrateWithAddress(Model $nude): Model
+    {
+        $addresses_collection = $nude->address();
+        // write the address data onto the object
+        $first_address = $addresses_collection->first();
+        return $first_address->hydrate_model($nude);
     }
 }

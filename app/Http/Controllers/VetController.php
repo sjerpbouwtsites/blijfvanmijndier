@@ -3,13 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use App\Vet;
-use App\MenuItem;
+use App\Address;
 
 class VetController extends Controller
 {
@@ -18,50 +17,49 @@ class VetController extends Controller
         parent::__construct('vets');
     }
 
+    /**
+     * plenary view & root endpoint
+     */
     public function index()
     {
-        $vets = Vet::all();
-        $vets = $vets->sortBy('name');
-
-        $menuItems = $this->GetMenuItems('vets');
-
-        $data = array(
-            'vets' => $vets,
-            'menuItems' => $menuItems
-        );
-
-        return view("vet.index")->with($data);
+        return $this->get_view("vet.index", [
+            'vets' => Address::allWithAddress('App\Vet')->sortBy('name'),
+        ]);
     }
 
+    /**
+     * single view & endpoint
+     */
     public function show($id)
     {
-        $vet = Vet::find($id);
-        $menuItems = $this->GetMenuItems('`vets');
-
-        $data = array(
-            'vet' => $vet,
-            'menuItems' => $menuItems
-        );
-
-        return view("vet.show")->with($data);
+        return $this->get_view("vet.show", [
+            'vet' => $this->get_hydrated($id),
+        ]);
     }
 
+    /**
+     * single edit view & endpoint
+     */
     public function edit($id)
     {
-        $vet = Vet::find($id);
-        $data = $this->GetVetData($vet);
-
-        return view("vet.edit")->with($data);
+        return $this->get_view("vet.edit", [
+            'vet' => $this->get_hydrated($id),
+        ]);
     }
 
+    /**
+     * single create view & endpoint
+     */
     public function create()
     {
-        $vet = new Vet;
-        $data = $this->GetVetData($vet);
-
-        return view("vet.edit")->with($data);
+        return $this->get_view("vet.edit", [
+            'vet' => new Vet,
+        ]);
     }
 
+    /**
+     * where is posted to on create.
+     */
     public function store(Request $request)
     {
         $validator = $this->validateVet();
@@ -70,13 +68,16 @@ class VetController extends Controller
             return Redirect::to('vets/create')
                 ->withErrors($validator)
                 ->withInput();
-        } else {
-            $this->saveVet($request);
-            Session::flash('message', 'Dierenarts succesvol toegevoegd!');
-            return redirect()->action('VetController@index');
         }
+        $ai = Address::save_or_create_address(true);
+        $this->create_or_save_vet($request, $ai);
+        Session::flash('message', 'Dierenarts succesvol toegevoegd!');
+        return redirect()->action('VetController@index');
     }
 
+    /**
+     * where is posted to on update
+     */
     public function update(Request $request)
     {
         $validator = $this->validateVet();
@@ -85,23 +86,23 @@ class VetController extends Controller
             return redirect()->action('VetController@edit', $request->id)
                 ->withErrors($validator)
                 ->withInput();
-        } else {
-            $this->saveVet($request);
-            Session::flash('message', 'Dierenarts succesvol gewijzigd!');
-            return redirect()->action('VetController@show', $request->id);
         }
+        $ai = Address::save_or_create_address(false);
+        $this->create_or_save_vet($request, $ai);
+        Session::flash('message', 'Dierenarts succesvol gewijzigd!');
+        return redirect()->action('VetController@show', $request->id);
     }
 
-    private function GetVetData($vet)
+    /**
+     * finds vet by id and hydrates the vet.
+     * @return Vet
+     * @param string id
+     */
+    public function get_hydrated(string $id): Vet
     {
-        $menuItems = $this->GetMenuItems('vets');
-
-        $data = array(
-            'vet' => $vet,
-            'menuItems' => $menuItems
-        );
-
-        return $data;
+        $nude_vet = Vet::find($id);
+        $vet = Address::hydrateWithAddress($nude_vet);
+        return $vet;
     }
 
     private function validateVet()
@@ -113,27 +114,15 @@ class VetController extends Controller
         return Validator::make(Input::all(), $rules);
     }
 
-    private function saveVet(Request $request)
+    private function create_or_save_vet(Request $request, string $address_id)
     {
-        if ($request->id !== null) {
-            $vet = Vet::find($request->id);
-        } else {
-            $vet = new Vet;
+        $vet = $this->get_model_instance($request, Vet::class);
+        foreach ($vet['own_attributes'] as $key) {
+            $vet->$key = $request->$key;
         }
 
-        $vet->name = $request->name;
-        $vet->street = $request->street;
-        $vet->house_number = $request->house_number;
-        $vet->postal_code = $request->postal_code;
-        $vet->city = $request->city;
-        $vet->phone_number = $request->phone_number;
-        $vet->email_address = $request->email_address;
-        $vet->website = $request->website;
-        $vet->contact_person = $request->contact_person;
-        $vet->remarks_contract = $request->remarks_contract;
-        $vet->remarks_general = $request->remarks_general;
-
-
+        $vet->address_id = $address_id;
         $vet->save();
+        return true;
     }
 }

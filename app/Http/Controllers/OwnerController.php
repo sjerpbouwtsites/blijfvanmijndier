@@ -37,7 +37,7 @@ class OwnerController extends Controller
     public function index()
     {
         return $this->get_view("owner.index", [
-            'owners' => Owner::allWithAddress()->sortBy('name'),
+            'owners' => Address::allWithAddress('App\Owner')->sortBy('name'),
         ]);
     }
 
@@ -93,7 +93,7 @@ class OwnerController extends Controller
     public function get_hydrated(string $id): Owner
     {
         $nude_owner = Owner::find($id);
-        $owner = Owner::hydrateWithAddress($nude_owner);
+        $owner = Address::hydrateWithAddress($nude_owner);
         return $owner;
     }
 
@@ -108,7 +108,7 @@ class OwnerController extends Controller
                 ->withInput();
         }
 
-        $ai = $this->save_or_create_address(true);
+        $ai = Address::save_or_create_address(true);
         if ($this->create_or_save_owner($request, $ai)) {
             Session::flash('message', 'Eigenaar succesvol toegevoegd!');
             return redirect()->action('OwnerController@index');
@@ -128,7 +128,7 @@ class OwnerController extends Controller
                 ->withInput();
         }
 
-        $ai = $this->save_or_create_address(false);
+        $ai = Address::save_or_create_address(false);
         if ($this->create_or_save_owner($request, $ai)) {
             Session::flash('message', 'Eigenaar succesvol gewijzigd!');
             return redirect()->action('OwnerController@show', $request->id);
@@ -137,25 +137,7 @@ class OwnerController extends Controller
         }
     }
 
-    /**
-     * Wrapper around saving the address. 
-     * calls address model methodes
-     * @return string address_id
-     * @param bool create: required. whether or not to save or create the address.
-     */
-    private function save_or_create_address($create): string
-    {
-        if (!is_bool($create)) {
-            throw new \Exception('save or create address without craate param');
-        }
-        $postdata = Input::all();
-        $Address = $create ? new Address() : Address::find($postdata['address_id']);
-        $Address->setNewValues($postdata);
-        $ai = $Address->uuid_check($postdata);
-        $Address->geoIpRoundTrip($postdata);
-        $Address->save();
-        return $ai;
-    }
+
 
 
     /**

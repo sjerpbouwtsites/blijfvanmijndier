@@ -40,30 +40,6 @@ class Owner extends Model
     }
 
     /**
-     * // @TODO naar address model zit ook in guest
-     * This is rather messy. It smashed the Address relation onto the Owner.
-     */
-    public static function allWithAddress()
-    {
-        $naked = Owner::all();
-        return $naked->map(function ($nude) {
-            return Owner::hydrateWithAddress($nude);
-        });
-    }
-
-    /**
-     * hydrates model with address data. 
-     */
-    public static function hydrateWithAddress(Owner $nude): Owner
-    {
-
-        $addresses_collection = $nude->address();
-        // write the address data onto the object
-        $first_address = $addresses_collection->first();
-        return $first_address->hydrate_model($nude);
-    }
-
-    /**
      * ONDUIDELIJK OF DEZE NOG GEBRUIKT WORDT!
      * Wrapper and 'hydrater' around find(). Locaties the Address, warns for arrors, combines the attributes on the guest.
      * @return Owner with Address
