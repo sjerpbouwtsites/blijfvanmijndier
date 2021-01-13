@@ -36,10 +36,10 @@ class GuestController extends Controller
     public function show($guest_id)
     {
         $guest = $this->get_hydrated($guest_id);
-        $animals = Animal::where('guest_id', $guest->id)->get();
-        foreach ($animals as $animal) {
-            $animal->animalImage = $this->getAnimalImage($animal->id);
-        }
+        $animals = Animal::setAnimalArrayImages(
+            Animal::where('guest_id', $guest->id)->get()
+        );
+
         return $this->get_view("guest.show", [
             'guest' => $guest,
             'animals' => $animals,

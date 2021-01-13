@@ -73,7 +73,7 @@ class AnimalController extends Controller
         $animal->gendertypeDesc = $this->getDescription($animal->gendertype_id);
         $animal->endtypeDesc = $this->getDescription($animal->endtype_id);
         $animal->needUpdate = $this->animalNeedUpdate($animal->id);
-        $animal->animalImage = $this->getAnimalImage($animal->id);
+        $animal->setAnimalImage();
         return $animal;
     }
 
@@ -84,7 +84,6 @@ class AnimalController extends Controller
     public function edit($id)
     {
         $animal = Animal::find($id);
-        $animal->animalImage = $this->getAnimalImage($animal->id);
         return $this->create_or_edit($animal);
     }
 

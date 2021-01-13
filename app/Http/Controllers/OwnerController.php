@@ -64,11 +64,7 @@ class OwnerController extends Controller
     public function show($owner_id)
     {
         $owner = $this->get_hydrated($owner_id);
-        $animals  = Animal::where('owner_id', $owner->id)->get();
-
-        foreach ($animals as $animal) {
-            $animal->animalImage = $this->getAnimalImage($animal->id);
-        }
+        $animals = Animal::setAnimalArrayImages(Animal::where('owner_id', $owner->id)->get());
 
         return $this->get_view("owner.show", [
             'owner' => $owner,

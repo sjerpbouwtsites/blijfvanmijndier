@@ -50,12 +50,7 @@ class ShelterController extends Controller
     public function show($shelter_id)
     {
         $shelter = $this->get_hydrated($shelter_id);
-        $animals  = Animal::where('shelter_id', $shelter->id)->get();
-
-        foreach ($animals as $animal) {
-            $animal->animalImage = $this->getAnimalImage($animal->id);
-        }
-
+        $animals  = Animal::setAnimalArrayImages(Animal::where('shelter_id', $shelter->id)->get());
         $updates = UpdateController::getUpdatesByLinkType('shelters', $shelter->id, 2);
 
         return $this->get_view("shelter.show", [

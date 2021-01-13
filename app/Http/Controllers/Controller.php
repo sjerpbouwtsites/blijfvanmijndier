@@ -132,16 +132,7 @@ class Controller extends BaseController
         return false;
     }
 
-    public function getAnimalImage($id)
-    {
-        $image = 'img/' . 'animal_' . $id . '.jpg';
 
-        if (file_exists($image)) {
-            return $image;
-        }
-
-        return 'img/placeholder.jpg';
-    }
 
     public function GetMenuItems($currentPath)
     {
