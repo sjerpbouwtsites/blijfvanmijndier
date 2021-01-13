@@ -33,7 +33,9 @@ class OwnerController extends Controller
         $this->set_validator_rules();
     }
 
-    // view func
+    /**
+     * plenary view & root endpoint
+     */
     public function index()
     {
         return $this->get_view("owner.index", [
@@ -41,7 +43,9 @@ class OwnerController extends Controller
         ]);
     }
 
-    // view func    
+    /**
+     * single match & endpoint
+     */
     public function match($id)
     {
         $animal = Animal::find($id);
@@ -53,7 +57,9 @@ class OwnerController extends Controller
         ]);
     }
 
-    // view func    
+    /**
+     * single show view & endpoint
+     */
     public function show($id)
     {
         $owner = $this->get_hydrated($id);
@@ -69,7 +75,9 @@ class OwnerController extends Controller
         ]);
     }
 
-    // view func
+    /**
+     * single edit view & endpoint
+     */
     public function edit($id)
     {
         return $this->get_view('owner.edit', [
@@ -77,7 +85,9 @@ class OwnerController extends Controller
         ]);
     }
 
-    // view func
+    /**
+     * new single edit view & endpoint
+     */
     public function create()
     {
         return $this->get_view("owner.edit", [
@@ -93,11 +103,12 @@ class OwnerController extends Controller
     public function get_hydrated(string $id): Owner
     {
         $nude_owner = Owner::find($id);
-        $owner = Address::hydrateWithAddress($nude_owner);
-        return $owner;
+        return Address::hydrateWithAddress($nude_owner);
     }
 
-
+    /**
+     * where is posted to on create
+     */
     public function store(Request $request)
     {
         $validator = Validator::make(Input::all(), $this->validator_rules);
@@ -118,6 +129,9 @@ class OwnerController extends Controller
         }
     }
 
+    /**
+     * where is posted to on update
+     */
     public function update(Request $request)
     {
         $validator = Validator::make(Input::all(), $this->validator_rules);
@@ -136,9 +150,6 @@ class OwnerController extends Controller
             Session::flash('message', 'Dat is een fout!');
         }
     }
-
-
-
 
     /**
      * on init creates validator rules based on $this->required;
