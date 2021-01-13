@@ -7,7 +7,9 @@
 		@else
 			<h3>Nieuw gastgezin</h3>
 		@endif
-		
+		@if (Session::has('message'))
+	    	<div class="alert alert-info">{{ Session::get('message') }}</div>
+		@endif		
 		{{ Html::ul($errors->all()) }}
 
 		@if( $guest->id > 0 )
@@ -33,7 +35,7 @@
 						<div class="form-group">
 							<label for="max_hours_alone" class="control-label col-md-4">max uren alleen</label>
 							<div class="col-md-8">
-								<input min="0" class="form-control" required name="max_hours_alone" type="number" value="<?=$guest['address_id']?>" id="max_hours_alone">
+								<input min="0" class="form-control" required name="max_hours_alone" type="number" value="<?=$guest['max_hours_alone']?>" id="max_hours_alone">
 							</div>
 					</div>
 
@@ -54,10 +56,16 @@
 			<div class="col-md-2">
 			</div>
 			<div class="col-md-5">
-                @include('form_checkbox_list', ['title' => 'Gedrag', 'list' => $behaviourList, 'checked' => $checked_behaviours])
+
+								@include('form_checkbox_list', 
+									['title' => 'Gedrag', 
+									'list' => $behaviourList, 
+									'checked' => $checked_behaviours
+								])
 			</div>
 			<div class="col-md-5">
-                @include('form_checkbox_list', ['title' => 'Wonen', 'list' => $hometypeList, 'checked' => $checked_hometypes])
+								@include('form_checkbox_list', ['title' => 'Wonen', 'list' => $hometypeList, 'checked' => $checked_hometypes])
+								
                 @include('form_checkbox_list', ['title' => 'Diervoorkeur', 'list' => $animaltypeList, 'checked' => $checked_animaltypes])
 			</div>
 		</div>

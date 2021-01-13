@@ -437,7 +437,6 @@ class AnimalController extends Controller
     private function saveAnimal(Request $request)
     {
         $animal = $this->get_model_instance($request, Animal::class);
-        $inputs = Input::all();
         // if checkbox, correct; if not allowed empty... set null
         $chkbox_keys = ['witnessed_abuse', 'abused', 'updates'];
         $not_null_keys = ['birth_date', 'registration_date'];
@@ -455,7 +454,10 @@ class AnimalController extends Controller
             $animal->save();
         }
 
-        $animal->tables()->sync(isset($inputs['tables']) ? $inputs['tables'] : []);
+        $tables = Input::has('tables')
+            ? Input::get('tables')
+            : [];
+        $animal->tables()->sync($tables);
         $animal->save();
 
         if ($request->hasFile('animal_image')) {

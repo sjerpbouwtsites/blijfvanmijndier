@@ -92,14 +92,18 @@ class ShelterController extends Controller
                 ->withErrors($validator)
                 ->withInput();
         }
-        $ai = Address::save_or_create_address(true);
-        if ($this->create_or_save_shelter($request, $ai)) {
-            Session::flash('message', 'Opvang succesvol toegevoegd!');
-            return redirect()->action('ShelterController@index');
-        } else {
-            Session::flash('message', 'Fout bij het opslaan!');
-            return redirect()->action('ShelterController@index');
+        $add_res = Address::save_or_create_address(true);
+        if ($add_res['geo_res']['status'] !== 'success') {
+            // error in curl / geo iq
+            Session::flash('message', 'geolocatie faal: ' . $add_res['geo_res']['reason']);
+            echo $add_res['geo_res']['return_html'];
+            echo $add_res['geo_res']['console'];
+            return $this->create($request->id);
         }
+
+        $this->create_or_save_shelter($request, $add_res['address_id']);
+        Session::flash('message', 'Succesvol toegevoegd!');
+        return redirect()->action($this->model_name . 'Controller@index');
     }
 
     /**
@@ -114,14 +118,17 @@ class ShelterController extends Controller
                 ->withErrors($validator)
                 ->withInput();
         }
-        $ai = Address::save_or_create_address(false);
-        if ($this->create_or_save_shelter($request, $ai)) {
-            Session::flash('message', 'Opvang succesvol gewijzigd!');
-            return redirect()->action('ShelterController@show', $request->id);
-        } else {
-            Session::flash('message', 'Dat is een fout!');
-            return redirect()->action('ShelterController@show', $request->id);
+        $add_res = Address::save_or_create_address(false);
+        if ($add_res['geo_res']['status'] !== 'success') {
+            // error in curl / geo iq
+            Session::flash('message', 'geolocatie faal: ' . $add_res['geo_res']['reason']);
+            echo $add_res['geo_res']['return_html'];
+            echo $add_res['geo_res']['console'];
+            return $this->edit($request->id);
         }
+        $this->create_or_save_shelter($request, $add_res['address_id']);
+        Session::flash('message', 'Succesvol gewijzigd!');
+        return redirect()->action($this->model_name . 'Controller@show', $request->id);
     }
 
     private function validateShelter()

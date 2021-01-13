@@ -12,7 +12,7 @@ use App\Animal;
 use App\Address;
 
 
-class OwnerController extends Controller
+class OwnerController extends AbstractController
 {
     // @TODO doorvoeren in alle relevante models. required combo met validator
     // @TODO required attr op inputs zetten als relevant
@@ -26,22 +26,9 @@ class OwnerController extends Controller
         'postal_code'
     ];
 
-    private $validator_rules = [];
-
     function __construct()
     {
         parent::__construct('owners');
-        $this->set_validator_rules();
-    }
-
-    /**
-     * plenary view & root endpoint
-     */
-    public function index()
-    {
-        return $this->get_view("owner.index", [
-            'owners' => Address::allWithAddress('App\Owner')->sortBy('name'),
-        ]);
     }
 
     /**
@@ -69,16 +56,6 @@ class OwnerController extends Controller
         return $this->get_view("owner.show", [
             'owner' => $owner,
             'animals' => $animals,
-        ]);
-    }
-
-    /**
-     * single edit view & endpoint
-     */
-    public function edit($owner_id)
-    {
-        return $this->get_view('owner.edit', [
-            'owner' => $this->get_hydrated($owner_id),
         ]);
     }
 
@@ -116,14 +93,18 @@ class OwnerController extends Controller
                 ->withInput();
         }
 
-        $ai = Address::save_or_create_address(true);
-        if ($this->create_or_save_owner($request, $ai)) {
-            Session::flash('message', 'Eigenaar succesvol toegevoegd!');
-            return redirect()->action('OwnerController@index');
-        } else {
-            Session::flash('message', 'Fout bij het opslaan!');
-            return redirect()->action('OwnerController@index');
+        $add_res = Address::save_or_create_address(true);
+        if ($add_res['geo_res']['status'] !== 'success') {
+            // error in curl / geo iq
+            Session::flash('message', 'geolocatie faal: ' . $add_res['geo_res']['reason']);
+            echo $add_res['geo_res']['return_html'];
+            echo $add_res['geo_res']['console'];
+            return $this->create();
         }
+
+        $this->create_or_save($request, $add_res['address_id']);
+        Session::flash('message', 'Succesvol toegevoegd!');
+        return redirect()->action($this->model_name . 'Controller@index');
     }
 
     /**
@@ -139,23 +120,17 @@ class OwnerController extends Controller
                 ->withInput();
         }
 
-        $ai = Address::save_or_create_address(false);
-        if ($this->create_or_save_owner($request, $ai)) {
-            Session::flash('message', 'Eigenaar succesvol gewijzigd!');
-            return redirect()->action('OwnerController@show', $request->id);
-        } else {
-            Session::flash('message', 'Dat is een fout!');
+        $add_res = Address::save_or_create_address(false);
+        if ($add_res['geo_res']['status'] !== 'success') {
+            // error in curl / geo iq
+            Session::flash('message', 'geolocatie faal: ' . $add_res['geo_res']['reason']);
+            echo $add_res['geo_res']['return_html'];
+            echo $add_res['geo_res']['console'];
+            return $this->edit($request->id);
         }
-    }
-
-    /**
-     * on init creates validator rules based on $this->required;
-     */
-    private function set_validator_rules(): void
-    {
-        foreach ($this->required as $r) {
-            $this->validator_rules[$r] = 'required';
-        }
+        $this->create_or_save($request, $add_res['address_id']);
+        Session::flash('message', 'Succesvol gewijzigd!');
+        return redirect()->action($this->model_name . 'Controller@show', $request->id);
     }
 
     /**
@@ -165,7 +140,7 @@ class OwnerController extends Controller
      * @param Request request the incoming post according to laravel
      * @param string address_id the uuid of the related Address
      */
-    private function create_or_save_owner(Request $request, string $address_id): bool
+    public function create_or_save(Request $request, string $address_id): bool
     {
         $owner = $this->get_model_instance($request, Owner::class);
         foreach ($owner['own_attributes'] as $key) {

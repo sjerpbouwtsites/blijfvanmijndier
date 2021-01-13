@@ -7,7 +7,9 @@
 		@else
 			<h3>Nieuwe opvanglocatie</h3>
 		@endif
-		
+		@if (Session::has('message'))
+		<div class="alert alert-info">{{ Session::get('message') }}</div>
+@endif
 		{{ Html::ul($errors->all()) }}
 
 		@if( $location->id > 0 )

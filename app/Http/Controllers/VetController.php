@@ -31,6 +31,17 @@ class VetController extends AbstractController
     }
 
     /**
+     * override but dont know why. didnt find Vet in abstracts class.
+     * single create view & endpoint
+     */
+    public function create()
+    {
+        return $this->get_view("vet.edit", [
+            'vet' => new Vet,
+        ]);
+    }
+
+    /**
      * override of abstract placeholder
      * creates new model instance if request does not non-null id prop
      * references Model's own attributes to set request values to self

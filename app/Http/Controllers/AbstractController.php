@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Input;
-use App\Address;
 
 /**
  * has the basic controller functions
@@ -48,7 +47,7 @@ abstract class AbstractController extends Controller
   public function index()
   {
     return $this->get_view($this->view_prefix . ".index", [
-      $this->plural => Address::allWithAddress("App\\" . $this->model_name)->sortBy('name'),
+      $this->plural => \App\Address::allWithAddress("App\\" . $this->model_name)->sortBy('name'),
     ]);
   }
 
@@ -98,8 +97,16 @@ abstract class AbstractController extends Controller
         ->withErrors($this->validator)
         ->withInput();
     }
-    $ai = Address::save_or_create_address(true);
-    $this->create_or_save($request, $ai);
+    $add_res = \App\Address::save_or_create_address(true);
+    if ($add_res['geo_res']['status'] !== 'success') {
+      // error in curl / geo iq
+      Session::flash('message', 'geolocatie faal: ' . $add_res['geo_res']['reason']);
+      echo $add_res['geo_res']['return_html'];
+      echo $add_res['geo_res']['console'];
+      return $this->create();
+    }
+
+    $this->create_or_save($request, $add_res['address_id']);
     Session::flash('message', 'Succesvol toegevoegd!');
     return redirect()->action($this->model_name . 'Controller@index');
   }
@@ -115,8 +122,15 @@ abstract class AbstractController extends Controller
         ->withErrors($this->validator)
         ->withInput();
     }
-    $ai = Address::save_or_create_address(false);
-    $this->create_or_save($request, $ai);
+    $add_res = \App\Address::save_or_create_address(false);
+    if ($add_res['geo_res']['status'] !== 'success') {
+      // error in curl / geo iq
+      Session::flash('message', 'geolocatie faal: ' . $add_res['geo_res'][' reason']);
+      echo $add_res['geo_res']['return_html'];
+      echo $add_res['geo_res']['console'];
+      return $this->edit($request->id);
+    }
+    $this->create_or_save($request, $add_res['address_id']);
     Session::flash('message', 'Succesvol gewijzigd!');
     return redirect()->action($this->model_name . 'Controller@show', $request->id);
   }

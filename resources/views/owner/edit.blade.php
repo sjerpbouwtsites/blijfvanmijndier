@@ -7,7 +7,9 @@
 		@else
 			<h3>Nieuwe eigenaar</h3>
 		@endif
-		
+		@if (Session::has('message'))
+		<div class="alert alert-info">{{ Session::get('message') }}</div>
+@endif
 		{{ Html::ul($errors->all()) }}
 
 		@if( $owner->id > 0 )

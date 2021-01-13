@@ -14,10 +14,16 @@ class Vet extends Model
         'name', 'phone_number', 'email_address', 'website', 'contact_person', 'remarks_contract', 'remarks_general'
     ];
 
+    public $fillable = [
+        'name', 'phone_number', 'email_address', 'website', 'contact_person', 'remarks_contract', 'remarks_general', 'address_id'
+    ];
+
     public function tables()
     {
         return $this->belongsToMany(Table::class);
     }
+
+
 
     /**
      * Get the address record collection associated with the owner.

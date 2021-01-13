@@ -85,46 +85,96 @@ class Address extends Model
      * goes by geoip service. writes to class properties.
      * @throws when curl error, geo ip registrations found !== 1. 
      */
-    public function geoIpRoundTrip(array $attributeList): void
+    public function geoIpRoundTrip(array $attributeList): array
     {
 
-        $urldata = [
-            str_replace(' ', '', $attributeList['postal_code']),
-            $attributeList['street'],
-            str_replace(' ', '', $attributeList['house_number'])
-        ];
+        $city = str_replace(' ', '', $attributeList['city']);
+        $street = str_replace(' ', '', $attributeList['street']);
+        $house_number = str_replace(' ', '', $attributeList['house_number']);
 
+        $geo_query = "$city $street $house_number";
 
-        $url = "https://eu1.locationiq.com/v1/search.php?key=b7a32fa378c135&q=" . urlencode(implode(' ', $urldata));
+        $url = "https://eu1.locationiq.com/v1/search.php?key=b7a32fa378c135&q=" . urlencode($geo_query) . "&limit=1";
 
+        $adres_back_html = $this->address_error_back_HTML($geo_query);
 
         $curl = new Curl();
         $curl->get($url, [
             "format" => "json"
         ]);
 
-        if ($curl->error) {
-            throw $curl->error;
-        } elseif (count($curl->response) === 0) {
-            throw new \Exception("Geen geolocatie gevonden voor dit adres");
-        } elseif (count($curl->response) > 1) {
-            // kan nog zijn dat hij ook een weg heeft gevonden.
-            $iets_gevonden = array_filter($curl->response, function ($adres) {
-                return in_array($adres->osm_type, ['way']);
-            });
-            if (count($iets_gevonden) !== 1) {
-                dd($curl->response, false);
-                throw new \Exception(count($curl->response) . " geolocatie registraties gevonden voor dit adres. Shit! \nKlopt het adres? Zo ja, contacteer de developer.\n Ik had al gekeken of er niet een weg meekwam, daarna waren er nog " . count($iets_gevonden) . " locaties gevonden.");
-            } else {
-                $adres = $iets_gevonden[0];
-            }
-        } else {
-            $adres = $curl->response[0];
+        $curl_console = `
+            <script>console.dir(` . $curl->rawResponse . `);</script>
+            `;
+
+        $basis_ret = [
+            'status' => null,
+            'console' => $curl_console,
+            'reason' => null,
+            'return_html' => $adres_back_html
+        ];
+
+        $status = 'success'; // assume eh;
+
+        // error in curl zelf.
+        if ($curl->error !== FALSE) {
+            $basis_ret['reason'] = 'curl error: ' . $curl->errorMessage;
+            $status = 'fail';
         }
-        $this->attributes['longitude'] = $adres->lon;
-        $this->attributes['lattitude'] = $adres->lat;
-        $this->longitude = $adres->lon;
-        $this->lattitude = $adres->lat;
+
+        // no response.
+        if (!property_exists($curl, 'response') || is_null($curl->response)) {
+            $basis_ret['reason'] = "curl response does not exist or is null";
+            $status = 'fail';
+        }
+
+        // geoIq error: response has error.
+        if (array_key_exists('error', $curl->response) && !empty($curl->response['error'])) {
+            $basis_ret['reason'] = "error in geoIq system: $curl->response['error']";
+            $status = 'fail';
+        }
+
+        // de reactie is geen array?
+        if (!is_array($curl->response)) {
+            $basis_ret['reason'] = "geo iq response is not an array.";
+            $status = 'fail';
+        }
+        // alweer niets gevonden door geo iq?
+        $response = $curl->response;
+        if (empty($response)) {
+            $basis_ret['reason'] = "geo iq did not find anything.";
+            $status = 'fail';
+        }
+
+        if (!property_exists($response[0], 'lat') || !property_exists($response[0], 'lon')) {
+            $basis_ret['reason'] = 'lat and or lon not set on response[0].';
+            $status = 'fail';
+        };
+
+        // we laten het hierbij!
+        $curl->close();
+        $basis_ret['status'] = $status;
+
+        if ($status === 'fail') {
+            return $basis_ret;
+        }
+
+        // what the whole sham was about
+        $this->longitude = $this->attributes['longitude'] = $response[0]->lon;
+        $this->lattitude = $this->attributes['lattitude'] = $response[0]->lat;
+
+        return [
+            'status' => 'success'
+        ];
+    }
+
+    private function address_error_back_HTML($geo_query)
+    {
+        return `
+            <h1>Er heeft zich een fout in de adresopzoeking voorgedaan.</h1>
+            <p>We zochten met deze info: $geo_query</p>
+            <p>Als dit niet klopt <button onclick="history.back()">klik dan hier</button></p>
+        `;
     }
 
     /**
@@ -203,10 +253,10 @@ class Address extends Model
     /**
      * Wrapper around saving the address. 
      * calls address model methodes
-     * @return string address_id
+     * @return array save address array with address_id and geo iq res
      * @param bool create: required. whether or not to save or create the address.
      */
-    public static function save_or_create_address($create): string
+    public static function save_or_create_address($create): array
     {
         if (!is_bool($create)) {
             throw new \Exception('save or create address without craate param');
@@ -215,9 +265,14 @@ class Address extends Model
         $Address = $create ? new Address() : Address::find($postdata['address_id']);
         $Address->setNewValues($postdata);
         $ai = $Address->uuid_check($postdata);
-        $Address->geoIpRoundTrip($postdata);
-        $Address->save();
-        return $ai;
+        $geo_res = $Address->geoIpRoundTrip($postdata);
+        if ($geo_res['status'] === 'success') {
+            $Address->save();
+        }
+        return [
+            'geo_res' => $geo_res,
+            'address_id' => $ai
+        ];
     }
 
     /**

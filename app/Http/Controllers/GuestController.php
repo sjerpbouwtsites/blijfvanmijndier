@@ -3,31 +3,28 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Input;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Session;
 use App\Guest;
 use App\Animal;
 use App\Table;
 use App\Address;
+use Illuminate\Support\Facades\Input;
 
-class GuestController extends Controller
+class GuestController extends AbstractController
 {
+
+    protected $required = [
+        'name',
+        'phone_number',
+        'email_address',
+        'city',
+        'house_number',
+        'street',
+        'postal_code'
+    ];
 
     function __construct()
     {
         parent::__construct('guests');
-    }
-
-    /**
-     * plenary view & root endpoint
-     */
-    public function index()
-    {
-        return $this->get_view("guest.index", [
-            'guests' => Address::allWithAddress('App\Guest')->sortBy('name'),
-        ]);
     }
 
     /**
@@ -55,9 +52,16 @@ class GuestController extends Controller
      */
     public function edit($guest_id)
     {
-        $d = $this->get_hydrated($guest_id);
-        $dd = $this->GetGuestData($d);
-        return $this->get_view('guest.edit', $dd);
+        $guest = $this->get_hydrated($guest_id);
+        //$view_data = $this->GetGuestData($guest);
+        // $meta_data = $this->guest_meta($guest);
+        // $behaviourList = Table::All()->where('tablegroup_id', $this->behaviourId);
+        // dump($meta_data);
+        // dd($behaviourList);
+        return $this->get_view(
+            'guest.edit',
+            $this->guest_meta($guest)
+        );
     }
     /**
      * new single edit view & endpoint
@@ -68,47 +72,6 @@ class GuestController extends Controller
             "guest.edit",
             $this->GetGuestData(new Guest),
         );
-    }
-
-    /**
-     * where is posted to on create
-     */
-    public function store(Request $request)
-    {
-        $validator = $this->validateGuest();
-
-        if ($validator->fails()) {
-            return Redirect::to('guests/create')
-                ->withErrors($validator)
-                ->withInput();
-        }
-        $ai = Address::save_or_create_address(true);
-        if ($this->create_or_save_guest($request, $ai)) {
-            Session::flash('message', 'gastgezin succesvol toegevoegd!');
-            return redirect()->action('GuestController@index');
-        } else {
-            Session::flash('message', 'Fout bij het opslaan!');
-            return redirect()->action('GuestController@index');
-        }
-    }
-
-    public function update(Request $request)
-    {
-        $validator = $this->validateGuest();
-
-        if ($validator->fails()) {
-            return redirect()->action('GuestController@edit', $request->id)
-                ->withErrors($validator)
-                ->withInput();
-        }
-        $ai = Address::save_or_create_address(false);
-        if ($this->create_or_save_guest($request, $ai)) {
-            Session::flash('message', 'gastgezin succesvol opgeslagen!');
-            return redirect()->action('GuestController@index');
-        } else {
-            Session::flash('message', 'Fout bij het opslaan!');
-            return redirect()->action('GuestController@index');
-        }
     }
 
     /**
@@ -123,11 +86,50 @@ class GuestController extends Controller
     }
 
     /**
+     * generic function for getting behaviourList, vaccinationList, hometypeList and their checked ones.
+     * @param Guest guest instance
+     * @param Array skip. which of behaviour, vaccination or hometype to skip.
+     * @return Array with behaviourList, vaccinationList, hometypeList and their id/description collections; also behaviourListChecked, etc. 
+     */
+    private function guest_meta(Guest $guest, $skip = array()): array
+    {
+        $to_return = [];
+        foreach (['behaviour', 'animaltype', 'hometype'] as $group) {
+            if (in_array($group, $skip)) continue;
+            $list_name = $group . "List";
+            $id_name = $group . "Id";
+
+            // all in this group.
+            $all_in_group = Table::All()->where(
+                'tablegroup_id',
+                $this->$id_name
+            );
+            $to_return[$list_name] = $all_in_group;
+
+            // all in this group checked, complete objects
+            $all_checked_ids = $guest->tables->where('tablegroup_id', $this->$id_name)->pluck('id')->toArray();
+            $complete_and_checked = [];
+            foreach ($all_in_group as $one_of_all) {
+                if (in_array($one_of_all['attributes']['id'], $all_checked_ids)) {
+                    $complete_and_checked[] = $one_of_all;
+                }
+            }
+            $to_return[$list_name . 'Checked'] = $complete_and_checked;
+
+            // all checked in this group, id list.
+            $to_return['checked_' . $group . 's'] = $all_checked_ids;
+        }
+        $to_return['guest'] = $guest;
+        return $to_return;
+    }
+
+    /**
      * Helper van edit en create
      */
     private function GetGuestData($guest)
     {
         $behaviourList = Table::All()->where('tablegroup_id', $this->behaviourId);
+
         $hometypeList = Table::All()->where('tablegroup_id', $this->hometypeId);
         $animaltypeList = Table::All()->where('tablegroup_id', $this->animaltypeId);
 
@@ -151,20 +153,6 @@ class GuestController extends Controller
         return $data;
     }
 
-    private function validateGuest()
-    {
-        // @TODO HIER CONTROLE OP ADRES SCHRIJVEN.
-        return Validator::make(Input::all(), [
-            'name',
-            'phone_number',
-            'email_address',
-            'city',
-            'house_number',
-            'street',
-            'postal_code'
-        ]);
-    }
-
     /**
      * creates new guest if request does not non-null id prop
      * references Model's own attributes to set request values to self
@@ -172,7 +160,7 @@ class GuestController extends Controller
      * @param Request request the incoming post according to laravel
      * @param string address_id the uuid of the related Address
      */
-    private function create_or_save_guest(Request $request, string $address_id): bool
+    public function create_or_save(Request $request, string $address_id): bool
     {
         // create new guest or use existing.
         $guest = $this->get_model_instance($request, Guest::class);
@@ -181,17 +169,14 @@ class GuestController extends Controller
         }
         $guest->address_id = $address_id;
 
-        if (isset($inputs['tables'])) {
-            $tables = $inputs['tables'];
-        } else {
-            $tables = [];
+        // extra save to get id
+        if ($request->id === null) {
+            $guest->save();
         }
 
-        // // extra save to get id
-        // if ($request->id === null) {
-        //     $guest->save();
-        // }
-
+        $tables = Input::has('tables')
+            ? Input::get('tables')
+            : [];
         $guest->tables()->sync($tables);
         $guest->save();
         return true;
