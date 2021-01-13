@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Input;
 
 /**
+ * A layer between the controller and the actual instances.
+ * 
  * has the basic controller functions
  * index, show, edit, create, store, update, get_hydrated, create_or_save
  * to be overwritten by the not abstract class when required.

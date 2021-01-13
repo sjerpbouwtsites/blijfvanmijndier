@@ -37,9 +37,10 @@ class ShelterController extends Controller
     {
         $animal = Animal::find($shelter_id);
         $animal->breedDesc = $this->getDescription($animal->breed_id);
+        $shelters = Address::allWithAddress("App\Shelter")->sortBy('name');
 
-        return $this->get_view("shelters.match", [
-            'shelters' => Shelter::all(),
+        return $this->get_view("shelter.match", [
+            'shelters' => $shelters,
             'animal' => $animal,
         ]);
     }

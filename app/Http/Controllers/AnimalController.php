@@ -10,6 +10,11 @@ use Illuminate\Support\Facades\Session;
 use App\Animal;
 use App\Table;
 
+/**
+ * Watch out this controller is an animal! 
+ * it's the core but also the most 'outlier' of the controllers
+ * logic generally a little more legacy here.
+ */
 
 class AnimalController extends Controller
 {
@@ -246,7 +251,8 @@ class AnimalController extends Controller
     }
 
     /**
-     * @TODO dit moet nog nagelopen worden!
+     * Looking at data from the animal and the table-table 
+     * litterally matches from beast to man are made
      */
     public function match($id)
     {
@@ -449,7 +455,7 @@ class AnimalController extends Controller
                     : $request->$key);
         }
 
-        // extra save to get id //TODO 
+        // extra save to get id 
         if ($request->id === null) {
             $animal->save();
         }

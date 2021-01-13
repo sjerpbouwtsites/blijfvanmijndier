@@ -40,7 +40,7 @@ class OwnerController extends AbstractController
         $animal->breedDesc = $this->getDescription($animal->breed_id);
 
         return $this->get_view("owner.match", [
-            'owners' => Owner::all(),
+            'owners' => Address::allWithAddress("App\Owner")->sortBy('name'),
             'animal' => $animal,
         ]);
     }
