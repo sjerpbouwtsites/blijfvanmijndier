@@ -11,6 +11,7 @@ use App\MenuItem;
 use App\Table;
 use App\Update;
 use App\Animal;
+use App\Vet;
 use DateTime;
 use Exception;
 use \Illuminate\View\View;
