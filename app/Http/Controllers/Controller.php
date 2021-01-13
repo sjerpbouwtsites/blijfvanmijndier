@@ -23,17 +23,18 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    public $breedId;
-    public $behaviourId;
-    public $vaccinationId;
-    public $animaltypeId;
-    public $hometypeId;
-    public $gendertypeId;
-    public $employeeId;
-    public $doctypeId;
-    public $endtypeId;
-    public $updatetypeId;
-    public $updatetypeOwner;
+    // ids of table table
+    public $breedId = 1;
+    public $behaviourId = 2;
+    public $vaccinationId = 3;
+    public $animaltypeId = 4;
+    public $hometypeId = 5;
+    public $gendertypeId = 6;
+    public $employeeId = 7;
+    public $doctypeId = 8;
+    public $endtypeId = 9;
+    public $updatetypeId = 10;
+    public $updatetypeOwner = 179;
 
     public string $model_name;
     public $menuItems = null;
@@ -44,26 +45,17 @@ class Controller extends BaseController
      */
     public function __construct($model_name, $menu_items_source = null)
     {
-        $this->set_model_name_and_menu_items($model_name, $menu_items_source);
-
-        $this->breedId = 1;
-        $this->behaviourId = 2;
-        $this->vaccinationId = 3;
-        $this->animaltypeId = 4;
-        $this->hometypeId = 5;
-        $this->gendertypeId = 6;
-        $this->employeeId = 7;
-        $this->doctypeId = 8;
-        $this->endtypeId = 9;
-        $this->updatetypeId = 10;
-        $this->updatetypeOwner = 179;
+        $this->init_model_name($model_name);
+        $this->init_menu_items($model_name, $menu_items_source);
     }
 
-    private function set_model_name_and_menu_items($model_name, $menu_items_source = null)
+    private function init_model_name($model_name)
     {
-        if (empty($model_name)) {
-            throw new Exception('geen model naam gegeven. \n Verget je de constructor? Nodig voor de menu items', E_WARNING);
-        }
+        $this->model_name = $model_name;
+    }
+
+    private function init_menu_items($model_name, $menu_items_source = null)
+    {
 
         // $menu items source mag overschrijven. Ook als het '' is... alleen null mag niet.
         $menu_items_model = !is_null($menu_items_source) ? $menu_items_source : $model_name;
