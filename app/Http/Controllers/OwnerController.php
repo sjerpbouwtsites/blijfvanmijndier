@@ -79,59 +79,6 @@ class OwnerController extends AbstractController
     }
 
     /**
-     * where is posted to on create
-     */
-    public function store(Request $request)
-    {
-        $validator = Validator::make(Input::all(), $this->validator_rules);
-
-        if ($validator->fails()) {
-            return Redirect::to('owners/create')
-                ->withErrors($validator)
-                ->withInput();
-        }
-
-        $add_res = Address::save_or_create_address(true);
-        if ($add_res['geo_res']['status'] !== 'success') {
-            // error in curl / geo iq
-            Session::flash('message', 'geolocatie faal: ' . $add_res['geo_res']['reason']);
-            echo $add_res['geo_res']['return_html'];
-            echo $add_res['geo_res']['console'];
-            return $this->create();
-        }
-
-        $this->create_or_save($request, $add_res['address_id']);
-        Session::flash('message', 'Succesvol toegevoegd!');
-        return redirect()->action($this->model_name . 'Controller@index');
-    }
-
-    /**
-     * where is posted to on update
-     */
-    public function update(Request $request)
-    {
-        $validator = Validator::make(Input::all(), $this->validator_rules);
-
-        if ($validator->fails()) {
-            return redirect()->action('OwnerController@edit', $request->id)
-                ->withErrors($validator)
-                ->withInput();
-        }
-
-        $add_res = Address::save_or_create_address(false);
-        if ($add_res['geo_res']['status'] !== 'success') {
-            // error in curl / geo iq
-            Session::flash('message', 'geolocatie faal: ' . $add_res['geo_res']['reason']);
-            echo $add_res['geo_res']['return_html'];
-            echo $add_res['geo_res']['console'];
-            return $this->edit($request->id);
-        }
-        $this->create_or_save($request, $add_res['address_id']);
-        Session::flash('message', 'Succesvol gewijzigd!');
-        return redirect()->action($this->model_name . 'Controller@show', $request->id);
-    }
-
-    /**
      * creates new owner if request does not non-null id prop
      * references Model's own attributes to set request values to self
      * @return bool for success
