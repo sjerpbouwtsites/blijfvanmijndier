@@ -19,7 +19,6 @@ class Map extends Model
      */
     public static function map_data()
     {
-
         $tables_to_get = ['addresses', 'guests', 'vets', 'shelters', 'owners'];
 
         $all_tables = [];

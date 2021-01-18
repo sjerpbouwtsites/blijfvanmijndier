@@ -149,15 +149,24 @@ function createMap() {
 }
 
 /**
- * dummy function to get locations
- * @returns Promise always succes with dummydata
+ * getMapAPIData
+ * @returns Promise
  */
-function getLocations() {
-  return new Promise((locationSucces, locationFailure) => {
-    setTimeout(() => {
-      return locationSucces(models);
-    }, 250);
-  });
+function getMapAPIData() {
+  return fetch("/map/data")
+    .then((unjson) => {
+      return unjson.json();
+    })
+    .then((jsonBlob) => {
+      const baseData = JSON.parse(jsonBlob);
+      const dataModel = models.create(baseData);
+      console.log(dataModel);
+      return dataModel;
+    })
+    .catch((err) => {
+      alert("fout bij aanvragen map data");
+      throw err;
+    });
 }
 
 function initMap() {
@@ -168,7 +177,7 @@ function initMap() {
 
   globalLeafletMap = createMap();
   addInteractive();
-  getLocations().then((models) => {
+  getMapAPIData().then((models) => {
     [...models.guests, ...models.vets, ...models.shelters, ...models.owners].map(function (model) {
       try {
         return leafletShell.locationMapper(model, globalLeafletMap);

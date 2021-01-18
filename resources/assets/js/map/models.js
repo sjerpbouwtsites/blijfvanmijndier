@@ -1,6 +1,5 @@
 //const rawData = require("./data");
 const models = {};
-
 /**
  * async func zodat debug data als laatste geconsoled wordt
  *
@@ -24,8 +23,7 @@ function debugDataAlsLaatste(data, logSet) {
   });
 }
 
-function createModels() {
-  if (!location.href.includes("map")) return;
+function create(baseData) {
   const addresses = baseData.addresses;
 
   models.animals = baseData.animals.map((baseAnimal) => {
@@ -44,7 +42,7 @@ function createModels() {
   models.owners = baseData.owners.map((baseOwner) => {
     return new Owner(baseOwner, addresses);
   });
-
+  return models;
   //  debugDataAlsLaatste(models, ["animals"]);
 }
 
@@ -279,10 +277,8 @@ class Animal extends MayaModel {
   }
 }
 
-createModels();
-
 module.exports = {
-  ...models,
+  create,
   MayaModel,
   LocatedEntity,
   Animal,

@@ -17,12 +17,17 @@ class MapController extends Controller
     public function index()
     {
 
-        $map_data = Map::map_data();
+        // $map_data = Map::map_data();
 
-        $data = array(
-            'map_data'      => $map_data,
-        );
+        // $data = array(
+        //     'map_data'      => $map_data,
+        // );
 
-        return view("map.index")->with($data);
+        return view("map.index");
+    }
+
+    public function map_data()
+    {
+        return json_encode(Map::map_data());
     }
 }

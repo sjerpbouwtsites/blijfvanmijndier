@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -38,6 +40,7 @@ Route::get('owners/{id}/match', 'OwnerController@match');
 Route::get('shelters/{id}/match', 'ShelterController@match');
 
 Route::get('map', 'MapController@index');
+Route::get('map/data', 'MapController@map_data');
 
 Route::post('animals/{id}/outofprojectstore', 'AnimalController@outofprojectstore');
 
