@@ -2,35 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Input;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Session;
-use App\Shelter;
-use App\Animal;
-use App\MenuItem;
+
+use App\Map;
 
 class MapController extends Controller
 {
 
     function __construct()
     {
+        // TODO is this still relevant?
         parent::__construct('maps', 'animals');
     }
 
     public function index()
     {
 
-        $shelters = Shelter::all();
-        $shelters = $shelters->sortBy('name');
-
-        $menuItems = $this->GetMenuItems('shelters');
+        $map_data = Map::map_data();
 
         $data = array(
-            'shelters' => $shelters,
-            'menuItems' => $menuItems
+            'json'      => $map_data,
         );
 
         return view("map.index")->with($data);
