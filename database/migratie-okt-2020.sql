@@ -11,7 +11,8 @@ CREATE TABLE `addresses` (
   `postal_code` text NOT NULL,
   `city` text,
   `lattitude` text,
-  `longitude` text
+  `longitude` text,
+  `manual_geolocation` varchar(255)
 );
 -- alle niet null van street, postal_code en house_number op herkenbare STRING
 -- ook nodig voor verhasing ivm concat.

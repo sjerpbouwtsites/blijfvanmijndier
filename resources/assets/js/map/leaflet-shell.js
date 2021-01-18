@@ -188,6 +188,8 @@ function locationMapper(locatedEntity, globalLeafletMap) {
     throw new Error(`fout in maakAlt, ${error.message}`);
   }
 
+  console.log(locatedEntity.name, locatedEntity.location);
+
   const marker = L.marker([locatedEntity.location.lattitude, locatedEntity.location.longitude], options).addTo(
     globalLeafletMap
   );

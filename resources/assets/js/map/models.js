@@ -25,6 +25,7 @@ function debugDataAlsLaatste(data, logSet) {
 }
 
 function createModels() {
+  if (!location.href.includes("map")) return;
   const addresses = baseData.addresses;
 
   models.animals = baseData.animals.map((baseAnimal) => {
