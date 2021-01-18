@@ -174,6 +174,8 @@ function maakAlt(locatedEntity) {
  * intialises map on roelofarendsveen and returns leaflet map instance.
  */
 function createMap() {
+  throw new Error("hallo");
+
   const goudaMapConfig = {
     lat: 52.2,
     lon: 4.6,

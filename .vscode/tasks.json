@@ -1,0 +1,16 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "prod",
+			"problemMatcher": [],
+			"label": "npm: prod",
+			"detail": "gulp --production",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		}
+	]
+}

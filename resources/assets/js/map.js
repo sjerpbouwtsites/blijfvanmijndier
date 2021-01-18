@@ -128,7 +128,7 @@ function getLocations() {
   });
 }
 
-function init() {
+function initMap() {
   if (!location.href.includes("/map")) {
     console.log("no map here");
     return;
@@ -150,4 +150,4 @@ function init() {
   });
 }
 
-init();
+initMap();
