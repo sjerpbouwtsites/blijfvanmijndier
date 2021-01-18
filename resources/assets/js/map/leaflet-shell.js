@@ -192,8 +192,6 @@ function locationMapper(locatedEntity, globalLeafletMap) {
     globalLeafletMap
   );
 
-  console.log(`marker ${locatedEntity.type} ${locatedEntity.name}`);
-
   marker.bindPopup(
     `<div class='bvmd-popup'>
       ${markerHTML.header(locatedEntity)}
@@ -231,7 +229,7 @@ const markerHTML = {
     <h4 class='bvmd-popup__inner-title'>Adres</h4>
     <address class='bvmd-popup__adres'>
       <ul class='bvmd-popup__adres-lijst'>
-        <li class='bvmd-popup__adres-stuk'>${locatedEntity.location.straat} ${locatedEntity.location.huisnummer}</li>
+        <li class='bvmd-popup__adres-stuk'>${locatedEntity.location.street} ${locatedEntity.location.huisnummer}</li>
         <li class='bvmd-popup__adres-stuk'>${locatedEntity.location.postcode} ${locatedEntity.location.plaatsnaam}</li>
       </ul>
     </address>

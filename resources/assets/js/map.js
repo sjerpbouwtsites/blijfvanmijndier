@@ -160,7 +160,6 @@ function getMapAPIData() {
     .then((jsonBlob) => {
       const baseData = JSON.parse(jsonBlob);
       const dataModel = models.create(baseData);
-      console.log(dataModel);
       return dataModel;
     })
     .catch((err) => {
@@ -177,8 +176,9 @@ function initMap() {
 
   globalLeafletMap = createMap();
   addInteractive();
-  getMapAPIData().then((models) => {
-    [...models.guests, ...models.vets, ...models.shelters, ...models.owners].map(function (model) {
+  getMapAPIData().then((dataModels) => {
+    console.log(dataModels);
+    [...dataModels.guests, ...dataModels.vets, ...dataModels.shelters, ...dataModels.owners].map(function (model) {
       try {
         return leafletShell.locationMapper(model, globalLeafletMap);
       } catch (error) {
@@ -187,8 +187,10 @@ function initMap() {
         throw new Error(`Fout in de location mapper met gelogde model`);
       }
     });
-    populateAnimalList(models.animals);
+    populateAnimalList(dataModels.animals);
     leafletShell.postLeafletWork();
+    globalLeafletMap.setZoom(8);
+    window.leesModels = dataModels;
   });
 }
 
