@@ -1,28 +1,46 @@
 //const rawData = require("./data");
 const models = {};
 
-function createModels() {
-  // Object.values(baseData).forEach((dataSet) => {
-  //   const print = [dataSet[0], dataSet[1], dataSet[2]];
-  //   console.table(print);
-  // });
+/**
+ * async func zodat debug data als laatste geconsoled wordt
+ *
+ */
+function debugDataAlsLaatste(data, logSet) {
+  return new Promise((succes, fail) => {
+    try {
+      setTimeout(() => {
+        Object.entries(data).forEach(([setName, dataSet]) => {
+          if (!logSet.includes(setName) && logSet !== setName) return;
+          const print = [dataSet[0], dataSet[1], dataSet[2]];
+          console.table(print);
+        });
+      }, 50);
+      succes();
+    } catch (e) {
+      fail(e);
+    }
+  });
+}
 
-  console.table(baseData.animals);
+function createModels() {
+  debugDataAlsLaatste(baseData, ["addresses", "guests"]);
+
+  const addresses = baseData.addresses;
 
   models.animals = baseData.animals.map((baseAnimal) => {
     return new Animal(baseAnimal);
   });
   models.guests = baseData.guests.map((baseGuest) => {
-    return new Guest(baseGuest, baseData.locations);
+    return new Guest(baseGuest, addresses);
   });
   models.shelters = baseData.shelters.map((baseshelter) => {
-    return new Shelter(baseshelter, baseData.locations);
+    return new Shelter(baseshelter, addresses);
   });
   models.vets = baseData.vets.map((baseVet) => {
-    return new Vet(baseVet, baseData.locations);
+    return new Vet(baseVet, addresses);
   });
-  models.owners = baseData.owner.map((baseOwner) => {
-    return new Owner(baseOwner, baseData.locations);
+  models.owners = baseData.owners.map((baseOwner) => {
+    return new Owner(baseOwner, addresses);
   });
 }
 
@@ -71,7 +89,7 @@ class MayaModel {
  * Abstract Class. Only use as base Class.
  */
 class LocatedEntity extends MayaModel {
-  constructor(type, config, locations) {
+  constructor(type, config, addresses) {
     super(type);
     if (!config.hasOwnProperty("name")) {
       throw new Error(`name forgotten`);
@@ -79,14 +97,15 @@ class LocatedEntity extends MayaModel {
     if (!config.hasOwnProperty("id")) {
       throw new Error(`id forgotten`);
     }
-    if (!config.hasOwnProperty("location")) {
-      throw new Error(`${config.name} heeft geen location`);
+    if (!config.hasOwnProperty("address_id")) {
+      throw new Error(`${config.name} heeft geen address_id`);
     }
     this.id = config.id;
     this.name = config.name;
     this.animals = [];
     try {
-      this.location = locations.find((loc) => loc.id === config.location); // potential memory leak, messes with garbage collection?
+      console.log(addresses);
+      this.location = addresses.find((address) => address.uuid === config.address_id); // potential memory leak, messes with garbage collection?
     } catch (error) {
       throw new Error(`${config.name} location niet gevonden in _locations. ${error.message}`);
     }
