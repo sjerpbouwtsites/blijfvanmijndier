@@ -5,9 +5,7 @@
 		<h3>Overzicht dierenarts</h3>
 		<h5><a href="{{ URL::to('vets/' . $vet->id . '/edit') }}" class="btn btn-primary">Wijzigen</a> <a href="{{ URL::to('vets') }}" class="btn btn-default">Terug naar overzicht</a></h5> 
 
-        @if (Session::has('message'))
-            <div class="alert alert-info">{{ Session::get('message') }}</div>
-        @endif
+        @include('session_messages')
 
         <div class="col-md-6  form-horizontal">
             <h4>Details</h4>

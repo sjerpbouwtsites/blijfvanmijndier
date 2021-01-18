@@ -38,6 +38,8 @@
 		@yield('content')
 	</div>
 	<br><br>
+
+		
 </body>
 
 </html>

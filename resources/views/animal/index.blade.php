@@ -6,9 +6,7 @@
 	</div>
 	<div class="col-md-12">
 
-		@if (Session::has('message'))
-	    	<div class="alert alert-info">{{ Session::get('message') }}</div>
-		@endif
+		@include('session_messages')
 
 		<div class="card-deck">
 

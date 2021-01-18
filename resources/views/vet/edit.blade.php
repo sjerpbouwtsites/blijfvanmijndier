@@ -7,9 +7,7 @@
 		@else
 			<h3>Nieuwe dierenarts</h3>
 		@endif
-		@if (Session::has('message'))
-		<div class="alert alert-info">{{ Session::get('message') }}</div>
-@endif
+		@include('session_messages')
 		{{ Html::ul($errors->all()) }}
 
 		@if( $vet->id > 0 )

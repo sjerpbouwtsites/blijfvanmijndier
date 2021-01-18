@@ -7,7 +7,7 @@
 		@else
 			<h3>Nieuwe update van {{ $name }}</h3>
 		@endif
-		
+		@include('session_messages')
 		{{ Html::ul($errors->all()) }}
 
 		@if( $update->id > 0 )

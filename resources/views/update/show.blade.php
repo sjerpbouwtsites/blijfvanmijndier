@@ -5,9 +5,7 @@
 		<h3>Overzicht update van {{$name}}</h3>
 		<h5><a href="{{ URL::to($type . '/' . $link_id . '/updates/' . $update->id . '/edit') }}" class="btn btn-primary">Wijzigen</a> <a href="{{ URL::to($type . '/' . $link_id . '/updates') }}" class="btn btn-default">Terug naar updates {{$name}}</a> <a href="{{ URL::to('updates/selection') }}" class="btn btn-default">Terug naar alle updates</a></h5> 
 
-        @if (Session::has('message'))
-            <div class="alert alert-info">{{ Session::get('message') }}</div>
-        @endif
+        @include('session_messages')
 
         <div class="col-md-6  form-horizontal">
             <h4>Details</h4>

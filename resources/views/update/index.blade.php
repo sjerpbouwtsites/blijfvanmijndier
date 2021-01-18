@@ -5,9 +5,7 @@
 		<h3>Overzicht updates van {{ $name }}</h3>
 	   	<h5><a href="{{ URL::to($link_type . '/' . $link_id . '/updates/create') }}" class="btn btn-primary">Toevoegen</a> <a href='{{ URL::to($link_type . '/' . $link_id ) }}' class="btn btn-default">Terug naar {{ $name }}</a></h5>
 
-		@if (Session::has('message'))
-	    	<div class="alert alert-info">{{ Session::get('message') }}</div>
-		@endif
+			 @include('session_messages')
 
 		<table class="table table-hover">
 			<thead>

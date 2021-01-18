@@ -5,10 +5,7 @@
 		<h3>Overzicht eigenaar</h3>
 		<h5><a href="{{ URL::to('owners/' . $owner->id . '/edit') }}" class="btn btn-primary">Wijzigen</a> <a href="{{ URL::to('owners') }}" class="btn btn-default">Terug naar overzicht</a></h5> 
 
-        @if (Session::has('message'))
-            <div class="alert alert-info">{{ Session::get('message') }}</div>
-        @endif
-
+        @include('session_messages')
         <div class="col-md-6  form-horizontal">
             <h4>Details</h4>
             @include('show_row', ['label' => 'Voornaam', 'value' => $owner->name])

@@ -5,9 +5,7 @@
 		<h3>Overzicht dierenartsen</h3>
 	   	<h5><a href="{{ URL::to('vets/create') }}" class="btn btn-primary">Toevoegen</a></h5>
 
-		@if (Session::has('message'))
-	    	<div class="alert alert-info">{{ Session::get('message') }}</div>
-		@endif
+			 @include('session_messages')
 
 		<table class="table table-hover">
 			<thead>
