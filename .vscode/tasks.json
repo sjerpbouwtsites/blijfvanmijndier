@@ -3,10 +3,10 @@
 	"tasks": [
 		{
 			"type": "npm",
-			"script": "prod",
+			"script": "dev",
 			"problemMatcher": [],
-			"label": "npm: prod",
-			"detail": "gulp --production",
+			"label": "npm: dev",
+			"detail": "gulp --watch",
 			"group": {
 				"kind": "build",
 				"isDefault": true
