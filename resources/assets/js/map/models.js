@@ -93,17 +93,20 @@ class MayaModel {
 class LocatedEntity extends MayaModel {
   constructor(type, config, addresses) {
     super(type);
-    if (!config.hasOwnProperty("name")) {
-      throw new Error(`name forgotten`);
-    }
-    if (!config.hasOwnProperty("id")) {
-      throw new Error(`id forgotten`);
-    }
-    if (!config.hasOwnProperty("address_id")) {
-      throw new Error(`${config.name} heeft geen address_id`);
-    }
-    this.id = config.id;
+
+    const addressKeys = ["phone_number", "prefix", "surname", "email_address", "name"];
+
     this.name = config.name;
+    this.contact = {};
+    Object.keys(config).forEach((key) => {
+      if (key === "address_id") return;
+      if (addressKeys.includes(key)) {
+        this.contact[key] = config[key];
+        return;
+      }
+      this[key] = config[key];
+    });
+
     this.animals = [];
     try {
       this.location = addresses.find((address) => address.uuid === config.address_id); // potential memory leak, messes with garbage collection?
@@ -113,6 +116,10 @@ class LocatedEntity extends MayaModel {
     if (config.text) {
       this.text = config.text;
     }
+  }
+
+  get fullName() {
+    return `${this.contact.name} ${this.contact.prefix} ${this.contact.surname}`.trim();
   }
 
   static find() {

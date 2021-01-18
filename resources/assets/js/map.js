@@ -160,6 +160,7 @@ function getMapAPIData() {
     .then((jsonBlob) => {
       const baseData = JSON.parse(jsonBlob);
       const dataModel = models.create(baseData);
+
       return dataModel;
     })
     .catch((err) => {

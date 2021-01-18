@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 
 use App\Map;
+use Illuminate\Support\Facades\DB;
 
 class MapController extends Controller
 {
@@ -17,11 +18,14 @@ class MapController extends Controller
     public function index()
     {
 
-        // $map_data = Map::map_data();
+        // $tables_to_get = ['addresses', 'guests', 'vets', 'shelters', 'owners'];
 
-        // $data = array(
-        //     'map_data'      => $map_data,
-        // );
+        // $all_tables = [];
+        // foreach ($tables_to_get as $table) {
+        //     $all_tables[$table] = DB::table($table)->get();
+        // }
+
+        // dd($all_tables);
 
         return view("map.index");
     }
