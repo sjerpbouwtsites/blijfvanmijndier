@@ -25,6 +25,7 @@ abstract class AbstractController extends Controller
   public $validator;
   // set in setValidator
   public $validator_config = [];
+  public $geolocation_failure = false;
 
   // please override.
   public $required = [];
@@ -96,7 +97,7 @@ abstract class AbstractController extends Controller
           $this->validator_config[$key] = "required|min:10";
           break;
         case 'postal_code':
-          $this->validator_config[$key] = "required|max:7|regex:/^([0-9]{4}[ ]+[a-zA-Z]{2})$/";
+          $this->validator_config[$key] = "required|max:7|regex:/^([0-9]{4}[ ]{0,1}[a-zA-Z]{2})$/";
           break;
         default:
           $this->validator_config[$key] = 'required';
@@ -145,11 +146,23 @@ abstract class AbstractController extends Controller
     $add_res = \App\Address::save_or_create_address(false);
     if ($add_res['geo_res']['status'] !== 'success') {
       // error in curl / geo iq
-      Session::flash('message', 'geolocatie faal: ' . $add_res['geo_res'][' reason']);
-      echo $add_res['geo_res']['return_html'];
-      echo $add_res['geo_res']['console'];
+      $reason = $add_res['geo_res']['reason'];
+      $return_html = $add_res['geo_res']['return_html'];
+      $js_console = $add_res['geo_res']['console'];
+      Session::put('geolocation_success', false);
+      if (!empty($js_console)) {
+        Session::flash(
+          'js_console',
+          $js_console
+        );
+      }
+      Session::flash(
+        'message',
+        "geolocatie is mislukt. Server meld: $reason. $return_html"
+      );
       return $this->edit($request->id);
     }
+    Session::put('geolocation_success', true);
     $this->create_or_save($request, $add_res['address_id']);
     Session::flash('message', 'Succesvol gewijzigd!');
     return redirect()->action($this->model_name . 'Controller@show', $request->id);

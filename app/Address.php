@@ -88,6 +88,15 @@ class Address extends Model
     public function geoIpRoundTrip(array $attributeList): array
     {
 
+        if (array_key_exists('manual_geolocation', $attributeList)  && $attributeList['manual_geolocation']) {
+            $this->longitude = $this->attributes['longitude'];
+            $this->lattitude = $this->attributes['lattitude'];
+            return [
+                'status' => 'success'
+            ];
+        }
+
+
         $city = str_replace(' ', '', $attributeList['city']);
         $street = str_replace(' ', '', $attributeList['street']);
         $house_number = str_replace(' ', '', $attributeList['house_number']);
@@ -121,6 +130,7 @@ class Address extends Model
             $basis_ret['reason'] = 'curl error: ' . $curl->errorMessage;
             $status = 'fail';
         }
+        $curl->close();
 
         // no response.
         if ($status !== 'fail') {
@@ -165,7 +175,6 @@ class Address extends Model
         }
 
         // we laten het hierbij!
-        $curl->close();
         $basis_ret['status'] = $status;
 
         if ($status === 'fail') {

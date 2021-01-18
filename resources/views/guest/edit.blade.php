@@ -24,10 +24,7 @@
 
 			<input type='hidden' name='address_id' value="<?=$guest['address_id']?>" >
             @include('form_text', ['field' => 'name', 'label' => 'Naam'])
-						@include('form_text', ['field' => 'street', 'label' => 'Straat'])
-						@include('form_text', ['field' => 'house_number', 'label' => 'Huisnummer'])
-            @include('form_text', ['field' => 'postal_code', 'label' => 'Postcode'])
-            @include('form_text', ['field' => 'city', 'label' => 'Woonplaats'])
+						@include('form_group_address');
             @include('form_text', ['field' => 'phone_number', 'label' => 'Telefoonnummer'])
 						@include('form_text', ['field' => 'email_address', 'label' => 'Emailadres'])
 						
