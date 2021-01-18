@@ -94,7 +94,7 @@ class LocatedEntity extends MayaModel {
   constructor(type, config, addresses) {
     super(type);
 
-    const addressKeys = ["phone_number", "prefix", "surname", "email_address", "name"];
+    const addressKeys = ["phone_number", "prefix", "surname", "email_address", "name", "website", "contact_person"];
 
     this.name = config.name;
     this.contact = {};
@@ -109,7 +109,10 @@ class LocatedEntity extends MayaModel {
 
     this.animals = [];
     try {
-      this.location = addresses.find((address) => address.uuid === config.address_id); // potential memory leak, messes with garbage collection?
+      const l = addresses.find((address) => address.uuid === config.address_id); // potential memory leak, messes with garbage collection?
+      delete l.manual_geolocation;
+      delete l.updated_at;
+      this.location = l;
     } catch (error) {
       throw new Error(`${config.name} location niet gevonden in _locations. ${error.message}`);
     }
@@ -119,7 +122,10 @@ class LocatedEntity extends MayaModel {
   }
 
   get fullName() {
-    return `${this.contact.name} ${this.contact.prefix} ${this.contact.surname}`.trim();
+    const n = !!this.contact.name ? this.contact.name : "",
+      p = !!this.contact.prefix ? this.contact.prefix : "",
+      s = !!this.contact.surname ? this.contact.surname : "";
+    return `${n} ${p} ${s}`.trim();
   }
 
   static find() {
