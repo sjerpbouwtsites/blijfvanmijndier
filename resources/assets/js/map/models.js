@@ -23,13 +23,12 @@ function debugDataAlsLaatste(data, logSet) {
 }
 
 function createModels() {
-  debugDataAlsLaatste(baseData, ["addresses", "guests"]);
-
   const addresses = baseData.addresses;
 
   models.animals = baseData.animals.map((baseAnimal) => {
     return new Animal(baseAnimal);
   });
+
   models.guests = baseData.guests.map((baseGuest) => {
     return new Guest(baseGuest, addresses);
   });
@@ -42,6 +41,8 @@ function createModels() {
   models.owners = baseData.owners.map((baseOwner) => {
     return new Owner(baseOwner, addresses);
   });
+
+  debugDataAlsLaatste(models, ["animals"]);
 }
 
 /**
@@ -104,7 +105,6 @@ class LocatedEntity extends MayaModel {
     this.name = config.name;
     this.animals = [];
     try {
-      console.log(addresses);
       this.location = addresses.find((address) => address.uuid === config.address_id); // potential memory leak, messes with garbage collection?
     } catch (error) {
       throw new Error(`${config.name} location niet gevonden in _locations. ${error.message}`);
@@ -201,6 +201,11 @@ class Animal extends MayaModel {
     }
   }
 
+  /**
+    vetId: "v-1",
+    ownerId: "e-1",
+    locationType: "guest",
+ */
   static find(animalId) {
     const possibleFound = models.animals.find((animal) => animalId === animal.id);
     if (!possibleFound) {
@@ -209,18 +214,22 @@ class Animal extends MayaModel {
     return possibleFound;
   }
   get vet() {
-    return models.vets.find((vet) => this.vetId === vet.id);
+    if (this.vet_id === null) return null;
+    return models.vets.find((vet) => this.vet_id === vet.id);
   }
   get owner() {
-    return models.owners.find((owner) => this.ownerId === owner.id);
+    if (this.owner_id === null) return null;
+    return models.owners.find((owner) => this.owner_id === owner.id);
   }
   get staysAt() {
-    if (this.locationType === "guest") {
-      return models.guests.find((guest) => guest.id === this.locationId);
-    }
-    if (this.locationType === "shelter") {
-      return models.shelters.find((shelter) => shelter.id === this.locationId);
-    }
+    console.warn("argh!");
+    throw new Error("ee");
+    // if (this.locationType === "guest") {
+    //   return models.guests.find((guest) => guest.id === this.locationId);
+    // }
+    // if (this.locationType === "shelter") {
+    //   return models.shelters.find((shelter) => shelter.id === this.locationId);
+    // }
   }
   get location() {
     return this.staysAt ? this.staysAt.location : null;

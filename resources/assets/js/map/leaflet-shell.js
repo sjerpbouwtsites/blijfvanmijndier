@@ -188,7 +188,9 @@ function locationMapper(locatedEntity, globalLeafletMap) {
     throw new Error(`fout in maakAlt, ${error.message}`);
   }
 
-  const marker = L.marker([locatedEntity.location.lat, locatedEntity.location.lon], options).addTo(globalLeafletMap);
+  const marker = L.marker([locatedEntity.location.lattitude, locatedEntity.location.longitude], options).addTo(
+    globalLeafletMap
+  );
 
   marker.bindPopup(
     `<div class='bvmd-popup'>

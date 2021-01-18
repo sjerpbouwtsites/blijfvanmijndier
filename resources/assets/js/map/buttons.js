@@ -1,53 +1,61 @@
 /**
+ * 'abstract' buttonHTML func.
+ *
+ * @param {*} buttonData animal, vet, etc instance.
+ * @param array modifiers list of CSS BEM modifiers
+ * @param {*} action function to be called
+ * @returns
+ */
+function buttonBase(buttonData, modifiers, action) {
+  if (buttonData === null) return ``;
+
+  const modifierHTML = modifiers
+    .map((mod) => {
+      return `map__link-style-button--${mod}`;
+    })
+    .join("");
+
+  return `<button 
+    data-action='${action}' 
+    data-id='${buttonData.id}'
+    class='
+      map__link-style-button 
+      ${modifierHTML}
+      '>
+    ${buttonData.name}
+    </button>`;
+}
+
+/**
  * returns button linked to animal view.
  * @param {model} animal
  */
-function animal(animal) {
-  return `<button 
-    data-action='open-animal-dialog' 
-    data-id='${animal.id}'
-    class='map__link-style-button map__link-style-button--animal'>
-    ${animal.name}
-    </button>`;
+function animal(animalData) {
+  return buttonBase(animalData, ["animal"], "open-animal-dialog");
 }
 
 /**
  * returns button linked to owner marker
- * @param {model} owner
+ * @param {model} ownerData
  */
-function owner(owner) {
-  return `<button 
-    data-action='goto-marker' 
-    data-id='${owner.id}'
-    class='map__link-style-button map__link-style-button--goto-marker map__link-style-button--owner'>
-    ${owner.name}
-    </button>`;
+function owner(ownerData) {
+  return buttonBase(ownerData, ["owner", "goto-marker"], "goto-marker");
 }
 
 /**
  * return button linked to animal's location button
- * @param {model} staysAt
+ * @param {model} staysAtData
  */
-function staysAt(staysAt) {
-  return `<button 
-    data-action='goto-marker' 
-    data-id='${staysAt.id}'
-    class='map__link-style-button map__link-style-button--goto-marker map__link-style-button--stays-at'>
-    ${staysAt.name}
-    </button>`;
+function staysAt(staysAtData) {
+  return buttonBase(staysAtData, ["stays-at", "goto-marker"], "goto-marker");
 }
 
 /**
  * returns button linked to vet marker
- * @param {model} vet
+ * @param {model} vetData
  */
-function vet(vet) {
-  return `<button 
-      data-action='open-vet-dialog' 
-      data-id='${vet.id}'
-      class='map__link-style-button map__link-style-button--vet'>
-      ${vet.name}
-      </button>`;
+function vet(vetData) {
+  return buttonBase(vetData, ["vet"], "open-vet-dialog");
 }
 
 module.exports = {
