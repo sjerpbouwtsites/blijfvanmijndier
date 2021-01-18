@@ -298,14 +298,16 @@ class AnimalController extends Controller
             }
         }
 
-        return $this->get_view("animal.match", [
-            ...$animal_meta,
-            'checked_behaviours' => $checked_behaviours,
-            'checked_hometypes' => $checked_hometypes,
-            'guests' => $guestList,
-            'tables' => $animal->tables,
-            'animal' => $animal
-        ]);
+        return $this->get_view("animal.match", array_merge(
+            $animal_meta,
+            [
+                'checked_behaviours' => $checked_behaviours,
+                'checked_hometypes' => $checked_hometypes,
+                'guests' => $guestList,
+                'tables' => $animal->tables,
+                'animal' => $animal
+            ]
+        ));
     }
 
     /**

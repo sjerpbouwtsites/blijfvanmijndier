@@ -178,7 +178,6 @@ function initMap() {
   globalLeafletMap = createMap();
   addInteractive();
   getMapAPIData().then((dataModels) => {
-    console.log(dataModels);
     [...dataModels.guests, ...dataModels.vets, ...dataModels.shelters, ...dataModels.owners].map(function (model) {
       try {
         return leafletShell.locationMapper(model, globalLeafletMap);

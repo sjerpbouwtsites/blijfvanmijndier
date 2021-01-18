@@ -42,6 +42,11 @@ function create(baseData) {
   models.owners = baseData.owners.map((baseOwner) => {
     return new Owner(baseOwner, addresses);
   });
+  // now link animals location uuid
+  models.animals.forEach((animal) => {
+    console.log(animal.staysAt.location.uuid);
+    animal.locationId = animal.staysAt.location.uuid;
+  });
   return models;
   //  debugDataAlsLaatste(models, ["animals"]);
 }
@@ -119,7 +124,7 @@ class LocatedEntity extends MayaModel {
     if (config.text) {
       this.text = config.text;
     }
-  }
+  } // end constructor
 
   get fullName() {
     const n = !!this.contact.name ? this.contact.name : "",
@@ -148,7 +153,7 @@ class Guest extends LocatedEntity {
   }
   get animals() {
     return models.animals.filter((animal) => {
-      return animal.locationType === "guest" && animal.locationId === this.id;
+      return animal.locationId === this.location.uuid;
     });
   }
   get animalsOnSite() {
@@ -213,13 +218,6 @@ class Animal extends MayaModel {
     for (let a in config) {
       this[a] = config[a];
     }
-
-    // let log = ["name", "guest_id", "owner_id", "shelter_id", "placement_date"];
-    // const logData = {};
-    // log.forEach((logNaam) => {
-    //   logData[logNaam] = config[logNaam];
-    // });
-    // console.dir(logData);
   }
 
   /**
