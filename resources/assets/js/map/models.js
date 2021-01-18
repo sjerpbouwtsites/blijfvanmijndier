@@ -9,7 +9,9 @@ function debugDataAlsLaatste(data, logSet) {
   return new Promise((succes, fail) => {
     try {
       setTimeout(() => {
-        Object.entries(data).forEach(([setName, dataSet]) => {
+        const useSet = !!data ? data : models;
+
+        Object.entries(useSet).forEach(([setName, dataSet]) => {
           if (!logSet.includes(setName) && logSet !== setName) return;
           const print = [dataSet[0], dataSet[1], dataSet[2]];
           console.table(print);
@@ -42,7 +44,7 @@ function createModels() {
     return new Owner(baseOwner, addresses);
   });
 
-  debugDataAlsLaatste(models, ["animals"]);
+  //  debugDataAlsLaatste(models, ["animals"]);
 }
 
 /**
@@ -199,6 +201,13 @@ class Animal extends MayaModel {
     for (let a in config) {
       this[a] = config[a];
     }
+
+    // let log = ["name", "guest_id", "owner_id", "shelter_id", "placement_date"];
+    // const logData = {};
+    // log.forEach((logNaam) => {
+    //   logData[logNaam] = config[logNaam];
+    // });
+    // console.dir(logData);
   }
 
   /**
@@ -221,15 +230,48 @@ class Animal extends MayaModel {
     if (this.owner_id === null) return null;
     return models.owners.find((owner) => this.owner_id === owner.id);
   }
+
+  /**
+   * helper for staysAt
+   * returns
+   *
+   * @memberof Animal
+   */
+  staysAtMeta() {
+    if (this.guest_id !== null) {
+      return ["guest", "guests", "guest_id", this.guest_id];
+    }
+    if (this.shelter_id !== null) {
+      return ["shelter", "shelters", "shelter_id", this.shelter_id];
+    }
+    if (this.owner_id !== null) {
+      return ["owner", "owners", "owner_id", this.owner_id];
+    }
+    console.error("guest id, shelter id and owner id not set.");
+    console.error(this);
+    return [null, null];
+  }
+
+  /**
+   * if guest id exists, find in guests for match; same for shelter.
+   * else, assume still at owner.
+   *
+   * @readonly
+   * @memberof Animal
+   */
   get staysAt() {
-    console.warn("argh!");
-    throw new Error("ee");
-    // if (this.locationType === "guest") {
-    //   return models.guests.find((guest) => guest.id === this.locationId);
-    // }
-    // if (this.locationType === "shelter") {
-    //   return models.shelters.find((shelter) => shelter.id === this.locationId);
-    // }
+    const [modelSingular, modelPlural, modelIdKey, modelId] = this.staysAtMeta();
+    if (modelSingular === null) return null;
+    const modelsToSearch = models[modelPlural];
+    const staysAtLoc = modelsToSearch.find((model) => {
+      return model[modelIdKey] === this[modelId];
+    });
+
+    if (!staysAtLoc) {
+      console.table(models[`${modelsToSearch}s`]);
+      throw new Error(`unfound staysAt location! ${modelsToSearch} ${modelId}`);
+    }
+    return staysAtLoc;
   }
   get location() {
     return this.staysAt ? this.staysAt.location : null;

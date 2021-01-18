@@ -20,12 +20,13 @@ class Map extends Model
     public static function map_data()
     {
 
-        $tables_to_get = ['addresses', 'guests', 'vets', 'shelters', 'owners', 'animals'];
+        $tables_to_get = ['addresses', 'guests', 'vets', 'shelters', 'owners'];
 
         $all_tables = [];
         foreach ($tables_to_get as $table) {
             $all_tables[$table] = DB::table($table)->get();
         }
+        $all_tables['animals'] = DB::table('animals')->whereNull('end_date')->get();
 
         return json_encode($all_tables);
     }

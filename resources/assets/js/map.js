@@ -12,12 +12,13 @@ function addInteractive() {
 
 function populateAnimalList(animals) {
   const printTarget = document.getElementById("animal-list");
+  //console.log(animals);
   const animalListHTML = animals
     .sort(function (a, b) {
-      if (a.title < b.title) {
+      if (a.name < b.name) {
         return -1;
       }
-      if (a.title > b.title) {
+      if (a.name > b.name) {
         return 1;
       }
       return 0;
