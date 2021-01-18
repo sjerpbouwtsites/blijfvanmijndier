@@ -7,7 +7,7 @@ function animal(animal) {
     data-action='open-animal-dialog' 
     data-id='${animal.id}'
     class='map__link-style-button map__link-style-button--animal'>
-    ${animal.title}
+    ${animal.name}
     </button>`;
 }
 
@@ -20,7 +20,7 @@ function owner(owner) {
     data-action='goto-marker' 
     data-id='${owner.id}'
     class='map__link-style-button map__link-style-button--goto-marker map__link-style-button--owner'>
-    ${owner.title}
+    ${owner.name}
     </button>`;
 }
 
@@ -33,7 +33,7 @@ function staysAt(staysAt) {
     data-action='goto-marker' 
     data-id='${staysAt.id}'
     class='map__link-style-button map__link-style-button--goto-marker map__link-style-button--stays-at'>
-    ${staysAt.title}
+    ${staysAt.name}
     </button>`;
 }
 
@@ -46,7 +46,7 @@ function vet(vet) {
       data-action='open-vet-dialog' 
       data-id='${vet.id}'
       class='map__link-style-button map__link-style-button--vet'>
-      ${vet.title}
+      ${vet.name}
       </button>`;
 }
 

@@ -20,7 +20,7 @@ class MapController extends Controller
         $map_data = Map::map_data();
 
         $data = array(
-            'json'      => $map_data,
+            'map_data'      => $map_data,
         );
 
         return view("map.index")->with($data);

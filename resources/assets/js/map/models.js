@@ -1,21 +1,28 @@
-const rawData = require("./data");
+//const rawData = require("./data");
 const models = {};
 
 function createModels() {
-  models.animals = rawData.animals.map((baseAnimal) => {
+  // Object.values(baseData).forEach((dataSet) => {
+  //   const print = [dataSet[0], dataSet[1], dataSet[2]];
+  //   console.table(print);
+  // });
+
+  console.table(baseData.animals);
+
+  models.animals = baseData.animals.map((baseAnimal) => {
     return new Animal(baseAnimal);
   });
-  models.guests = rawData.guests.map((baseGuest) => {
-    return new Guest(baseGuest, rawData.locations);
+  models.guests = baseData.guests.map((baseGuest) => {
+    return new Guest(baseGuest, baseData.locations);
   });
-  models.shelters = rawData.shelters.map((baseshelter) => {
-    return new Shelter(baseshelter, rawData.locations);
+  models.shelters = baseData.shelters.map((baseshelter) => {
+    return new Shelter(baseshelter, baseData.locations);
   });
-  models.vets = rawData.vets.map((baseVet) => {
-    return new Vet(baseVet, rawData.locations);
+  models.vets = baseData.vets.map((baseVet) => {
+    return new Vet(baseVet, baseData.locations);
   });
-  models.owners = rawData.owner.map((baseOwner) => {
-    return new Owner(baseOwner, rawData.locations);
+  models.owners = baseData.owner.map((baseOwner) => {
+    return new Owner(baseOwner, baseData.locations);
   });
 }
 
@@ -66,22 +73,22 @@ class MayaModel {
 class LocatedEntity extends MayaModel {
   constructor(type, config, locations) {
     super(type);
-    if (!config.hasOwnProperty("title")) {
-      throw new Error(`title forgotten`);
+    if (!config.hasOwnProperty("name")) {
+      throw new Error(`name forgotten`);
     }
     if (!config.hasOwnProperty("id")) {
       throw new Error(`id forgotten`);
     }
     if (!config.hasOwnProperty("location")) {
-      throw new Error(`${config.title} heeft geen location`);
+      throw new Error(`${config.name} heeft geen location`);
     }
     this.id = config.id;
-    this.title = config.title;
+    this.name = config.name;
     this.animals = [];
     try {
       this.location = locations.find((loc) => loc.id === config.location); // potential memory leak, messes with garbage collection?
     } catch (error) {
-      throw new Error(`${config.title} location niet gevonden in _locations. ${error.message}`);
+      throw new Error(`${config.name} location niet gevonden in _locations. ${error.message}`);
     }
     if (config.text) {
       this.text = config.text;

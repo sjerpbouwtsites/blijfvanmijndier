@@ -71,9 +71,7 @@
 
   <link rel="stylesheet" href="css/app.css" />  
   <script>
-    const baseData = <?=$json?>;
-
-    console.dir(baseData);
+    const baseData = <?=$map_data?>;
   </script>
 
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>

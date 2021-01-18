@@ -217,7 +217,7 @@ const markerHTML = {
   header(locatedEntity) {
     return `<header class='bvmd-popup__header'>
     <h3 class='bvmd-popup__header-links'>
-      ${locatedEntity.title}
+      ${locatedEntity.name}
     </h3>
   </header>
   `;
