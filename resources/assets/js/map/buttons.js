@@ -99,12 +99,79 @@ const dataActionCallbacks = {
     const animal = Animal.find(animalId);
     document.getElementById("map-own-dialog").classList.add("map__dialog--open");
     document.getElementById("dialog-print-target").innerHTML = `
-      <h3 class='map__dialog-title'>${animal.title}</h3>
-      <p class='map__dialog-text'>${animal.text}</p>
+      <h3 class='map__dialog-title'>${animal.name} - <small>${animal.breed} ${animal.animal_type}</small></h3>
+      <ul class='bvmd-popup__adres-lijst bvmd-popup__adres-lijst--animal-info'>
+        <li class='bvmd-popup__adres-stuk'>
+          <span class='bvmd-pop__kolom bvmd-pop__kolom--title'>Geslacht: </span> 
+          <span class='bvmd-pop__kolom'>${animal.gender}</span> 
+        </li>      
+        <li class='bvmd-popup__adres-stuk'>
+          <span class='bvmd-pop__kolom bvmd-pop__kolom--title'>Geregistreerd: </span> 
+          <span class='bvmd-pop__kolom'>${new Date(animal.reg_data).toLocaleDateString()}</span> 
+        </li>              
+        <li class='bvmd-popup__adres-stuk'>
+          <span class='bvmd-pop__kolom bvmd-pop__kolom--title'>Geboren: </span> 
+          <span class='bvmd-pop__kolom'>${new Date(animal.birth_date).toLocaleDateString()}</span> 
+        </li>                      
+        ${
+          animal.chip_nr
+            ? `<li class='bvmd-popup__adres-stuk'>
+              <span class='bvmd-pop__kolom bvmd-pop__kolom--title'>Chip nr: </span> 
+              <span class='bvmd-pop__kolom'>${animal.chip_nr}</span> 
+              </li>`
+            : `
+        `
+        }
+        ${
+          animal.passport
+            ? `<li class='bvmd-popup__adres-stuk'>
+              <span class='bvmd-pop__kolom bvmd-pop__kolom--title'>Passpoort: </span> 
+              <span class='bvmd-pop__kolom'>${animal.passport}</span> 
+              </li>`
+            : `
+        `
+        }        
+        ${
+          animal.passport
+            ? `<li class='bvmd-popup__adres-stuk'>
+              <span class='bvmd-pop__kolom bvmd-pop__kolom--title'>Max uren alleen: </span> 
+              <span class='bvmd-pop__kolom'>${animal.max_hours_alone}</span> 
+              </li>`
+            : `
+        `
+        }           
+        ${
+          animal.passport
+            ? `<li class='bvmd-popup__adres-stuk'>
+              <span class='bvmd-pop__kolom bvmd-pop__kolom--title'>Misbruik:</span> 
+              <span class='bvmd-pop__kolom'>${
+                animal.abused && animal.witnessed_abuse
+                  ? `Gezien en meegemaakt`
+                  : animal.abused
+                  ? `Meegemaakt`
+                  : animal.witnessed_abuse
+                  ? `Gezien`
+                  : `Geen`
+              }</span> 
+              </li>`
+            : `
+        `
+        }           
+      <ul>
+
       <div class='map__dialog-button-group'>
         ${animal.vet ? `<div class='map_dialog-button-row'>Arts: ${vet(animal.vet)}</div>` : ""}
         ${animal.staysAt ? `<div class='map_dialog-button-row'>Verblijft te: ${staysAt(animal.staysAt)}</div>` : ""}
       </div>
+
+      <footer class="bvmd-popup__voet">
+      <span class="bvmd-popup__voet-link-wrap">
+        Naar Maya: 
+        <a class="bvmd-popup__voet-link" target="_blank" href="${animal.mayaRoute()}">🔍</a>
+        <a class="bvmd-popup__voet-link" target="_blank" href="${animal.mayaRoute(true)}">✍</a>
+      </span>
+    </footer>
+
     `;
   },
   openVetDialog(event) {

@@ -110,6 +110,7 @@ function initMap() {
         throw new Error(`Fout in de location mapper met gelogde model`);
       }
     });
+    console.table(dataModels.animals);
     addInteractive();
     populateAnimalList(dataModels.animals);
     leafletShell.postLeafletWork();

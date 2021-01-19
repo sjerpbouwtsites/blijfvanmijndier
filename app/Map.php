@@ -25,7 +25,26 @@ class Map extends Model
         foreach ($tables_to_get as $table) {
             $all_tables[$table] = DB::table($table)->get();
         }
-        $all_tables['animals'] = DB::table('animals')->whereNull('end_date')->get();
+        $all_tables['animals'] = DB::select("SELECT an.id as id,
+        an.name as name,
+        an.shelter_id as shelter_id,
+        an.owner_id as owner_id,
+        an.guest_id as guest_id,
+        tBreed.description as breed,
+        tAnimalType.description as animal_type,
+        tGenderType.description as gender,
+        an.registration_date as reg_date,
+        an.birth_date as birth_date,
+        an.chip_number as chip_nr,
+        an.passport_number as passport,
+        an.max_hours_alone as max_hours_alone,
+        an.witnessed_abuse as witnessed_abuse,
+        an.abused as abused
+      FROM animals an
+        LEFT JOIN tables tBreed ON tBreed.id = an.breed_id
+        LEFT JOIN tables tAnimalType ON tAnimalType.id = an.animaltype_id  
+        LEFT JOIN tables tGenderType ON tGenderType.id = an.gendertype_id;
+      ");
 
         return json_encode($all_tables);
     }
