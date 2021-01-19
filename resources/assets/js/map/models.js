@@ -1,29 +1,11 @@
-//const rawData = require("./data");
 const models = {};
 
 /**
- * async func zodat debug data als laatste geconsoled wordt
+ * creates (further) hydrated and functionalized Animal, Guest, Shelter, Vet and Owner instances.
  *
+ * @param {*} baseData API results
+ * @returns models
  */
-function debugDataAlsLaatste(data, logSet) {
-  return new Promise((succes, fail) => {
-    try {
-      setTimeout(() => {
-        const useSet = !!data ? data : models;
-
-        Object.entries(useSet).forEach(([setName, dataSet]) => {
-          if (!logSet.includes(setName) && logSet !== setName) return;
-          const print = [dataSet[0], dataSet[1], dataSet[2]];
-          console.table(print);
-        });
-      }, 50);
-      succes();
-    } catch (e) {
-      fail(e);
-    }
-  });
-}
-
 function create(baseData) {
   const addresses = baseData.addresses;
 
@@ -45,7 +27,6 @@ function create(baseData) {
   });
 
   return models;
-  //  debugDataAlsLaatste(models, ["animals"]);
 }
 
 /**
@@ -236,6 +217,15 @@ class Animal extends MayaModel {
     return models.owners.find((owner) => this.owner_id === owner.id);
   }
 
+  get abuseConsolidatedText() {
+    return this.abused && this.witnessed_abuse
+      ? `Gezien en meegemaakt`
+      : this.abused
+      ? `Meegemaakt`
+      : this.witnessed_abuse
+      ? `Gezien`
+      : `Geen`;
+  }
   /**
    * helper for staysAt
    * returns

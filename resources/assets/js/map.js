@@ -1,43 +1,15 @@
 const filter = require("./map/filter");
 const models = require("./map/models");
 const leafletShell = require("./map/leaflet-shell");
-const buttons = require("./map/buttons");
+const sidebar = require("./map/sidebar");
+const postLeafletFixes = require("./map/post-leaflet-fixes");
+const popups = require("./map/popups");
 
 function addInteractive() {
-  buttons.dataActionEventHandler();
-  closeDialogClickHandler();
+  popups.buttonHandlers.init();
+  popups.closeDialogClickHandler();
   filter.populateFilterHTML();
   filter.filterClickHandler();
-}
-
-function populateAnimalList(animals) {
-  const printTarget = document.getElementById("animal-list");
-  //console.log(animals);
-  const animalListHTML = animals
-    .sort(function (a, b) {
-      if (a.name < b.name) {
-        return -1;
-      }
-      if (a.name > b.name) {
-        return 1;
-      }
-      return 0;
-    })
-    .map((animal) => {
-      const sa = animal.staysAt;
-      const o = animal.owner;
-      return `<li class='map__list-item'>
-      ${buttons.animal(animal)} 
-      ${o ? `van ${buttons.owner(o)}` : ``}
-      ${sa ? `verblijft te ${buttons.staysAt(sa)}` : ``}
-    </li>`;
-    })
-    .join(``);
-  printTarget.innerHTML = animalListHTML;
-}
-
-function closeDialogClickHandler() {
-  document.getElementById("map-dialog-close").addEventListener("click", buttons.closeOwnDialog);
 }
 
 /**
@@ -110,10 +82,10 @@ function initMap() {
         throw new Error(`Fout in de location mapper met gelogde model`);
       }
     });
-    console.table(dataModels.animals);
+    console.log(dataModels.animals);
     addInteractive();
-    populateAnimalList(dataModels.animals);
-    leafletShell.postLeafletWork();
+    sidebar.populateAnimalList(dataModels.animals);
+    postLeafletFixes();
     globalLeafletMap.setZoom(8);
   });
 }
