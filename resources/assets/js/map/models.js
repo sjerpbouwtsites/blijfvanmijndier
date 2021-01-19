@@ -42,11 +42,7 @@ function create(baseData) {
   models.owners = baseData.owners.map((baseOwner) => {
     return new Owner(baseOwner, addresses);
   });
-  // now link animals location uuid
-  models.animals.forEach((animal) => {
-    console.log(animal.staysAt.location.uuid);
-    animal.locationId = animal.staysAt.location.uuid;
-  });
+
   return models;
   //  debugDataAlsLaatste(models, ["animals"]);
 }
@@ -153,7 +149,7 @@ class Guest extends LocatedEntity {
   }
   get animals() {
     return models.animals.filter((animal) => {
-      return animal.locationId === this.location.uuid;
+      return animal.guest_id === this.id;
     });
   }
   get animalsOnSite() {
@@ -167,7 +163,7 @@ class Shelter extends LocatedEntity {
   }
   get animals() {
     return models.animals.filter((animal) => {
-      return animal.locationType === "shelter" && animal.locationId === this.id;
+      return animal.shelter_id === this.id;
     });
   }
   get animalsOnSite() {
@@ -188,7 +184,7 @@ class Vet extends LocatedEntity {
   }
   get animals() {
     return models.animals.filter((animal) => {
-      return animal.vetId === this.id;
+      return animal.vet_id === this.id;
     });
   }
   get animalsOnSite() {
@@ -202,12 +198,12 @@ class Owner extends LocatedEntity {
   }
   get animals() {
     return models.animals.filter((animal) => {
-      return animal.ownerId === this.id;
+      return animal.owner_id === this.id;
     });
   }
   get animalsOnSite() {
     return this.animals.filter((ownedAnimals) => {
-      return ownedAnimals.staysAt.id === this.id;
+      return ownedAnimals.staysAt.location.uuid === this.location.uuid;
     });
   }
 }
@@ -220,11 +216,6 @@ class Animal extends MayaModel {
     }
   }
 
-  /**
-    vetId: "v-1",
-    ownerId: "e-1",
-    locationType: "guest",
- */
   static find(animalId) {
     const possibleFound = models.animals.find((animal) => animalId === animal.id);
     if (!possibleFound) {
@@ -247,19 +238,23 @@ class Animal extends MayaModel {
    *
    * @memberof Animal
    */
-  staysAtMeta() {
+  get staysAtMeta() {
     if (this.guest_id !== null) {
-      return ["guest", "guests", "guest_id", this.guest_id];
+      return {
+        searchModel: "guests",
+        foreignId: this.guest_id,
+      };
     }
     if (this.shelter_id !== null) {
-      return ["shelter", "shelters", "shelter_id", this.shelter_id];
+      return {
+        searchModel: "shelters",
+        foreignId: this.shelter_id,
+      };
     }
-    if (this.owner_id !== null) {
-      return ["owner", "owners", "owner_id", this.owner_id];
-    }
-    console.error("guest id, shelter id and owner id not set.");
-    console.error(this);
-    return [null, null];
+    return {
+      searchModel: "owners",
+      foreignId: this.owner_id,
+    };
   }
 
   /**
@@ -270,16 +265,12 @@ class Animal extends MayaModel {
    * @memberof Animal
    */
   get staysAt() {
-    const [modelSingular, modelPlural, modelIdKey, modelId] = this.staysAtMeta();
-    if (modelSingular === null) return null;
-    const modelsToSearch = models[modelPlural];
-    const staysAtLoc = modelsToSearch.find((model) => {
-      return model[modelIdKey] === this[modelId];
+    const meta = this.staysAtMeta;
+    const staysAtLoc = models[meta.searchModel].find((model) => {
+      return model.id === meta.foreignId;
     });
-
     if (!staysAtLoc) {
-      console.table(models[`${modelsToSearch}s`]);
-      throw new Error(`unfound staysAt location! ${modelsToSearch} ${modelId}`);
+      return null;
     }
     return staysAtLoc;
   }

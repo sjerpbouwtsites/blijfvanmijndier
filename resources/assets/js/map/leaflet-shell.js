@@ -330,7 +330,6 @@ const markerHTML = {
     if (!locatedEntity.hasAnimals) {
       return ``;
     }
-    console.log(`wel animals ${locatedEntity.fullName}`);
 
     return `
     <div class='bvmd-popup__animal-list-outer'>

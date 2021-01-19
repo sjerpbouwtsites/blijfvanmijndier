@@ -24,11 +24,12 @@ function populateAnimalList(animals) {
       return 0;
     })
     .map((animal) => {
+      const sa = animal.staysAt;
+      const o = animal.owner;
       return `<li class='map__list-item'>
-      ${buttonRenders.animal(animal)} van
-      ${buttonRenders.owner(animal.owner)}
-       verblijft te
-      ${buttonRenders.staysAt(animal.staysAt)}
+      ${buttonRenders.animal(animal)} 
+      ${o ? `van ${buttonRenders.owner(o)}` : ``}
+      ${sa ? `verblijft te ${buttonRenders.staysAt(sa)}` : ``}
     </li>`;
     })
     .join(``);
@@ -178,6 +179,7 @@ function initMap() {
   globalLeafletMap = createMap();
   addInteractive();
   getMapAPIData().then((dataModels) => {
+    window.leesModels = dataModels;
     [...dataModels.guests, ...dataModels.vets, ...dataModels.shelters, ...dataModels.owners].map(function (model) {
       try {
         return leafletShell.locationMapper(model, globalLeafletMap);
@@ -190,7 +192,6 @@ function initMap() {
     populateAnimalList(dataModels.animals);
     leafletShell.postLeafletWork();
     globalLeafletMap.setZoom(8);
-    window.leesModels = dataModels;
   });
 }
 
