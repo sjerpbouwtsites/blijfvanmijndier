@@ -1,5 +1,7 @@
 @import "map/leaflet";
 @import "map/popup";
+@import "map/buttons";
+
 .map__inner {
   height: 100vh;
   width: calc(100vw - 450px);
@@ -32,23 +34,6 @@
       margin-bottom: 0;
     }
   }
-}
-
-.map__link-style-button {
-  border: 0;
-  padding: 0;
-  margin: 0;
-  color: rgb(81, 81, 211);
-  background-color: transparent;
-  &:focus {
-    outline: none;
-  }
-  // &::after {
-  //   content: ' 🧲 ';
-  //   font-size: .5em;
-  //   position: relative;
-  //   top: -.25em;
-  // }
 }
 
 @import "map/filter.scss";

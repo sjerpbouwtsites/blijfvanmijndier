@@ -141,27 +141,35 @@ styling for both the leaflet popup and the own dialog
   // #region body
   &brood {
   }
+  &list-wrapper {
+    font-size: 0.75em;
+  }
   &list {
     padding: 0;
     list-style-type: none;
     padding-left: 0.5em;
     border-left: 4px solid #333;
     line-height: 1.25;
-    font-size: 0.75em;
     font-weight: 600;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    background-color: #f5f5f5;
     &-wrapper {
-      margin: 1em 0;
+      & + .bvmd-popup__list-wrapper {
+        margin-top: 2em;
+      }
     }
     &-title {
       margin: 0;
       margin-bottom: 0px;
+      font-size: inherit;
       line-height: 1;
       text-transform: uppercase;
       color: #333;
       margin-bottom: 0.33em;
-      font-size: 0.75em;
       font-weight: 900;
-      text-indent: calc(0.5em + 4px);
+      text-align: left;
+      width: 50%;
     }
   }
   &data-row {
@@ -191,6 +199,7 @@ styling for both the leaflet popup and the own dialog
     text-align: left;
     &--left {
       margin-right: 0.5em;
+      text-align: right;
     }
     &--right {
       margin-left: 0.5em;
@@ -202,6 +211,7 @@ styling for both the leaflet popup and the own dialog
   // #endregion body
   // #region footer
   &footer {
+    margin-top: 2em;
     &-link {
       // font-size: 20px;
       // filter: grayscale(100%);

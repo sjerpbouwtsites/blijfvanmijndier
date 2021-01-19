@@ -1,0 +1,40 @@
+.map__link-style-button {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  color: rgb(81, 81, 211);
+  background-color: transparent;
+  transition: cubic-bezier(0.075, 0.82, 0.165, 1);
+  display: flex;
+  &:focus {
+    outline: 2px solid rgb(81, 81, 211);
+  }
+  &:hover {
+    color: #51a8d3;
+    cursor: pointer;
+  }
+  &::after {
+    display: inline-block;
+    margin-left: 3px;
+  }
+  &--does-action {
+    &::after {
+      content: "";
+    }
+  }
+  &--real-anchor {
+    &::after {
+      content: "🔗";
+    }
+    &.map__link-style-button--tel {
+      &::after {
+        content: "📱";
+      }
+    }
+    &.map__link-style-button--mail {
+      &::after {
+        content: "📧";
+      }
+    }
+  }
+}

@@ -21,16 +21,26 @@ function buttonBase(buttonData, modifiers, action) {
     })
     .join("");
 
-  return `<button 
-    data-action='${action}' 
-    data-id='${buttonData.id}'
-    data-type='${buttonData._type}'
-    class='
-      map__link-style-button 
-      ${modifierHTML}
-      '>
-    ${buttonData.name}
-    </button>`;
+  const CssClasses = ["", "does-action"].concat(modifiers).map((modifierBase) => {
+    return {
+      wrapper: modifierBase ? `map__button-wrapper--${modifierBase}` : `map__button-wrapper`,
+      button: modifierBase ? `map__link-style-button--${modifierBase}` : `map__link-style-button`,
+    };
+  });
+
+  const wrapperCss = CssClasses.map((selectorSet) => selectorSet.wrapper).join("  ");
+  const buttonCss = CssClasses.map((selectorSet) => selectorSet.button).join("  ");
+
+  return `
+    <span class='${wrapperCss}'>
+      <a 
+      data-action='${action}' 
+      data-id='${buttonData.id}'
+      data-type='${buttonData._type}'
+      class='${buttonCss}'>
+      ${buttonData.name}
+      </a>
+    </span>`;
 }
 
 /**
@@ -115,6 +125,8 @@ const buttonHandlers = {
 };
 // #endregion
 
+// #region popup HTML renderfuncs
+
 /**
  * Generic row with a left and right column to be used in either leaflet popup or dialog
  *
@@ -145,14 +157,31 @@ function popupDataList(rowList = [], title = "", modifier = "") {
 
 function popupFooter(entity, rijen = []) {
   return `<footer class="bvmd-popup__footer">
+
+
   ${popupDataList(
     [
-      popupDataRow("Zien", `<a class="bvmd-popup__voet-link" target="_blank" href="${entity.mayaRoute()}">🔍</a>`),
       popupDataRow(
-        "Bewerken",
-        `<a class="bvmd-popup__voet-link" target="_blank" href="${entity.mayaRoute(true)}">✍</a>`
+        `Bekijk ${entity.type} ${entity.fullName}`,
+        `<a class="map__link-style-button map__link-style-button--real-anchor bvmd-popup__voet-link" target="_blank" href="${entity.mayaRoute()}">Open leesscherm</a>`
       ),
-    ],
+      popupDataRow(
+        `Bewerk ${entity.type} ${entity.fullName}`,
+        `<a class="map__link-style-button map__link-style-button--real-anchor bvmd-popup__voet-link" target="_blank" href="${entity.mayaRoute(
+          true
+        )}">Open schrijfscherm</a>`
+      ),
+    ].concat(
+      entity.animals.map((animal) => {
+        // links for all animals to maya.
+        return popupDataRow(
+          `${animal.breed} ${animal.name}`,
+          `<a class="map__link-style-button map__link-style-button--real-anchor bvmd-popup__voet-link" target="_blank" href="${animal.mayaRoute()}">Bekijk dier</a> | <a class="map__link-style-button map__link-style-button--real-anchor bvmd-popup__voet-link" target="_blank" href="${animal.mayaRoute(
+            true
+          )}">Bewerk dier</a>`
+        );
+      })
+    ),
     "Maya",
     "maya-links"
   )}
@@ -210,6 +239,9 @@ function populateDialogWithAnimal(animal) {
 `;
 }
 
+// #endregion popup HTML render funcs
+
+// #region markerHTML
 /**
  * leaflet's marker: guest, shelter, vet, owner data.
  */
@@ -229,15 +261,42 @@ const markerHTML = {
   header(locatedEntity) {
     return popupHeader(locatedEntity.fullName);
   },
+  addressHelper2(key, value) {
+    if (value.length < 18) return value;
+    if (key === "phone_number") return value;
+
+    if (key === "email_address") {
+      // cut off to lang addresses. like ik@[...]
+      const firstPart = value.substring(0, value.indexOf("@") + 4);
+      const dotSplit = value.split(".");
+      const lastPart = dotSplit[dotSplit.length - 1];
+      const dotsToFill = 18 - firstPart.length - lastPart.length;
+      return `${firstPart.padEnd(dotsToFill, ".")}${lastPart}`;
+    } else {
+      // remove http, www.
+      const noHttp = value.includes("//") ? value.split("//")[1] : value;
+      const noWww = value.includes("www.") ? value.split("www.")[1] : value;
+      if (noWww.length < 18) {
+        return noWww;
+      } else {
+        return `${`${noWww[0]}${noWww[1]}${noWww[2]}${noWww[3]}${noWww[5]}`.padEnd(8, ".")}${noWww[noWww.length - 1]}${
+          noWww[noWww.length - 2]
+        }${noWww[noWww.length - 3]}${noWww[noWww.length - 4]}${noWww[noWww.length - 5]}`;
+      }
+    }
+  },
   addressHelper1(key, value) {
+    const printValue = this.addressHelper2(key, value);
+
     if (key === "phone_number") {
-      return `<a href='call:${value}'>${value}</a>`;
+      return `<a 
+        class='map__link-style-button map__link-style-button--real-anchor map__link-style-button--tel' href='call:${value}'>${value}</a>`;
     }
     if (key === "email_address") {
-      return `<a href='mailto:${value}'>${value}</a>`;
+      return `<a class='map__link-style-button map__link-style-button--real-anchor map__link-style-button--mail' href='mailto:${value}'>${printValue}</a>`;
     }
     if (key === "website") {
-      return `<a target='_blank' href='${value}'>${value}</a>`;
+      return `<a class='map__link-style-button map__link-style-button--real-anchor' target='_blank' href='${value}'>${printValue}</a>`;
     }
     return value;
   },
@@ -245,28 +304,30 @@ const markerHTML = {
     const l = locatedEntity.location;
     const c = locatedEntity.contact;
 
-    const cToNl = {
-      phone_number: "telefoonnummer",
-      email_address: "e-mailadres",
-      website: "website",
-      contact_person: "contactpersoon",
-    };
-
-    const secondAddressBlock = Object.entries(cToNl)
-      .map(([contactKey, contactNl]) => {
-        if (!c[contactKey]) return ``;
-        return popupDataRow(contactNl, this.addressHelper1(contactKey, c[contactKey]));
-      })
-      .join("");
-
-    return `
-      <ul class='bvmd-popup__list bvmd-popup__list--address'>
-        ${popupDataRow(l.street, l.house_number)}
-        ${popupDataRow(l.postal_code, l.city)}
-      </ul>
-      <ul class='bvmd-popup__list bvmd-popup__list--contact'>
-        ${secondAddressBlock}
-      </ul>`;
+    return (
+      popupDataList(
+        [
+          popupDataRow("straat", `${l.street} ${l.house_number}`),
+          popupDataRow("stad&postcode", `${l.city} ${l.postal_code}`),
+        ],
+        "Adres",
+        "address"
+      ) +
+      popupDataList(
+        Object.entries({
+          phone_number: "telefoonnummer",
+          email_address: "e-mailadres",
+          website: "website",
+          contact_person: "contactpersoon",
+        }).map(([contactKey, contactNl]) => {
+          // contactKey bv phone_number, contactNl de NL string
+          if (!c[contactKey]) return ``;
+          return popupDataRow(contactNl, this.addressHelper1(contactKey, c[contactKey]));
+        }),
+        "Contact",
+        "contact"
+      )
+    );
   },
   body(locatedEntity) {
     const bodyFuncName = `${locatedEntity._type}Body`;
@@ -342,6 +403,8 @@ const markerHTML = {
     return popupDataRow(`${animalBtn(animal)} van`, ownerBtn(animal.owner));
   },
 };
+
+// #endregion markerHTML
 
 //#region dialogs / popups open close
 /**

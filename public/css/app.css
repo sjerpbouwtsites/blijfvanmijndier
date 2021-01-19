@@ -1,3 +1,4 @@
+@charset "UTF-8";
 /**
 aanpassingen: 
 .leaflet-marker-icon -> .lmi
@@ -297,10 +298,6 @@ svg.leaflet-image-layer.lei path {
 .leaflet-container {
   background: #ddd;
   outline: 0;
-}
-
-.leaflet-container a {
-  color: #0078a8;
 }
 
 .leaflet-container a.leaflet-active {
@@ -849,30 +846,37 @@ styling for both the leaflet popup and the own dialog
   display: block;
 }
 
+.bvmd-popup__list-wrapper {
+  font-size: 0.75em;
+}
+
 .bvmd-popup__list {
   padding: 0;
   list-style-type: none;
   padding-left: 0.5em;
   border-left: 4px solid #333;
   line-height: 1.25;
-  font-size: 0.75em;
   font-weight: 600;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  background-color: #f5f5f5;
 }
 
-.bvmd-popup__list-wrapper {
-  margin: 1em 0;
+.bvmd-popup__list-wrapper + .bvmd-popup__list-wrapper {
+  margin-top: 2em;
 }
 
 .bvmd-popup__list-title {
   margin: 0;
   margin-bottom: 0px;
+  font-size: inherit;
   line-height: 1;
   text-transform: uppercase;
   color: #333;
   margin-bottom: 0.33em;
-  font-size: 0.75em;
   font-weight: 900;
-  text-indent: calc(0.5em + 4px);
+  text-align: left;
+  width: 50%;
 }
 
 .bvmd-popup__data-row {
@@ -907,6 +911,7 @@ styling for both the leaflet popup and the own dialog
 
 .bvmd-popup__column--left {
   margin-right: 0.5em;
+  text-align: right;
 }
 
 .bvmd-popup__column--right {
@@ -917,9 +922,53 @@ styling for both the leaflet popup and the own dialog
   margin: 0;
 }
 
+.bvmd-popup__footer {
+  margin-top: 2em;
+}
+
 .bvmd-popup__footer-link-wrap + .bvmd-popup__footer-link-wrap {
   position: relative;
   top: -1px;
+}
+
+.map__link-style-button {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  color: #5151d3;
+  background-color: transparent;
+  transition: cubic-bezier(0.075, 0.82, 0.165, 1);
+  display: flex;
+}
+
+.map__link-style-button:focus {
+  outline: 2px solid #5151d3;
+}
+
+.map__link-style-button:hover {
+  color: #51a8d3;
+  cursor: pointer;
+}
+
+.map__link-style-button::after {
+  display: inline-block;
+  margin-left: 3px;
+}
+
+.map__link-style-button--does-action::after {
+  content: "";
+}
+
+.map__link-style-button--real-anchor::after {
+  content: "🔗";
+}
+
+.map__link-style-button--real-anchor.map__link-style-button--tel::after {
+  content: "📱";
+}
+
+.map__link-style-button--real-anchor.map__link-style-button--mail::after {
+  content: "📧";
 }
 
 .map__inner {
@@ -949,18 +998,6 @@ styling for both the leaflet popup and the own dialog
 .map__section:last-child ul:last-child,
 .map__section:last-child ol:last-child {
   margin-bottom: 0;
-}
-
-.map__link-style-button {
-  border: 0;
-  padding: 0;
-  margin: 0;
-  color: #5151d3;
-  background-color: transparent;
-}
-
-.map__link-style-button:focus {
-  outline: none;
 }
 
 .map__filter-row {
