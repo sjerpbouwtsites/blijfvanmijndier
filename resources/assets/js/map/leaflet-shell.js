@@ -28,20 +28,25 @@ function postLeafletWork() {
     }
     //  markerAltData.splice(markerAltData.indexOf(markerId), 1); // just delete alt in the end.
 
-    marker.setAttribute("id", `marker-${markerId}`);
-    marker.setAttribute("data-shadow-id", `shadow-${markerId}`);
-    shadowMarker.setAttribute("id", `shadow-${markerId}`);
-    shadowMarker.setAttribute("data-marker-id", `marker-${markerId}`);
+    const markerTempType = markerAltData
+      .find((altPiece) => {
+        return altPiece.includes("is-");
+      })
+      .replace("is-", "");
+    marker.setAttribute("id", `marker-${markerTempType}-${markerId}`);
+    marker.setAttribute("data-shadow-id", `shadow-${markerTempType}-${markerId}`);
+    shadowMarker.setAttribute("id", `shadow-${markerTempType}-${markerId}`);
+    shadowMarker.setAttribute("data-marker-id", `marker-${markerTempType}-${markerId}`);
     //    marker.setAttribute("alt", markerAltData.join(" "));
 
     // CUT INLINE STYLES TO STYLESHEET
     const markerInlineStyle = marker.getAttribute("style");
     const shadowInlineStyle = shadowMarker.getAttribute("style");
     stylesheetHTMLArray.push(`
-      #marker-${markerId} {
+      #marker-${markerTempType}-${markerId} {
         ${markerInlineStyle}
       }
-      #shadow-${markerId} {
+      #shadow-${markerTempType}-${markerId} {
         ${shadowInlineStyle}
       }      
     `);

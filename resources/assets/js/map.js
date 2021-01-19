@@ -1,10 +1,10 @@
 const filter = require("./map/filter");
 const models = require("./map/models");
 const leafletShell = require("./map/leaflet-shell");
-const buttonRenders = require("./map/buttons");
+const buttons = require("./map/buttons");
 
 function addInteractive() {
-  dataActionEventHandler();
+  buttons.dataActionEventHandler();
   closeDialogClickHandler();
   filter.populateFilterHTML();
   filter.filterClickHandler();
@@ -27,95 +27,17 @@ function populateAnimalList(animals) {
       const sa = animal.staysAt;
       const o = animal.owner;
       return `<li class='map__list-item'>
-      ${buttonRenders.animal(animal)} 
-      ${o ? `van ${buttonRenders.owner(o)}` : ``}
-      ${sa ? `verblijft te ${buttonRenders.staysAt(sa)}` : ``}
+      ${buttons.animal(animal)} 
+      ${o ? `van ${buttons.owner(o)}` : ``}
+      ${sa ? `verblijft te ${buttons.staysAt(sa)}` : ``}
     </li>`;
     })
     .join(``);
   printTarget.innerHTML = animalListHTML;
 }
 
-function dataActionEventHandler() {
-  const knownActions = ["open-animal-dialog", "open-vet-dialog", "goto-marker"];
-  document.body.addEventListener("click", function (event) {
-    if (!event.target.hasAttribute("data-action")) {
-      return;
-    }
-    const action = event.target.getAttribute("data-action");
-    if (!knownActions.includes(action)) {
-      alert(`unknown action: ${action}`);
-      return;
-    }
-
-    const camelcasedAction = action
-      .split("-")
-      .map((word, index) => {
-        return index > 0 ? word[0].toUpperCase() + word.substring(1, word.length) : word;
-      })
-      .join("");
-    dataActionCallbacks[camelcasedAction](event);
-  });
-}
-
-function getMarkerById(id) {
-  const marker = document.getElementById(`marker-id-${id}`);
-  if (!marker) {
-    throw new Error(`Marker for id ${id}, id attr val marker-id-${id}, not found`);
-    return false;
-  }
-  return marker;
-}
-
-dataActionCallbacks = {
-  openAnimalDialog(event) {
-    closeLeafletPopupWhenOpen();
-    const animalId = event.target.getAttribute("data-id");
-    const animal = models.Animal.find(animalId);
-    document.getElementById("map-own-dialog").classList.add("map__dialog--open");
-    document.getElementById("dialog-print-target").innerHTML = `
-      <h3 class='map__dialog-title'>${animal.title}</h3>
-      <p class='map__dialog-text'>${animal.text}</p>
-      <div class='map__dialog-button-group'>
-        ${animal.vet ? `<div class='map_dialog-button-row'>Arts: ${buttonRenders.vet(animal.vet)}</div>` : ""}
-        ${
-          animal.staysAt
-            ? `<div class='map_dialog-button-row'>Verblijft te: ${buttonRenders.staysAt(animal.staysAt)}</div>`
-            : ""
-        }
-      </div>
-    `;
-  },
-  openVetDialog(event) {
-    closeOwnDialog();
-    const vetId = event.target.getAttribute("data-id");
-    const vet = models.Vet.find(vetId);
-    const marker = getMarkerById(vet.id);
-    marker && marker.click();
-  },
-  gotoMarker(event) {
-    closeOwnDialog();
-    const targetMarker = event.target.getAttribute("data-id");
-    console.log(targetMarker);
-    const marker = getMarkerById(targetMarker);
-    marker && marker.click();
-  },
-};
-/**
- * own dialog as in not the one made by leaflet. Used by Animal.
- */
-function closeOwnDialog() {
-  document.getElementById("map-own-dialog").classList.contains("map__dialog--open") &&
-    document.getElementById("map-own-dialog").classList.remove("map__dialog--open");
-}
-
 function closeDialogClickHandler() {
-  document.getElementById("map-dialog-close").addEventListener("click", closeOwnDialog);
-}
-
-function closeLeafletPopupWhenOpen() {
-  const mightBeAnchorElement = document.querySelector(".leaflet-popup-close-button");
-  if (mightBeAnchorElement) mightBeAnchorElement.click();
+  document.getElementById("map-dialog-close").addEventListener("click", buttons.closeOwnDialog);
 }
 
 /**
@@ -177,9 +99,8 @@ function initMap() {
   }
 
   globalLeafletMap = createMap();
-  addInteractive();
   getMapAPIData().then((dataModels) => {
-    window.leesModels = dataModels;
+    _globalModels = dataModels;
     [...dataModels.guests, ...dataModels.vets, ...dataModels.shelters, ...dataModels.owners].map(function (model) {
       try {
         return leafletShell.locationMapper(model, globalLeafletMap);
@@ -189,6 +110,7 @@ function initMap() {
         throw new Error(`Fout in de location mapper met gelogde model`);
       }
     });
+    addInteractive();
     populateAnimalList(dataModels.animals);
     leafletShell.postLeafletWork();
     globalLeafletMap.setZoom(8);

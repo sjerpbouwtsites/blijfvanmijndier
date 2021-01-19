@@ -1,5 +1,6 @@
 //const rawData = require("./data");
 const models = {};
+
 /**
  * async func zodat debug data als laatste geconsoled wordt
  *
@@ -217,9 +218,12 @@ class Animal extends MayaModel {
   }
 
   static find(animalId) {
-    const possibleFound = models.animals.find((animal) => animalId === animal.id);
+    const animalIdInt = Number(animalId);
+    const possibleFound = models.animals.find((animal) => {
+      return animalIdInt === animal.id;
+    });
     if (!possibleFound) {
-      throw new Error(`no animal found with id ${animalId}`);
+      throw new Error(`no animal found with id ${animalIdInt}`);
     }
     return possibleFound;
   }
