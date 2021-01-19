@@ -1,4 +1,5 @@
 @import "map/leaflet";
+@import "map/popup";
 .map__inner {
   height: 100vh;
   width: calc(100vw - 450px);
@@ -7,49 +8,7 @@
   left: 0;
 }
 
-// ruimte voor sluitknop
-.bvmd-popup__header {
-  max-width: calc(100% - 30px);
-}
-
 // kop
-.bvmd-popup__header-links {
-  margin: 0;
-  font-weight: bold;
-  font-variant: small-caps;
-}
-
-.bvmd-popup__brood {
-}
-.bvmd-popup__tekst {
-  margin: 0;
-}
-.bvmd-popup__adres {
-  margin-bottom: 0;
-  line-height: inherit;
-}
-.bvmd-popup__adres-lijst {
-  margin: 0;
-  padding: 0;
-  list-style-type: none;
-}
-.bvmd-popup__voet {
-  display: flex;
-  justify-content: flex-end;
-}
-.bvmd-popup__voet-link {
-  font-size: 20px;
-  filter: grayscale(100%);
-  transition: 0.2s ease-in-out;
-  margin-left: 0.5em;
-  &:hover {
-    filter: grayscale(0);
-  }
-}
-.bvmd-popup__voet-link-wrap + .bvmd-popup__voet-link-wrap {
-  position: relative; // different icon, different size.
-  top: -1px;
-}
 
 .map__aside {
   position: absolute;
@@ -93,32 +52,6 @@
 }
 
 @import "map/filter.scss";
-.map__dialog {
-  position: fixed;
-  z-index: 501;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  background-color: #f5f5f5;
-  padding: 20px;
-  color: #333;
-  box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.4);
-  display: none;
-  &--open {
-    display: block;
-  }
-}
-.map__dialog-inner {
-  position: relative;
-}
-.map__dialog-close {
-  position: absolute;
-  right: -20px;
-  top: -19px;
-  font-weight: bold;
-  background-color: transparent;
-  border: 0;
-}
 
 // leaflet overschrijvingen
 .leaflet-shadow-icon {
@@ -147,28 +80,4 @@
     //   }
     // }
   }
-}
-
-.leaflet-popup-content-wrapper,
-.leaflet-popup-tip {
-  background-color: #f5f5f5;
-  color: #333;
-  box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.4);
-}
-
-.leaflet-popup-content-wrapper {
-  border-radius: 0;
-}
-
-.leaflet-popup-content {
-  margin: 0;
-  margin: 15px;
-  min-width: 200px;
-  line-height: inherit;
-}
-
-.leaflet-container a.leaflet-popup-close-button {
-  width: 26px;
-  height: 26px;
-  font: 26px/26px Tahoma, Verdana, sans-serif;
 }

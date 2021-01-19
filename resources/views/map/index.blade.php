@@ -3,7 +3,7 @@
 @section('content')
 <div class='map__dialog' id='map-own-dialog' >
   <div  class='map__dialog-inner'>
-    <button id='map-dialog-close' class='map__dialog-close'>X</button>
+    <a id='map-dialog-close' class='map__dialog-close'>x</a>
     <div class='map__dialog-print' id='dialog-print-target'></div>
   </div>
 </div>

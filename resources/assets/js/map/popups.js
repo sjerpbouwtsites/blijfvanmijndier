@@ -125,31 +125,58 @@ const buttonHandlers = {
 function popupDataRow(left, right) {
   if (!right) return ``;
   return `<li class='bvmd-popup__data-row'>
-    <span class='bvmd-popup__column bvmd-popup__column--title'>${left}: </span> 
-    <span class='bvmd-popup__column'>${right}</span> 
+    <span class='bvmd-popup__column bvmd-popup__column--left'>${left}</span> 
+    <span class='bvmd-popup__column bvmd-popup__column--right'>${right}</span>  
   </li>`;
 }
 
+function popupDataList(rowList = [], title = "", modifier = "") {
+  if (rowList.length < 1) return "";
+  const titleHtml = !title ? `` : `<h3 class='bvmd-popup__list-title'>${title}</h3>`;
+  return `
+  <div class='bvmd-popup__list-wrapper'>
+    ${titleHtml}
+    <ul class='bvmd-popup__list bvmd-popup__list--${modifier}'>
+      ${rowList.join("")}
+    </ul>
+  </div>
+  `;
+}
+
 function popupFooter(entity, rijen = []) {
-  return `<footer class="bvmd-popup__voet">
-  <ul class='bvmd-popup__list bvmd-popup__list--button-group'>
-  ${popupDataRow(
-    "Maya: ",
-    `<a class="bvmd-popup__voet-link" target="_blank" href="${entity.mayaRoute()}">🔍</a><a class="bvmd-popup__voet-link" target="_blank" href="${entity.mayaRoute(
-      true
-    )}">✍</a>`
+  return `<footer class="bvmd-popup__footer">
+  ${popupDataList(
+    [
+      popupDataRow("Zien", `<a class="bvmd-popup__voet-link" target="_blank" href="${entity.mayaRoute()}">🔍</a>`),
+      popupDataRow(
+        "Bewerken",
+        `<a class="bvmd-popup__voet-link" target="_blank" href="${entity.mayaRoute(true)}">✍</a>`
+      ),
+    ],
+    "Maya",
+    "maya-links"
   )}
-  ${rijen.join("")}
-  
-  </ul>
+  ${popupDataList(rijen, "Relaties", "relaties")}
+
 </footer> `;
 }
 
 function popupHeader(title, subtitle = null) {
-  const subtitleHTML = !subtitle ? `` : ` - <small class='bvmd-popup__subtitle'>${subtitle}</small>`;
-  return `<header class='bvmd-popup__header'>
-  <h3 class='bvmd-popup__header-links'>
-    ${title}
+  // calculate minimum length with charcount of subtitle & title
+  // allow for space for close button
+  // subtitle is .66em
+  const subtitleLength = subtitle ? subtitle.length : 0;
+  const maxChars = Math.max(title.length, subtitleLength * 0.66);
+
+  const minWidthCh = `min-width: calc(${maxChars}ch + 1em);`;
+  const subtitleHTML = !subtitle ? `` : `<small class='bvmd-popup__header-subtitle'>${subtitle}</small>`;
+
+  return `<header 
+    class='bvmd-popup__header'
+    style='${minWidthCh}'
+  >
+  <h3 class='bvmd-popup__header-title'>
+    <span class='bvmd-popup__header-title-inner'>${title}</span>
     ${subtitleHTML}
   </h3>
 </header>`;
@@ -158,17 +185,22 @@ function popupHeader(title, subtitle = null) {
 function populateDialogWithAnimal(animal) {
   document.getElementById("dialog-print-target").innerHTML = `
     <div class='bvmd-popup'>
-      ${popupHeader(animal.name, `${animal.breed} ${animal.animal_type}`)}
+      ${popupHeader(animal.name, `${animal.breed} ${animal.animal_type.toLowerCase()}`)}
       <div class='bvmd-popup__brood'>
-        <ul class='bvmd-popup__list bvmd-popup__list--animal-info'>
-          ${popupDataRow("Geslacht", animal.gender)}
-          ${popupDataRow("Geregistreerd", new Date(animal.reg_data).toLocaleDateString())}
-          ${popupDataRow("Geboren", new Date(animal.birth_date).toLocaleDateString())}
-          ${popupDataRow("Chip nr", animal.chip_nr)}
-          ${popupDataRow("Paspoort", animal.passport)}
-          ${popupDataRow("Max uren alleen", animal.max_hours_alone)}
-          ${popupDataRow("Misbruik", animal.abuseConsolidatedText)}
-        </ul>
+      ${popupDataList(
+        [
+          popupDataRow("Chip nr", animal.chip_nr),
+          popupDataRow("Geboren", new Date(animal.birth_date).toLocaleDateString()),
+          popupDataRow("Geregistreerd", new Date(animal.reg_data).toLocaleDateString()),
+          popupDataRow("Geslacht", animal.gender),
+          popupDataRow("Max uren alleen", animal.max_hours_alone),
+          popupDataRow("Misbruik", animal.abuseConsolidatedText),
+          popupDataRow("Paspoort", animal.passport),
+        ],
+        "Gegevens",
+        "animal-info"
+      )}
+
       </div>
       ${popupFooter(animal, [
         popupDataRow("Verblijft", staysAtBtn(animal.staysAt)),
@@ -259,13 +291,14 @@ const markerHTML = {
     ];
   },
   vetBody(locatedEntity) {
-    return `<ul class='bvmd-popup__list bvmd-popup__list--vet-info'>${this.vetBodyData
-      .map(({ key, nl }) => {
+    return popupDataList(
+      this.vetBodyData.map(({ key, nl }) => {
         if (!locatedEntity[key]) return "";
         return popupDataRow(nl, locatedEntity[key]);
-      })
-      .join("")}
-    </ul>`;
+      }),
+      "Aantekingen",
+      "vet-info"
+    );
   },
   get guestBodyData() {
     return [
@@ -281,30 +314,26 @@ const markerHTML = {
   },
 
   guestBody(locatedEntity) {
-    return `<ul class='bvmd-popup__list bvmd-popup__list--guest-info'>${this.guestBodyData
-      .map(({ key, nl }) => {
+    return popupDataList(
+      this.guestBodyData.map(({ key, nl }) => {
         if (!locatedEntity[key]) return "";
         return popupDataRow(nl, locatedEntity[key]);
-      })
-      .join("")}
-    </ul>`;
+      }),
+      "Aantekingen",
+      "guest-info"
+    );
   },
   animalList(locatedEntity) {
     if (!locatedEntity.hasAnimals) {
       return ``;
     }
-    return `
-    <div class='bvmd-popup__list-outer'>
-      <h4 class='bvmd-popup__list-title'>Dieren</h4>
-      <ol class='bvmd-popup__list bvmd-popup__list--animals'>
-        ${locatedEntity.animals
-          .map((animal) => {
-            return locatedEntity.is("owner") ? this.animalListItemOwner(animal) : this.animalListItemSafeHouse(animal);
-          })
-          .join(``)}
-      </ol>
-    </div>
-    `;
+    return popupDataList(
+      locatedEntity.animals.map((animal) => {
+        return locatedEntity.is("owner") ? this.animalListItemOwner(animal) : this.animalListItemSafeHouse(animal);
+      }),
+      "Dieren",
+      "animals"
+    );
   },
   animalListItemOwner(animal) {
     return popupDataRow(`${animalBtn(animal)} verblijft`, staysAtBtn(animal.staysAt));
