@@ -10,6 +10,7 @@ function addInteractive() {
   popups.closeDialogClickHandler();
   filter.populateFilterHTML();
   filter.filterClickHandler();
+  popups.closeAllDialogsPopupsIframesEscape();
 }
 
 /**

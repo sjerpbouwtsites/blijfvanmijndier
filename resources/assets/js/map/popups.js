@@ -100,45 +100,58 @@ const buttonHandlers = {
     const knownActions = ["open-animal-dialog", "open-vet-dialog", "open-maya-page", "goto-marker"];
     document.body.addEventListener("click", (event) => {
       event.preventDefault();
-      if (!event.target.hasAttribute("data-action")) {
-        return;
-      }
-      const action = event.target.getAttribute("data-action");
+      const t = event.target;
+      const actionBtn = this.findAction(t);
+      if (!actionBtn) return;
+      const action = actionBtn.getAttribute("data-action");
       if (!knownActions.includes(action)) {
         alert(`unknown action: ${action}`);
         return;
       }
 
       const camelcasedAction = toCamelCase(action);
-      this.callbacks[camelcasedAction](event);
+      this.callbacks[camelcasedAction](actionBtn);
     });
   },
+  findAction(t) {
+    return t.hasAttribute("data-action")
+      ? t
+      : t.parentNode.hasAttribute("data-action")
+      ? t.parentNode
+      : t.parentNode.parentNode.hasAttribute("data-action")
+      ? t.parentNode.parentNode
+      : t.parentNode.parentNode.parentNode.hasAttribute("data-action")
+      ? t.parentNode.parentNode.parentNode
+      : false;
+  },
   callbacks: {
-    openAnimalDialog(event) {
+    openAnimalDialog(actionBtn) {
+      console.log("fdfdf", actionBtn);
       closeLeaflet();
       setOwnDialogState(true);
-      const animalId = event.target.getAttribute("data-id");
+      const animalId = actionBtn.getAttribute("data-id");
       const animal = Animal.find(animalId);
       populateDialogWithAnimal(animal);
+      console.log("hallo");
     },
-    openVetDialog(event) {
+    openVetDialog(actionBtn) {
       setOwnDialogState(false);
-      const vetId = event.target.getAttribute("data-id");
+      const vetId = actionBtn.getAttribute("data-id");
       const vet = Vet.find(vetId);
       const marker = getMarkerByIdAndType(vet.id, "vet");
       marker && marker.click();
     },
-    gotoMarker(event) {
+    gotoMarker(actionBtn) {
       setOwnDialogState(false);
-      const buttonId = event.target.getAttribute("data-id");
-      const buttonType = event.target.getAttribute("data-type");
+      const buttonId = actionBtn.getAttribute("data-id");
+      const buttonType = actionBtn.getAttribute("data-type");
       const marker = getMarkerByIdAndType(buttonId, buttonType);
       marker && marker.click();
     },
-    openMayaPage(event) {
+    openMayaPage(actionBtn) {
       closeLeaflet();
       setOwnDialogState(false);
-      const singularId = event.target.href.replace(/\W/g, "");
+      const singularId = actionBtn.href.replace(/\W/g, "");
       const wrapperDiv = document.createElement("div");
       wrapperDiv.id = singularId;
       wrapperDiv.classList.add("map__iframe-wrapper");
@@ -146,24 +159,19 @@ const buttonHandlers = {
       closeBtn.className = "map__iframe-close";
       closeBtn.innerHTML = svgs.arrowBack("#fff");
       closeBtn.id = `${singularId}__close`;
-      wrapperDiv.innerHTML = `<iframe scrolling="auto" src="${event.target.href}"></iframe>`;
+      wrapperDiv.innerHTML = `<iframe scrolling="auto" src="${actionBtn.href}"></iframe>`;
       const docBody = document.getElementsByTagName("body")[0];
       wrapperDiv.appendChild(closeBtn);
       docBody.appendChild(wrapperDiv);
       document.getElementById(`${singularId}__close`).addEventListener("click", removeIframeWrapper);
-      document.addEventListener("keydown", removeIframeWrapper);
     },
   },
 };
 // #endregion
 
 function removeIframeWrapper(event) {
-  const btnEl = document.querySelector(".map__iframe-wrapper");
-  btnEl.removeEventListener("click", removeIframeWrapper);
-  document.removeEventListener("keydown", removeIframeWrapper);
-  const wrapperId = btnEl.id.replace("__close", "");
-  const w = document.getElementById(wrapperId);
-  w.parentNode.removeChild(w);
+  const wrapperEl = document.querySelector(".map__iframe-wrapper");
+  if (wrapperEl) wrapperEl.parentNode.removeChild(wrapperEl);
 }
 
 // #region popup HTML renderfuncs
@@ -466,11 +474,22 @@ function closeLeaflet() {
   if (mightBeAnchorElement) mightBeAnchorElement.click();
 }
 
+function closeAllDialogsPopupsIframesEscape() {
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      removeIframeWrapper();
+      closeLeaflet();
+      setOwnDialogState(false);
+    }
+  });
+}
+
 //#endregion open closing popups and dialogs
 
 module.exports = {
   markerHTML,
   closeDialogClickHandler,
+  closeAllDialogsPopupsIframesEscape,
   closeLeaflet,
   populateDialogWithAnimal,
   popupDataRow,
