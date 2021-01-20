@@ -84,7 +84,7 @@ function mayaBtn(entity, edit = false, modifier = "") {
   const r = entity.mayaRoute(edit);
   return `<a 
     class="map__link-style-button map__link-style-button--maya-btn ${m} " 
-    data-action='open-maya-page' href="${r}">${t}</a>`;
+    data-action='open-maya-page' href="${r}">${t} ${svgs.open("rgb(81, 81, 211)")}</a>`;
 }
 
 //#endregion Button renders
