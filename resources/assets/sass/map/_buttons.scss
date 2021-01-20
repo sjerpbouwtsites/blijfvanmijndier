@@ -47,17 +47,17 @@
     }
   }
 }
-.map__link-style-svg {
+.map__link-style-button svg {
   width: 1em;
   height: 1em;
-  margin: 0 0 0.33em 0;
+  margin-right: 0.33em;
+  margin-left: 0.33em;
   display: inline-block;
   vertical-align: middle;
   opacity: 0.5;
   transition: 0.2s ease-in-out 0.2s;
   position: relative;
-  bottom: -1px;
 }
-a:hover .map__link-style-svg {
+.map__link-style-button:hover svg {
   opacity: 1;
 }
