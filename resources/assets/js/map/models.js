@@ -66,7 +66,7 @@ class MayaModel {
     }
 
     const editPostfix = edit ? `/edit` : "";
-    return `${location.host}/${this.pluralType}/${this.id}${editPostfix}`;
+    return `${location.protocol}//${location.host}/${this.pluralType}/${this.id}${editPostfix}`;
   }
 }
 

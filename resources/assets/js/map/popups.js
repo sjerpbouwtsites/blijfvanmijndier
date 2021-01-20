@@ -2,6 +2,7 @@ const Animal = require("./models").Animal;
 const Vet = require("./models").Vet;
 const toCamelCase = require("./util").toCamelCase;
 const getMarkerByIdAndType = require("./util").getMarkerByIdAndType;
+const svgs = require("./svgs");
 
 // #region Button renders
 /**
@@ -15,23 +16,15 @@ const getMarkerByIdAndType = require("./util").getMarkerByIdAndType;
 function buttonBase(buttonData, modifiers, action) {
   if (buttonData === null) return ``;
 
-  const modifierHTML = modifiers
-    .map((mod) => {
-      return `map__link-style-button--${mod}`;
-    })
-    .join("");
-
   const CssClasses = ["", "does-action"].concat(modifiers).map((modifierBase) => {
     return {
       wrapper: modifierBase ? `map__button-wrapper--${modifierBase}` : `map__button-wrapper`,
       button: modifierBase ? `map__link-style-button--${modifierBase}` : `map__link-style-button`,
-      svg: modifierBase ? `map__link-style-svg--${modifierBase}` : `map__link-style-svg`,
     };
   });
 
   const wrapperCss = CssClasses.map((selectorSet) => selectorSet.wrapper).join("  ");
   const buttonCss = CssClasses.map((selectorSet) => selectorSet.button).join("  ");
-  const svgCss = CssClasses.map((selectorSet) => selectorSet.svg).join("  ");
   return `
     <span class='${wrapperCss}'>
       <a 
@@ -40,10 +33,7 @@ function buttonBase(buttonData, modifiers, action) {
       data-type='${buttonData._type}'
       class='${buttonCss}'>
       ${buttonData.name}
-      <svg class='${svgCss}' xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
-        <path class='svg-path-1' d="M0 0h24v24H0z" fill="none"/>
-        <path class='svg-path-2' d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-      </svg>
+      ${svgs.marker("rgb(81, 81, 211)")}
       </a>
     </span>`;
 }
@@ -79,6 +69,24 @@ function staysAtBtn(staysAtData) {
 function vetBtn(vetData) {
   return buttonBase(vetData, ["vet"], "open-vet-dialog");
 }
+
+/**
+ * creates maya btn, opens window with maya page.
+ *
+ * @param {*} entity
+ * @param {boolean} [edit=false] open show / edit maya page
+ * @param {string} [modifier=""] added as BEM modifiers
+ * @returns string mayaBtn
+ */
+function mayaBtn(entity, edit = false, modifier = "") {
+  const m = !!modifier ? `map__link-style-button--${modifier}` : "";
+  const t = !!edit ? `Bewerk` : "Bekijk";
+  const r = entity.mayaRoute(edit);
+  return `<a 
+    class="map__link-style-button map__link-style-button--maya-btn ${m} " 
+    data-action='open-maya-page' href="${r}">${t}</a>`;
+}
+
 //#endregion Button renders
 
 // #region buttonHandler
@@ -89,8 +97,9 @@ function vetBtn(vetData) {
  */
 const buttonHandlers = {
   init() {
-    const knownActions = ["open-animal-dialog", "open-vet-dialog", "goto-marker"];
+    const knownActions = ["open-animal-dialog", "open-vet-dialog", "open-maya-page", "goto-marker"];
     document.body.addEventListener("click", (event) => {
+      event.preventDefault();
       if (!event.target.hasAttribute("data-action")) {
         return;
       }
@@ -126,9 +135,34 @@ const buttonHandlers = {
       const marker = getMarkerByIdAndType(buttonId, buttonType);
       marker && marker.click();
     },
+    openMayaPage(event) {
+      closeLeaflet();
+      setOwnDialogState(false);
+      const singularId = event.target.href.replace(/\W/g, "");
+      const wrapperDiv = document.createElement("div");
+      wrapperDiv.id = singularId;
+      wrapperDiv.classList.add("map__iframe-wrapper");
+      const closeBtn = document.createElement("button");
+      closeBtn.className = "map__iframe-close";
+      closeBtn.innerHTML = svgs.arrowBack("#fff");
+      closeBtn.id = `${singularId}__close`;
+      wrapperDiv.innerHTML = `<iframe scrolling="auto" src="${event.target.href}"></iframe>`;
+      const docBody = document.getElementsByTagName("body")[0];
+      wrapperDiv.appendChild(closeBtn);
+      docBody.appendChild(wrapperDiv);
+      document.getElementById(`${singularId}__close`).addEventListener("click", removeIframeWrapper);
+    },
   },
 };
 // #endregion
+
+function removeIframeWrapper(event) {
+  const btnEl = document.querySelector(".map__iframe-wrapper");
+  btnEl.removeEventListener("click", removeIframeWrapper);
+  const wrapperId = btnEl.id.replace("__close", "");
+  const w = document.getElementById(wrapperId);
+  w.parentNode.removeChild(w);
+}
 
 // #region popup HTML renderfuncs
 
@@ -167,9 +201,7 @@ function popupFooter(entity, rijen = []) {
           // links for all animals to maya.
           return popupDataRow(
             `${animal.breed} ${animal.name}`,
-            `<a class="map__link-style-button map__link-style-button--real-anchor bvmd-popup__voet-link" target="_blank" href="${animal.mayaRoute()}">Bekijk</a> | <a class="map__link-style-button map__link-style-button--real-anchor bvmd-popup__voet-link" target="_blank" href="${animal.mayaRoute(
-              true
-            )}">Bewerk</a>`
+            `${mayaBtn(animal, false, "in-popup-footer")} | ${mayaBtn(animal, true, "in-popup-footer")}`
           );
         })
       : "";
@@ -177,16 +209,8 @@ function popupFooter(entity, rijen = []) {
   return `<footer class="bvmd-popup__footer">
   ${popupDataList(
     [
-      popupDataRow(
-        `Bekijk ${entity.name}`,
-        `<a class="map__link-style-button map__link-style-button--real-anchor bvmd-popup__voet-link" target="_blank" href="${entity.mayaRoute()}">Leesscherm</a>`
-      ),
-      popupDataRow(
-        `Bewerk ${entity.name}`,
-        `<a class="map__link-style-button map__link-style-button--real-anchor bvmd-popup__voet-link" target="_blank" href="${entity.mayaRoute(
-          true
-        )}">Schrijfscherm</a>`
-      ),
+      popupDataRow(`Bekijk ${entity.name}`, `${mayaBtn(entity, false)}`),
+      popupDataRow(`Bewerk ${entity.name}`, `${mayaBtn(entity, true)}`),
     ].concat(addToFooter),
     "Maya",
     "maya-links"

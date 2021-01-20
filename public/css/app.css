@@ -931,6 +931,44 @@ styling for both the leaflet popup and the own dialog
   top: -1px;
 }
 
+.map__iframe-wrapper {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  padding: 10vh 10vw;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 2000;
+  display: flex;
+  left: 0;
+  top: 0;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.map__iframe-wrapper iframe {
+  width: 90%;
+  height: 90%;
+  border: 0;
+}
+
+.map__iframe-close {
+  position: absolute;
+  top: 10px;
+  right: 33px;
+  z-index: 2001;
+  background-color: #5151d3;
+  border: 0;
+}
+
+.close-svg {
+  width: 40px;
+  height: 40px;
+}
+
+.map__iframe-close:hover .close-svg path + path {
+  fill: #ccc;
+}
+
 .map__link-style-button {
   border: 0;
   padding: 0;
@@ -999,10 +1037,8 @@ styling for both the leaflet popup and the own dialog
   vertical-align: middle;
   opacity: 0.5;
   transition: 0.2s ease-in-out 0.2s;
-}
-
-.map__link-style-svg path.svg-path-2 {
-  fill: #5151d3;
+  position: relative;
+  bottom: -1px;
 }
 
 a:hover .map__link-style-svg {

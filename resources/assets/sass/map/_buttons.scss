@@ -55,9 +55,8 @@
   vertical-align: middle;
   opacity: 0.5;
   transition: 0.2s ease-in-out 0.2s;
-  path.svg-path-2 {
-    fill: rgb(81, 81, 211);
-  }
+  position: relative;
+  bottom: -1px;
 }
 a:hover .map__link-style-svg {
   opacity: 1;
