@@ -938,7 +938,7 @@ styling for both the leaflet popup and the own dialog
   color: #5151d3;
   background-color: transparent;
   transition: cubic-bezier(0.075, 0.82, 0.165, 1);
-  display: flex;
+  display: inline-flex;
 }
 
 .map__link-style-button:focus {

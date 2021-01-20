@@ -5,7 +5,7 @@
   color: rgb(81, 81, 211);
   background-color: transparent;
   transition: cubic-bezier(0.075, 0.82, 0.165, 1);
-  display: flex;
+  display: inline-flex;
   &:focus {
     outline: 2px solid rgb(81, 81, 211);
   }

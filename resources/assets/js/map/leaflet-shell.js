@@ -90,7 +90,7 @@ function locationMapper(locatedEntity, globalLeafletMap) {
     globalLeafletMap
   );
 
-  marker.bindPopup(popups.markerHTML.create(locatedEntity));
+  marker.bindPopup(popups.markerHTML.create(locatedEntity), { maxWidth: "auto" });
 }
 
 module.exports = { maakAlt, locationMapper };

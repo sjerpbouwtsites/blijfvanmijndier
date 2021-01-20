@@ -162,23 +162,23 @@ function popupFooter(entity, rijen = []) {
   ${popupDataList(
     [
       popupDataRow(
-        `Bekijk ${entity.type} ${entity.fullName}`,
-        `<a class="map__link-style-button map__link-style-button--real-anchor bvmd-popup__voet-link" target="_blank" href="${entity.mayaRoute()}">Open leesscherm</a>`
+        `Bekijk ${entity.name}`,
+        `<a class="map__link-style-button map__link-style-button--real-anchor bvmd-popup__voet-link" target="_blank" href="${entity.mayaRoute()}">Leesscherm</a>`
       ),
       popupDataRow(
-        `Bewerk ${entity.type} ${entity.fullName}`,
+        `Bewerk ${entity.name}`,
         `<a class="map__link-style-button map__link-style-button--real-anchor bvmd-popup__voet-link" target="_blank" href="${entity.mayaRoute(
           true
-        )}">Open schrijfscherm</a>`
+        )}">Schrijfscherm</a>`
       ),
     ].concat(
       entity.animals.map((animal) => {
         // links for all animals to maya.
         return popupDataRow(
           `${animal.breed} ${animal.name}`,
-          `<a class="map__link-style-button map__link-style-button--real-anchor bvmd-popup__voet-link" target="_blank" href="${animal.mayaRoute()}">Bekijk dier</a> | <a class="map__link-style-button map__link-style-button--real-anchor bvmd-popup__voet-link" target="_blank" href="${animal.mayaRoute(
+          `<a class="map__link-style-button map__link-style-button--real-anchor bvmd-popup__voet-link" target="_blank" href="${animal.mayaRoute()}">Bekijk</a> | <a class="map__link-style-button map__link-style-button--real-anchor bvmd-popup__voet-link" target="_blank" href="${animal.mayaRoute(
             true
-          )}">Bewerk dier</a>`
+          )}">Bewerk</a>`
         );
       })
     ),
@@ -197,12 +197,13 @@ function popupHeader(title, subtitle = null) {
   const subtitleLength = subtitle ? subtitle.length : 0;
   const maxChars = Math.max(title.length, subtitleLength * 0.66);
 
-  const minWidthCh = `min-width: calc(${maxChars}ch + 1em);`;
+  const widthCh = `width: calc(${maxChars}ch + 1em);`;
+  const maxWidthCh = `max-width: calc(${25}ch + 1em);`; // no too long titles.
   const subtitleHTML = !subtitle ? `` : `<small class='bvmd-popup__header-subtitle'>${subtitle}</small>`;
 
   return `<header 
     class='bvmd-popup__header'
-    style='${minWidthCh}'
+    style='${widthCh}${maxWidthCh}'
   >
   <h3 class='bvmd-popup__header-title'>
     <span class='bvmd-popup__header-title-inner'>${title}</span>
@@ -392,12 +393,12 @@ const markerHTML = {
       locatedEntity.animals.map((animal) => {
         return locatedEntity.is("owner") ? this.animalListItemOwner(animal) : this.animalListItemSafeHouse(animal);
       }),
-      "Dieren",
+      "Dieren & verblijf",
       "animals"
     );
   },
   animalListItemOwner(animal) {
-    return popupDataRow(`${animalBtn(animal)} verblijft`, staysAtBtn(animal.staysAt));
+    return popupDataRow(`${animalBtn(animal)}`, staysAtBtn(animal.staysAt));
   },
   animalListItemSafeHouse(animal) {
     return popupDataRow(`${animalBtn(animal)} van`, ownerBtn(animal.owner));
