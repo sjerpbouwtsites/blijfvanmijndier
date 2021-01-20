@@ -96,9 +96,12 @@ function mayaBtn(entity, edit = false, modifier = "") {
  *
  */
 const buttonHandlers = {
+  /**
+   * adds the data-action event listener
+   */
   init() {
     const knownActions = ["open-animal-dialog", "open-vet-dialog", "open-maya-page", "goto-marker"];
-    document.body.addEventListener("click", (event) => {
+    document.addEventListener("click", (event) => {
       event.preventDefault();
       const t = event.target;
       const actionBtn = this.findAction(t);
@@ -113,6 +116,11 @@ const buttonHandlers = {
       this.callbacks[camelcasedAction](actionBtn);
     });
   },
+  /**
+   * looks 3 layers deep for an data-action attr, otherwise returns false;
+   * @param {*} t
+   * @returns {HTMLelement | bool}
+   */
   findAction(t) {
     return t.hasAttribute("data-action")
       ? t
@@ -126,13 +134,11 @@ const buttonHandlers = {
   },
   callbacks: {
     openAnimalDialog(actionBtn) {
-      console.log("fdfdf", actionBtn);
       closeLeaflet();
       setOwnDialogState(true);
       const animalId = actionBtn.getAttribute("data-id");
       const animal = Animal.find(animalId);
       populateDialogWithAnimal(animal);
-      console.log("hallo");
     },
     openVetDialog(actionBtn) {
       setOwnDialogState(false);
@@ -148,6 +154,11 @@ const buttonHandlers = {
       const marker = getMarkerByIdAndType(buttonId, buttonType);
       marker && marker.click();
     },
+    /**
+     * prints an iframe to maya on the page
+     *
+     * @param {*} actionBtn
+     */
     openMayaPage(actionBtn) {
       closeLeaflet();
       setOwnDialogState(false);
@@ -169,7 +180,10 @@ const buttonHandlers = {
 };
 // #endregion
 
-function removeIframeWrapper(event) {
+/**
+ * removes the maya iframe it
+ */
+function removeIframeWrapper() {
   const wrapperEl = document.querySelector(".map__iframe-wrapper");
   if (wrapperEl) wrapperEl.parentNode.removeChild(wrapperEl);
 }
@@ -181,7 +195,7 @@ function removeIframeWrapper(event) {
  *
  * @param {*} left
  * @param {*} right
- * @returns
+ * @returns {string} HTML
  */
 function popupDataRow(left, right) {
   if (!right) return ``;
@@ -190,7 +204,14 @@ function popupDataRow(left, right) {
     <span class='bvmd-popup__column bvmd-popup__column--right'>${right}</span>  
   </li>`;
 }
-
+/**
+ * takes popupDataRows and returns in ul wrapper in div, possibly with title and modifier
+ *
+ * @param {*} [rowList=[]] popupDataRow() output
+ * @param {string} [title=""]
+ * @param {string} [modifier=""]
+ * @returns {string} HTML
+ */
 function popupDataList(rowList = [], title = "", modifier = "") {
   if (rowList.length < 1) return "";
   const titleHtml = !title ? `` : `<h3 class='bvmd-popup__list-title'>${title}</h3>`;
@@ -203,7 +224,12 @@ function popupDataList(rowList = [], title = "", modifier = "") {
   </div>
   `;
 }
-
+/**
+ * creates popup footer HTML with edit and view links; if not used on animal entity, add animal list.
+ * @param {*} entity
+ * @param {*} [rijen=[]]
+ * @returns {string} HTML popup footer
+ */
 function popupFooter(entity, rijen = []) {
   const addToFooter =
     entity.type !== "animal"
@@ -229,7 +255,13 @@ function popupFooter(entity, rijen = []) {
 
 </footer> `;
 }
-
+/**
+ * creates popup header and sets overal popup width based on title width.
+ *
+ * @param {*} title
+ * @param {*} [subtitle=null]
+ * @returns {string} HTML
+ */
 function popupHeader(title, subtitle = null) {
   // calculate minimum length with charcount of subtitle & title
   // allow for space for close button
@@ -252,6 +284,10 @@ function popupHeader(title, subtitle = null) {
 </header>`;
 }
 
+/**
+ * creates and prints animal dialog HTML
+ * @param {Animal} animal
+ */
 function populateDialogWithAnimal(animal) {
   document.getElementById("dialog-print-target").innerHTML = `
     <div class='bvmd-popup'>
