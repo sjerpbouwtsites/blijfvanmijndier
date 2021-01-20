@@ -25,12 +25,13 @@ function buttonBase(buttonData, modifiers, action) {
     return {
       wrapper: modifierBase ? `map__button-wrapper--${modifierBase}` : `map__button-wrapper`,
       button: modifierBase ? `map__link-style-button--${modifierBase}` : `map__link-style-button`,
+      svg: modifierBase ? `map__link-style-svg--${modifierBase}` : `map__link-style-svg`,
     };
   });
 
   const wrapperCss = CssClasses.map((selectorSet) => selectorSet.wrapper).join("  ");
   const buttonCss = CssClasses.map((selectorSet) => selectorSet.button).join("  ");
-
+  const svgCss = CssClasses.map((selectorSet) => selectorSet.svg).join("  ");
   return `
     <span class='${wrapperCss}'>
       <a 
@@ -39,6 +40,10 @@ function buttonBase(buttonData, modifiers, action) {
       data-type='${buttonData._type}'
       class='${buttonCss}'>
       ${buttonData.name}
+      <svg class='${svgCss}' xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
+        <path class='svg-path-1' d="M0 0h24v24H0z" fill="none"/>
+        <path class='svg-path-2' d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+      </svg>
       </a>
     </span>`;
 }
@@ -156,9 +161,20 @@ function popupDataList(rowList = [], title = "", modifier = "") {
 }
 
 function popupFooter(entity, rijen = []) {
+  const addToFooter =
+    entity.type !== "animal"
+      ? entity.animals.map((animal) => {
+          // links for all animals to maya.
+          return popupDataRow(
+            `${animal.breed} ${animal.name}`,
+            `<a class="map__link-style-button map__link-style-button--real-anchor bvmd-popup__voet-link" target="_blank" href="${animal.mayaRoute()}">Bekijk</a> | <a class="map__link-style-button map__link-style-button--real-anchor bvmd-popup__voet-link" target="_blank" href="${animal.mayaRoute(
+              true
+            )}">Bewerk</a>`
+          );
+        })
+      : "";
+
   return `<footer class="bvmd-popup__footer">
-
-
   ${popupDataList(
     [
       popupDataRow(
@@ -171,17 +187,7 @@ function popupFooter(entity, rijen = []) {
           true
         )}">Schrijfscherm</a>`
       ),
-    ].concat(
-      entity.animals.map((animal) => {
-        // links for all animals to maya.
-        return popupDataRow(
-          `${animal.breed} ${animal.name}`,
-          `<a class="map__link-style-button map__link-style-button--real-anchor bvmd-popup__voet-link" target="_blank" href="${animal.mayaRoute()}">Bekijk</a> | <a class="map__link-style-button map__link-style-button--real-anchor bvmd-popup__voet-link" target="_blank" href="${animal.mayaRoute(
-            true
-          )}">Bewerk</a>`
-        );
-      })
-    ),
+    ].concat(addToFooter),
     "Maya",
     "maya-links"
   )}

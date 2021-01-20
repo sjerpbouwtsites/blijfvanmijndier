@@ -90,7 +90,6 @@ class LocatedEntity extends MayaModel {
       this[key] = config[key];
     });
 
-    this.animals = [];
     try {
       const l = addresses.find((address) => address.uuid === config.address_id); // potential memory leak, messes with garbage collection?
       delete l.manual_geolocation;
@@ -111,6 +110,21 @@ class LocatedEntity extends MayaModel {
     return `${n} ${p} ${s}`.trim();
   }
 
+  /**
+   * search all animals by this.id matching animal foreign key like owner_id
+   *
+   * @readonly
+   * @memberof LocatedEntity
+   * @returns Array<Animal>
+   */
+  get animals() {
+    const foreignKey = `${this.type}_id`;
+    const foundAnimals = models.animals.filter((animal) => {
+      return animal[foreignKey] === this.id;
+    });
+    return foundAnimals || [];
+  }
+
   static find() {
     throw new Error("using find method of LocatedEntity, please implement in child");
   }
@@ -129,11 +143,7 @@ class Guest extends LocatedEntity {
   constructor(config, locations) {
     super("guest", config, locations);
   }
-  get animals() {
-    return models.animals.filter((animal) => {
-      return animal.guest_id === this.id;
-    });
-  }
+
   get animalsOnSite() {
     return this.animals;
   }
@@ -143,11 +153,7 @@ class Shelter extends LocatedEntity {
   constructor(config, locations) {
     super("shelter", config, locations);
   }
-  get animals() {
-    return models.animals.filter((animal) => {
-      return animal.shelter_id === this.id;
-    });
-  }
+
   get animalsOnSite() {
     return this.animals;
   }
@@ -164,11 +170,7 @@ class Vet extends LocatedEntity {
     }
     return possibleFound;
   }
-  get animals() {
-    return models.animals.filter((animal) => {
-      return animal.vet_id === this.id;
-    });
-  }
+
   get animalsOnSite() {
     return []; // animals never registered as with vet
   }
@@ -178,11 +180,7 @@ class Owner extends LocatedEntity {
   constructor(config, locations) {
     super("owner", config, locations);
   }
-  get animals() {
-    return models.animals.filter((animal) => {
-      return animal.owner_id === this.id;
-    });
-  }
+
   get animalsOnSite() {
     return this.animals.filter((ownedAnimals) => {
       return ownedAnimals.staysAt.location.uuid === this.location.uuid;
@@ -215,6 +213,10 @@ class Animal extends MayaModel {
   get owner() {
     if (this.owner_id === null) return null;
     return models.owners.find((owner) => this.owner_id === owner.id);
+  }
+  get animals() {
+    throw new Error("accessing animals... of animals");
+    return;
   }
 
   get abuseConsolidatedText() {
