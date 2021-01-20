@@ -151,6 +151,7 @@ const buttonHandlers = {
       wrapperDiv.appendChild(closeBtn);
       docBody.appendChild(wrapperDiv);
       document.getElementById(`${singularId}__close`).addEventListener("click", removeIframeWrapper);
+      document.addEventListener("keydown", removeIframeWrapper);
     },
   },
 };
@@ -159,6 +160,7 @@ const buttonHandlers = {
 function removeIframeWrapper(event) {
   const btnEl = document.querySelector(".map__iframe-wrapper");
   btnEl.removeEventListener("click", removeIframeWrapper);
+  document.removeEventListener("keydown", removeIframeWrapper);
   const wrapperId = btnEl.id.replace("__close", "");
   const w = document.getElementById(wrapperId);
   w.parentNode.removeChild(w);
