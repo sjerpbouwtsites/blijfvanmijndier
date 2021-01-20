@@ -745,7 +745,7 @@ styling for both the leaflet popup and the own dialog
 .leaflet-container a.leaflet-popup-close-button {
   background-attachment: scroll;
   background-clip: border-box;
-  background-color: #56c82c;
+  background-color: #5151d3;
   background-image: none;
   background-origin: padding-box;
   background-position: 0% 0%;
@@ -936,7 +936,7 @@ styling for both the leaflet popup and the own dialog
   width: 100vw;
   height: 100vh;
   padding: 10vh 10vw;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(7, 7, 30, 0.7);
   z-index: 2000;
   display: flex;
   left: 0;
@@ -1058,6 +1058,8 @@ styling for both the leaflet popup and the own dialog
   top: 0;
   right: 0;
   height: 100vh;
+  max-height: 100vh;
+  overflow-y: scroll;
   width: 450px;
   z-index: 500;
   padding: 20px;

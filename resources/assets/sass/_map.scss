@@ -17,6 +17,8 @@
   top: 0;
   right: 0;
   height: 100vh;
+  max-height: 100vh;
+  overflow-y: scroll;
   width: 450px;
   z-index: 500;
   padding: 20px;
