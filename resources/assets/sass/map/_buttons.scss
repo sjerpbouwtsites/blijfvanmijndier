@@ -2,36 +2,79 @@
   border: 0;
   padding: 0;
   margin: 0;
-  color: rgb(81, 81, 211);
+  color: #333;
+  &:hover {
+    color: #333;
+  }
   background-color: transparent;
   transition: cubic-bezier(0.075, 0.82, 0.165, 1);
   display: inline-flex;
   &:focus {
     outline: 2px solid rgb(81, 81, 211);
   }
-  &:hover {
-    color: #51a8d3;
-    cursor: pointer;
-  }
   &::after {
     display: inline-block;
     margin-left: 3px;
   }
   &--does-action {
+    position: relative;
+    padding-right: 10px;
+    &:hover {
+      cursor: pointer;
+    }
     &::after {
       content: "";
+      display: block;
+      width: 0;
+      height: 0;
+      border: 2px solid transparent;
+      border-top-color: transparent;
+      border-top-style: solid;
+      border-top-width: 2px;
+      border-right-color: transparent;
+      border-right-style: solid;
+      border-right-width: 2px;
+      border-top-color: transparent;
+      border-top-style: solid;
+      border-top-width: 2px;
+      border-right-color: transparent;
+      border-right-style: solid;
+      border-right-width: 2px;
+      border-top: 2px solid;
+      border-top-color: currentcolor;
+      border-top-color: #6767c2;
+      border-right: 2px solid;
+      border-right-color: currentcolor;
+      border-right-color: #6767c2;
+      position: absolute;
+      right: 2px;
+      top: 50%;
+      filter: grayscale(50%);
+      transform: translateX(0) rotate(45deg) translateY(-50%);
+      transition: 0.3s ease-in-out 0.4s;
+    }
+    &:hover::after {
+      filter: grayscale(0);
+      transform: translateX(2px) rotate(45deg) translateY(calc(-50% - 0.5px));
     }
   }
   &--real-anchor {
+    color: rgb(81, 81, 211);
+    &:hover {
+      color: #51a8d3;
+      cursor: pointer;
+    }
     &::after {
-      content: "🔗";
+      content: "";
     }
     &.map__link-style-button--tel {
+      color: #333;
       &::after {
         content: "📱";
       }
     }
     &.map__link-style-button--mail {
+      color: #333;
       &::after {
         content: "📧";
       }
