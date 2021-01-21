@@ -16,7 +16,7 @@ function createMapSection(title, contents) {
     <section id='section-${sluggedTitle}' class='map-aside__section'>
       <header class='map-aside__header'>
         <h2 class='${BEMMapper("map-aside__heading", "2")}'>
-          ${title}
+          ${title} ${popups.textBtn(title)}
         </h2>
       </header>        
       <div id='body-${sluggedTitle}' class='map-aside__body'>${contents}</div>
@@ -70,15 +70,6 @@ function populateAnimalList(animals) {
     .join(``);
 
   animalListWrapper.innerHTML = `
-    <p class='map-aside__paragraph'>Scroll/tab door de lijst.<br>Zoek in het veld op: </p>
-    <ol class='map-aside__list map-aside__list--ordered'>
-    <li class='map-aside__list-item map-aside__list-item--ordered'>Naam dier; </li>
-    <li class='map-aside__list-item map-aside__list-item--ordered'>naam eigenaar; </li>
-    <li class='map-aside__list-item map-aside__list-item--ordered'>naam verblijfplaats; </li>
-    <li class='map-aside__list-item map-aside__list-item--ordered'>diertype of </li>
-    <li class='map-aside__list-item map-aside__list-item--ordered'>diersoort</li>
-  </ol>
-
     <input class='map-aside__input' type='text' tabindex='1' id='animal-list-search' placeholder='Zoek...'>    
     <ul class='map-aside__list animal-list'>
       ${animalListHTML}

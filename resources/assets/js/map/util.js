@@ -32,14 +32,22 @@ function findInParents(startElement, conditionFunc, maxRecursion = 5) {
   }
   let werkEl = startElement.parentNode;
   let teller = 0;
-  while (!conditionFunc(werkEl) && teller < maxRecursion) {
-    if (conditionFunc(werkEl)) return werkEl;
-    if (werkEl.parentNode && werkEl.parentNode.className !== "container content") {
-      werkEl = werkEl.parentNode;
-      teller = teller + 1;
-    } else {
+  while (teller < maxRecursion) {
+    // console.log("teller", teller);
+    // gevonden? return.
+    if (conditionFunc(werkEl)) {
+      // console.log("gevonden!");
+      return werkEl;
+    }
+    const tParent = werkEl.parentNode;
+    // zijn we al op body?
+    if (tParent.id === "app-body") {
+      //   console.log("mis!");
       return null;
     }
+    // nog een cirkel.
+    werkEl = tParent;
+    teller = teller + 1;
   }
   return null;
 }

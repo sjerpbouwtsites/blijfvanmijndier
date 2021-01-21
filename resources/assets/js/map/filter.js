@@ -318,7 +318,6 @@ function wrappedInput(filterConfig) {
  */
 function wrappedRadioInput(filterConfig) {
   const labelsAndInputs = filterConfig.radioData.reduce((prev, radioDatum) => {
-    console.log(radioDatum);
     return `${prev}
     <label 
       class="map__filter-label map__filter-label--radio map__filter-label--${filterConfig.name}" 

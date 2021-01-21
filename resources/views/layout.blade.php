@@ -8,7 +8,7 @@
 	<link rel="stylesheet" href="{{ URL::asset('/font-awesome/css/font-awesome.min.css') }}">
 	<link rel="icon" type="image/vnd.microsoft.icon" href="{{ URL::asset('favicon.ico') }}" />
 </head>
-<body>
+<body id='app-body'>
 	<div class="header">
 		<div class="container">
 			<div class="col-md-2">

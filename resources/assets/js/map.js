@@ -80,12 +80,14 @@ function initMap() {
         throw new Error(`Fout in de location mapper met gelogde model`);
       }
     });
-    console.log(dataModels.animals);
     addInteractive();
     postLeafletFixes();
     sidebar.init();
     globalLeafletMap.setZoom(8);
-    globalLeafletMap.invalidateSize();
+    setTimeout(() => {
+      console.warn("dev dingetje invalidate size");
+      globalLeafletMap.invalidateSize();
+    }, 500);
   });
 }
 

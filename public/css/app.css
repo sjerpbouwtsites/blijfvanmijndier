@@ -1096,6 +1096,20 @@ styling for both the leaflet popup and the own dialog
   font-size: 1.2em;
 }
 
+.map__link-style-button--text-btn {
+  display: inline-block;
+  vertical-align: middle;
+  position: relative;
+  top: -3px;
+}
+
+.map__link-style-button--text-btn svg {
+  margin: 0;
+  width: 24px;
+  height: 24px;
+  transform: rotate(90deg);
+}
+
 .map-aside__body,
 .map-aside__footer {
   padding-left: 20px;
@@ -1130,11 +1144,11 @@ styling for both the leaflet popup and the own dialog
 }
 
 .map-aside__list--ordered {
-  list-style-type: initial;
+  list-style-type: lower-latin;
 }
 
 .map-aside__list-item--ordered {
-  display: inline-block;
+  list-style-type: lower-latin;
 }
 
 .animal-list {

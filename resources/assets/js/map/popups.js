@@ -2,6 +2,7 @@ const Animal = require("./models").Animal;
 const Vet = require("./models").Vet;
 const utils = require("./util");
 const toCamelCase = utils.toCamelCase;
+const texts = require("./texts");
 const getMarkerByIdAndType = utils.getMarkerByIdAndType;
 
 const svgs = require("./svgs");
@@ -73,6 +74,16 @@ function vetBtn(vetData) {
 }
 
 /**
+ * returns button opening dialog for text
+ * @param {string} slug corresponding to keys in texts.js
+ */
+function textBtn(slug, modifier = "") {
+  return `<a 
+    class="map__link-style-button map__link-style-button--text-btn ${modifier}" 
+    data-action='open-explanation' data-text-id='${slug.toLowerCase()}' href="#">${svgs.info("#5151d3")}</a>`;
+}
+
+/**
  * creates maya btn, opens window with maya page.
  *
  * @param {*} entity
@@ -104,13 +115,19 @@ const buttonHandlers = {
   init() {
     document.addEventListener("click", (event) => {
       const t = event.target;
-      const actionBtn = utils.findInParents(t, (el) => {
-        return el.hasAttribute("data-action");
-      });
+      console.log(t);
+      const actionBtn = utils.findInParents(
+        t,
+        (el) => {
+          return el.hasAttribute("data-action");
+        },
+        5
+      );
       if (!actionBtn) {
         return;
       }
       event.preventDefault();
+      console.log(actionBtn);
       this.callbacks[toCamelCase(actionBtn.getAttribute("data-action"))](actionBtn);
     });
   },
@@ -136,6 +153,13 @@ const buttonHandlers = {
       const buttonType = actionBtn.getAttribute("data-type");
       const marker = getMarkerByIdAndType(buttonId, buttonType);
       marker && marker.click();
+    },
+    openExplanation(actionBtn) {
+      closeLeaflet();
+      const textId = actionBtn.getAttribute("data-text-id");
+      console.log(textId);
+      populateDialogWithText(textId);
+      setOwnDialogState(true);
     },
     /**
      * prints an iframe to maya on the page
@@ -297,6 +321,17 @@ function populateDialogWithAnimal(animal) {
       ])}
     </div>
 `;
+}
+
+function populateDialogWithText(textId) {
+  const textCollection = texts[textId];
+  console.log(textCollection);
+  document.getElementById("dialog-print-target").innerHTML = `<div class='bvmd-popup'>
+    ${popupHeader(textCollection.title, textCollection.subtitle)}
+    <div class='bvmd-popup__brood'>
+      ${textCollection.body}
+    </div>
+  </div>`;
 }
 
 // #endregion popup HTML render funcs
@@ -515,6 +550,7 @@ module.exports = {
   popupFooter,
   animalBtn,
   ownerBtn,
+  textBtn,
   staysAtBtn,
   vetBtn,
   buttonHandlers,

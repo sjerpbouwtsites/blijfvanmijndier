@@ -27,7 +27,20 @@
   width: 200px;
   font-size: 1.2em;
 }
+// info svg
+.map__link-style-button--text-btn {
+  display: inline-block;
+  vertical-align: middle;
+  position: relative;
+  top: -3px;
 
+  svg {
+    margin: 0;
+    width: 24px;
+    height: 24px;
+    transform: rotate(90deg);
+  }
+}
 .map-aside__body,
 .map-aside__footer {
   padding-left: 20px;
@@ -56,15 +69,13 @@
   margin: 0;
   padding: 0;
   &--ordered {
-    list-style-type: initial;
+    list-style-type: lower-latin;
+    margin-left: 2em;
   }
 }
 
-.map-aside__list-item {
-  // margin-bottom: 1.5em;
-  &--ordered {
-    display: inline-block;
-  }
+.map-aside__list-item--ordered {
+  list-style-type: lower-latin;
 }
 
 .animal-list {
