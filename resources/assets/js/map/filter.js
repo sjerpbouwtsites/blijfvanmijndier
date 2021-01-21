@@ -1,4 +1,5 @@
-const BEMMapper = require("./util").BEMMapper;
+const utils = require("./util");
+const showHideNodes = utils.showHideNodes;
 const modelsModule = require("./models.js");
 const MayaModel = modelsModule.MayaModel;
 const Animal = modelsModule.Animal;
@@ -93,19 +94,6 @@ class EntityFilter {
     this.setRow2();
   }
 
-  static showHideMarkers(markers, showMarkers = true) {
-    markers.map((marker) => {
-      const isBlurred = marker.classList.contains("blurred");
-      if (showMarkers && isBlurred) {
-        marker.classList.remove("blurred");
-      } else if (!showMarkers && !isBlurred) {
-        marker.classList.add("blurred");
-      }
-
-      return marker;
-    });
-  }
-
   setRow1() {
     this.data.push(
       new FilterObject({
@@ -186,13 +174,13 @@ class EntityFilter {
       const filterConfig = this.getByName(event.target.name);
       const type = filterConfig.type;
       if (type === "checkbox") {
-        EntityFilter.showHideMarkers(filterConfig.markers, event.target.checked);
+        showHideNodes(filterConfig.markers, event.target.checked);
       } else {
         // value is name
         const value = event.target.form[event.target.name].value;
         const evaluatedMarkers = filterConfig.evaluate(value);
-        EntityFilter.showHideMarkers(evaluatedMarkers.success, true);
-        EntityFilter.showHideMarkers(evaluatedMarkers.failure, false);
+        showHideNodes(evaluatedMarkers.success, true);
+        showHideNodes(evaluatedMarkers.failure, false);
       }
     });
   }
