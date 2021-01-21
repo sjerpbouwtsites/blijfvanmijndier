@@ -1,4 +1,3 @@
-const filter = require("./map/filter");
 const models = require("./map/models");
 const leafletShell = require("./map/leaflet-shell");
 const sidebar = require("./map/sidebar");
@@ -8,8 +7,6 @@ const popups = require("./map/popups");
 function addInteractive() {
   popups.buttonHandlers.init();
   popups.closeDialogClickHandler();
-  filter.populateFilterHTML();
-  filter.filterClickHandler();
   popups.closeAllDialogsPopupsIframesEscape();
 }
 
@@ -85,9 +82,10 @@ function initMap() {
     });
     console.log(dataModels.animals);
     addInteractive();
-    sidebar.populateAnimalList(dataModels.animals);
     postLeafletFixes();
+    sidebar.init();
     globalLeafletMap.setZoom(8);
+    globalLeafletMap.invalidateSize();
   });
 }
 

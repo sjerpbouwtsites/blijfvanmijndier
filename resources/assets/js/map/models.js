@@ -53,6 +53,23 @@ class MayaModel {
   }
 
   /**
+   * returns all models
+   *
+   * @readonly
+   * @static
+   * @memberof MayaModel
+   */
+  static get allMayaModels() {
+    return Object.values(models);
+  }
+
+  get marker() {
+    const r = document.getElementById(`marker-${this.type}-id-${this.id}`);
+    if (!r) throw new Error(`geen marker gevonden met type ${this.type} en id ${this.id}`);
+    return r;
+  }
+
+  /**
    * Creates a route to a maya-single page.
    *
    * @param {*} instanceId
@@ -147,6 +164,10 @@ class Guest extends LocatedEntity {
   get animalsOnSite() {
     return this.animals;
   }
+
+  static get all() {
+    return models.guests;
+  }
 }
 
 class Shelter extends LocatedEntity {
@@ -156,6 +177,9 @@ class Shelter extends LocatedEntity {
 
   get animalsOnSite() {
     return this.animals;
+  }
+  static get all() {
+    return models.shelters;
   }
 }
 
@@ -174,6 +198,9 @@ class Vet extends LocatedEntity {
   get animalsOnSite() {
     return []; // animals never registered as with vet
   }
+  static get all() {
+    return models.vets;
+  }
 }
 
 class Owner extends LocatedEntity {
@@ -185,6 +212,9 @@ class Owner extends LocatedEntity {
     return this.animals.filter((ownedAnimals) => {
       return ownedAnimals.staysAt.location.uuid === this.location.uuid;
     });
+  }
+  static get all() {
+    return models.owners;
   }
 }
 
@@ -272,6 +302,9 @@ class Animal extends MayaModel {
   }
   get location() {
     return this.staysAt ? this.staysAt.location : null;
+  }
+  static get all() {
+    return models.animals;
   }
 }
 

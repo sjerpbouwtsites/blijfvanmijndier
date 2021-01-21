@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 	<meta charset="utf-8">
 	<link rel="stylesheet" href="{{ URL::asset('/css/bootstrap.min.css') }}">
@@ -9,7 +8,6 @@
 	<link rel="stylesheet" href="{{ URL::asset('/font-awesome/css/font-awesome.min.css') }}">
 	<link rel="icon" type="image/vnd.microsoft.icon" href="{{ URL::asset('favicon.ico') }}" />
 </head>
-
 <body>
 	<div class="header">
 		<div class="container">

@@ -1,43 +1,28 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,700;0,900;1,400;1,500&display=swap");
 @import "map/leaflet";
 @import "map/popup";
 @import "map/buttons";
 
-.map__inner {
+.map__outer {
   height: 100vh;
-  width: calc(100vw - 450px);
-  position: absolute;
+  width: 100vw;
+  position: fixed;
   top: 0;
   left: 0;
+  z-index: 1000;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  font-family: "Montserrat", sans-serif;
+}
+
+#leaflet-map {
+  flex-grow: 1;
 }
 
 // kop
 
-.map__aside {
-  position: absolute;
-  top: 0;
-  right: 0;
-  height: 100vh;
-  max-height: 100vh;
-  overflow-y: scroll;
-  width: 450px;
-  z-index: 500;
-  padding: 20px;
-  background-color: #f5f5f5;
-}
-
-.map__aside .map__heading:first-of-type {
-  margin-top: 0;
-}
-.map__section:last-child {
-  p,
-  ul,
-  ol {
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-}
-
+@import "map/aside.scss";
 @import "map/filter.scss";
 
 // leaflet overschrijvingen

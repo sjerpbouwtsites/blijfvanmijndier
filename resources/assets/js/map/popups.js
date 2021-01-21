@@ -102,10 +102,10 @@ const buttonHandlers = {
   init() {
     const knownActions = ["open-animal-dialog", "open-vet-dialog", "open-maya-page", "goto-marker"];
     document.addEventListener("click", (event) => {
-      event.preventDefault();
       const t = event.target;
       const actionBtn = this.findAction(t);
       if (!actionBtn) return;
+      event.preventDefault();
       const action = actionBtn.getAttribute("data-action");
       if (!knownActions.includes(action)) {
         alert(`unknown action: ${action}`);

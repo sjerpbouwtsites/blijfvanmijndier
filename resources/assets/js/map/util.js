@@ -21,7 +21,19 @@ function getMarkerByIdAndType(id, type) {
   return marker;
 }
 
+/**
+ * maps over selectors and adds modifier to end and returns join.
+ * @param {Array<string>|string} selectors
+ * @param {string} modifier
+ * @returns {string} Bemmed CSS selectors
+ */
+function BEMMapper(selectors, modifier) {
+  const workSelectors = Array.isArray(selectors) ? selectors : selectors.split(" ");
+  return workSelectors.map((selector) => `${selector} ${selector}--${modifier}`).join(" ");
+}
+
 module.exports = {
+  BEMMapper,
   toCamelCase,
   getMarkerByIdAndType,
 };
