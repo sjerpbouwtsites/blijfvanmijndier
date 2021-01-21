@@ -9,7 +9,26 @@ const Shelter = modelsModule.Shelter;
 const Owner = modelsModule.Owner;
 
 /**
- *
+ * document.getElementById('map-filter')
+ * @throws when map filter is unknown.
+ * @returns {HTMLFormElement} the map filter form.
+ */
+function filterForm() {
+  const f = document.getElementById("map-filters");
+  if (!f) throw new Error("map filter unfound");
+  return f;
+}
+
+function radioConfig(label, value, evalFunc) {
+  return {
+    label,
+    value,
+    evalFunc,
+  };
+}
+
+/**
+ * One filterObject per filter 'rule' / input
  * @property {string} name used internally
  * @property {string} label used to client
  * @property {string} type inputtype
@@ -20,13 +39,6 @@ const Owner = modelsModule.Owner;
  * @class FilterObject
  */
 class FilterObject {
-  /**
-   * Rules for the filter config
-   *
-   * in config!
-
-   * @returns configObj
-   */
   constructor(config) {
     this.type = "checkbox";
     for (let k in config) {
@@ -39,70 +51,132 @@ class FilterObject {
     return `filter-input-${this.name}`;
   }
 
-  get inputOrInputs() {
-    let r;
+  /**
+   * retrieve current value of corresponding input in DOM.
+   *
+   * @readonly
+   * @memberof FilterObject
+   * @return {bool|string} the current checked bool or radio string.
+   */
+  get inputCurrentValue() {
     if (this.type === "checkbox") {
-      r = document.getElementById(this.id);
+      return document.getElementById(this.id) && document.getElementById(this.id).checked;
+    } else if (this.type === "radio") {
+      // create radioButtonList and get the value from there
+      // note: radios give their name as the value.
+      filterForm()[this.name].value;
     } else {
-      r = [document.getElementById("map-filters")[this.name]];
+      throw new Error("unknow type ", this.type);
     }
-    if (!r) {
-      console.error("geen ", filterObject.id);
-    }
-    return r;
   }
+
+  /**
+   * Get markers of entities related to this input.
+   *
+   * @readonly
+   * @returns {Array<Marker>} array of markers
+   */
   get markers() {
     return this.entities.map((model) => model.marker);
   }
 
-  isChecked() {
-    if (this.type !== "checkbox") {
-      throw new Error("fdfd");
-    }
-    return document.getElementById(this.id).value === "on";
-  }
   /**
-   * returns bool in the end!
+   * dispatches to corresponding evaluators
    *
-   * @param {*} radioEvaluationKey
+   * @param {bool|string} evaluateWith result of the inbox' value... either bool or string atm.
+   * @returns {object} width success.array of markers & failure.array of markers.
+   */
+  evaluate(evaluateWith) {
+    return this.type === "checkbox" ? this.evaluateCheckbox(evaluateWith) : this.evaluateRadio(evaluateWith);
+  }
+
+  /**
+   * @param {bool} evaluateWith checkbox res
+   * @returns {object} width success.array of markers & failure.array of markers.
+   */
+  evaluateCheckbox(evaluateWith) {
+    // checkbox are really straightforward.
+    if (evaluateWith === true) {
+      return {
+        success: this.markers,
+        failure: [],
+      };
+    }
+    return {
+      success: [],
+      failure: this.markers,
+    };
+  }
+
+  /**
+   * helper of evaluateRadio.
+   *
+   * @param {string} radioNameValue
+   * @return {Function} radioEvalFunc
    * @memberof FilterObject
    */
-  evaluate(radioEvaluationKey) {
+  getRadioEvalFunc(radioNameValue) {
+    const radioEvalFunc = this.radioData.find(radioDatum.value === radioNameValue).evalFunc;
+    return (
+      (radioEvalFunc && radioEvalFunc.type === "function" && radioEvalFunc) ||
+      utils.throwError(` no radioFunc for ${radioNameValue}`)
+    );
+  }
+
+  /**
+   * tests all entities associated with this config to the set radioEvaluations.
+   *
+   * @param {string} radioEvaluationKey the value of the name of the radio in the end chosen.
+   * @returns {object} width success.array of markers & failure.array of markers.
+   */
+  evaluateRadio(radioNameValue) {
+    this.type !== "radio" && utils.throwError("wrong eval func");
     const r = {
       success: [],
       failure: [],
     };
+    // get evalfunc from radioData.
 
-    const radioFunc = this.radioEvaluations[radioEvaluationKey];
+    // test every single entity and push marker.
     this.entities.forEach((entity) => {
-      if (radioFunc(entity)) {
+      if (radioEvalFunc(entity)) {
         r.success.push(entity.marker);
       } else {
         r.failure.push(entity.marker);
       }
-      console.error("HIER BEN JE");
     });
     return r;
   }
 }
 
+let fakeStaticBecauseCodeBaseToOld = {};
+/**
+ * Singleton, holder of configurations, orchestrates HTML, allows for retrieving configurations by id, name,
+ *
+ * @property {Array<FilterObject>} configurations
+ */
 class EntityFilter {
   constructor() {
-    this.data = [];
-    this.markers = MayaModel.allMayaModels.map((model) => model.marker);
+    // singleton enforecen.
+    if (fakeStaticBecauseCodeBaseToOld._self) return fakeStaticBecauseCodeBaseToOld._self;
+
+    this.configurations = [];
+    this.birthDate = new Date().getMilliseconds();
+
     this.setRow1();
     this.setRow2();
+    fakeStaticBecauseCodeBaseToOld._self = this;
   }
 
   setRow1() {
-    this.data.push(
+    this.configurations.push(
       new FilterObject({
         entityFilter: this,
         name: `is-guest`,
         label: "Gastgezin",
         entities: Guest.all,
         row: 1,
-        requiresName: "number-animals",
+        requiresName: "animals-on-site",
       }),
       new FilterObject({
         entityFilter: this,
@@ -117,7 +191,7 @@ class EntityFilter {
         label: "Eigenaar",
         entities: Owner.all,
         row: 1,
-        requiresName: "number-animals",
+        requiresName: "animals-on-site",
       }),
       new FilterObject({
         entityFilter: this,
@@ -125,108 +199,133 @@ class EntityFilter {
         label: "Pension",
         entities: Shelter.all,
         row: 1,
-        requiresName: "number-animals",
+        requiresName: "animals-on-site",
       })
     );
   }
   setRow2() {
-    this.data.push(
+    this.configurations.push(
       new FilterObject({
         entityFilter: this,
         name: `animals-on-site`,
         type: `radio`,
         label: "Aantal opgevangen",
-        radioLabels: ["onbelangrijk", "0", "1", "Meerdere"],
-        radioValues: ["skip", "nul", "een", "meerdere"],
-        radioEvaluations: {
-          skip: (entity) => {
+        radioData: [
+          radioConfig("onbelangrijk", "skip", () => {
             return true;
-          },
-          nul: (entity) => {
+          }),
+          radioConfig("0", "nul", (entity) => {
             return entity.animalsOnSite.length === 0;
-          },
-          een: (entity) => {
+          }),
+          radioConfig("1", "e&eacute;n", (entity) => {
             return entity.animalsOnSite.length === 1;
-          },
-          meerdere: (entity) => {
-            return entity.animalsOnSite.length > 2;
-          },
-        },
+          }),
+          radioConfig("Meerdere", "multiple", (entity) => {
+            return entity.animalsOnSite.length > 1;
+          }),
+        ],
         entities: [Guest.all, Owner.all, Shelter.all].flat(),
         row: 2,
         requiresName: ["is-shelter", "is-guest", "is-pension"],
       })
     );
   }
+  /**
+   * @param {string} name
+   * @returns {FilterConfig} filterConfig from this.configurations.
+   */
   getByName(name) {
-    const re = this.data.find((filterConfig) => filterConfig.name === name);
+    const re = this.configurations.find((filterConfig) => filterConfig.name === name);
     return re;
   }
+  /**
+   * @param {string} id
+   * @returns {FilterConfig} filterConfig from this.configurations.
+   */
   getById(id) {
-    return this.data.find((filterConfig) => filterConfig.id === id);
+    return this.configurations.find((filterConfig) => filterConfig.id === id);
   }
+  /**
+   * retrieves array of filterConfigs.
+   * @param {string} row
+   * @returns {Array<FilterConfig>} filterConfig from this.configurations.
+   */
   getRow(row) {
-    return this.data.filter((configObj) => configObj.row === row);
+    return this.configurations.filter((configObj) => configObj.row === row);
   }
 
   setEventHandlers() {
-    document.getElementById("map-filters").addEventListener("change", (event) => {
+    filterForm().addEventListener("change", (event) => {
+      // FilterConfig from this.configurations.
       const filterConfig = this.getByName(event.target.name);
       const type = filterConfig.type;
+
       if (type === "checkbox") {
+        // either all markers go or not.
         showHideNodes(filterConfig.markers, event.target.checked);
-      } else {
+        return;
+      }
+      if (type === "radio") {
         // value is name
         const value = event.target.form[event.target.name].value;
-        const evaluatedMarkers = filterConfig.evaluate(value);
+        const evaluatedMarkers = filterConfig.evaluateRadio(value);
         showHideNodes(evaluatedMarkers.success, true);
         showHideNodes(evaluatedMarkers.failure, false);
+        return;
       }
+      throw new Error("unknown type");
     });
   }
+}
 
-  static wrappedInput(filterConfig) {
-    return `
+/**
+ * @param {FilterConfig} filterConfig
+ * @returns {string} HTML of wrapped input
+ */
+function wrappedInput(filterConfig) {
+  return `
+  <label 
+    class='map__filter-label map__filter-label--${filterConfig.type} map__filter-label--${filterConfig.name}' 
+    for='${filterConfig.id}'>
+    <span class='map__filter-title'>${filterConfig.label}</span>
+    <input 
+      class='map__filter-input map__filter-input--${filterConfig.name}' 
+      id='${filterConfig.id}' 
+      name='${filterConfig.name}' 
+      type='${filterConfig.type}'
+      checked 
+    >
+  </label>`;
+}
+
+/**
+ *
+ * @param {FilterConfig} filterConfig
+ * @returns {string} HTML of a wrapper radio input.
+ */
+function wrappedRadioInput(filterConfig) {
+  const labelsAndInputs = filterConfig.radioData.reduce((prev, radioDatum) => {
+    prev +
+      `
     <label 
-      class='map__filter-label map__filter-label--${filterConfig.type} map__filter-label--${filterConfig.name}' 
-      for='${filterConfig.id}'>
-      <span class='map__filter-title'>${filterConfig.label}</span>
+      class="map__filter-label map__filter-label--radio map__filter-label--${filterConfig.name}" 
+      for="${filterConfig.id}-${radioDatum.label}">
+      <span class='map__filter-title'>${radioDatum.label}</span>
       <input 
-        class='map__filter-input map__filter-input--${filterConfig.name}' 
-        id='${filterConfig.id}' 
+        class="map__filter-input map__filter-input--${filterConfig.name}"
+        id="${filterConfig.id}-${radioDatum.label}"
         name='${filterConfig.name}' 
         type='${filterConfig.type}'
-        checked 
+        value='${radioDatum.value}'
       >
     </label>`;
-  }
-
-  static wrappedRadioInput(filterConfig) {
-    let labelsAndInputs = "";
-    for (let i = 0; i < filterConfig.radioValues.length; i++) {
-      const value = filterConfig.radioValues[i];
-      const label = filterConfig.radioLabels[i];
-      labelsAndInputs += `
-      <label 
-        class="map__filter-label map__filter-label--radio map__filter-label--${filterConfig.name}" 
-        for="${filterConfig.id}-${label}">
-        <span class='map__filter-title'>${label}</span>
-        <input 
-          class="map__filter-input map__filter-input--${filterConfig.name}"
-          id="${filterConfig.id}-${label}"
-          name='${filterConfig.name}' 
-          type='${filterConfig.type}'
-          value='${value}'
-        >
-      </label>`;
-    }
-
-    return `
+  }, "");
+  return `
     <span class='map__filter-radio-outer'>
-    <span class='map__filter-title map__filter-title--high'>${filterConfig.label}</span>
-    ${labelsAndInputs}
+      <span class='map__filter-title map__filter-title--high'>${filterConfig.label}
+      </span>
+      ${labelsAndInputs}
     </span>`;
-  }
 }
 
 /**
@@ -236,12 +335,12 @@ class EntityFilter {
 function populateFilterHTML(entityFilter) {
   const inputRow1 = `<div class='map__filter-row'>
         ${entityFilter.getRow(1).reduce((prev, filterConfig) => {
-          return prev + EntityFilter.wrappedInput(filterConfig);
+          return prev + wrappedInput(filterConfig);
         }, "")}
       </div>`;
   const inputRow2 = `<div class='map__filter-row'>
   ${entityFilter.getRow(2).reduce((prev, filterConfig) => {
-    return prev + EntityFilter.wrappedRadioInput(filterConfig);
+    return prev + wrappedRadioInput(filterConfig);
   }, "")}
 </div>`;
 
@@ -261,6 +360,8 @@ function setFilterEventHandlers(entityFilter) {
 
 function init() {
   const entityFilter = new EntityFilter();
+  const entityFilter2 = new EntityFilter();
+  console.log(entityFilter, entityFilter2);
   populateFilterHTML(entityFilter);
   setFilterEventHandlers(entityFilter);
 }
@@ -268,15 +369,3 @@ function init() {
 module.exports = {
   init,
 };
-
-//   const styleElement = getFilterStyleElement();
-
-//   const formCSSRules = Object.entries(formData)
-//     .map(([rule, checked]) => {
-//       return `[alt~="${rule}"] {
-//           opacity: ${checked ? `1` : `0.2`}
-//         }`;
-//     })
-//     .join("");
-//   styleElement.innerHTML = formCSSRules;
-// });

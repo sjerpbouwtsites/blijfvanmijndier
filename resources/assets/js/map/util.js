@@ -1,5 +1,9 @@
 const { closeAllDialogsPopupsIframesEscape } = require("./popups");
 
+function throwError(string) {
+  throw new Error(string);
+}
+
 /**
  * turns-string-like this to turnsStringLike
  *
@@ -68,4 +72,5 @@ module.exports = {
   toCamelCase,
   getMarkerByIdAndType,
   showHideNodes,
+  throwError,
 };
