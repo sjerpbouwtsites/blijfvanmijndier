@@ -176,8 +176,8 @@ function filterClickHandler() {
 /**
  * helper function to switch blurred state on markers.
  *
- * @param {*} marker
- * @param {*} blur
+ * @param {HTMLImageElement} marker
+ * @param {boolean} blur
  */
 function blurMarker(marker, blurMarker) {
   if (typeof blurMarker !== "boolean") {
