@@ -18,8 +18,19 @@
   font-family: "Montserrat";
 }
 
-#leaflet-map {
+// #leaflet-map
+.map__inner {
+  box-shadow: 2px 0px 6px rgba(33, 33, 33, 0.3);
   flex-grow: 1;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.blurred {
+  opacity: 0.3;
+  filter: greyscale(50%);
 }
 
 // kop

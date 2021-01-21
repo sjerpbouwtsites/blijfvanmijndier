@@ -1,5 +1,6 @@
 const utils = require("./util");
 const showHideNodes = utils.showHideNodes;
+const svgs = require("./svgs");
 const modelsModule = require("./models.js");
 const MayaModel = modelsModule.MayaModel;
 const Animal = modelsModule.Animal;
@@ -174,12 +175,23 @@ class EntityFilter {
     fakeStaticBecauseCodeBaseToOld._self = this;
   }
 
+  /**
+   * insert row number get title
+   *
+   * @param {*} row
+   * @returns
+   * @memberof EntityFilter
+   */
+  getRowTitles(row) {
+    return ["Types"]["Opgevangen dieren"];
+  }
+
   setRow1() {
     this.configurations.push(
       new FilterObject({
         entityFilter: this,
         name: `is-guest`,
-        label: "Gastgezin",
+        label: "Gast gezin",
         entities: Guest.all,
         row: 1,
         requiresName: "animals-on-site",
@@ -187,14 +199,14 @@ class EntityFilter {
       new FilterObject({
         entityFilter: this,
         name: `is-vet`,
-        label: "Dierenartsen",
+        label: "Dieren artsen",
         entities: Vet.all,
         row: 1,
       }),
       new FilterObject({
         entityFilter: this,
         name: `is-owner`,
-        label: "Eigenaar",
+        label: "Eigen aar",
         entities: Owner.all,
         row: 1,
         requiresName: "animals-on-site",
@@ -202,7 +214,7 @@ class EntityFilter {
       new FilterObject({
         entityFilter: this,
         name: `is-shelter`,
-        label: "Pension",
+        label: "Pen sion",
         entities: Shelter.all,
         row: 1,
         requiresName: "animals-on-site",
@@ -217,16 +229,16 @@ class EntityFilter {
         type: `radio`,
         label: "Aantal opgevangen",
         radioData: [
-          radioConfig("onbelangrijk", "skip", () => {
+          radioConfig("negeer", "skip", () => {
             return true;
           }),
-          radioConfig("0", "nul", (entity) => {
+          radioConfig("nul", "nul", (entity) => {
             return entity.animalsOnSite.length === 0;
           }),
-          radioConfig("1", "een", (entity) => {
+          radioConfig("&eacute;&eacute;n", "een", (entity) => {
             return entity.animalsOnSite.length === 1;
           }),
-          radioConfig("Meerdere", "multiple", (entity) => {
+          radioConfig("meer", "multiple", (entity) => {
             return entity.animalsOnSite.length > 1;
           }),
         ],
@@ -300,14 +312,18 @@ function wrappedInput(filterConfig) {
   <label 
     class='map__filter-label map__filter-label--${filterConfig.type} map__filter-label--${filterConfig.name}' 
     for='${filterConfig.id}'>
-    <span class='map__filter-title'>${filterConfig.label}</span>
     <input 
-      class='map__filter-input map__filter-input--${filterConfig.name}' 
-      id='${filterConfig.id}' 
-      name='${filterConfig.name}' 
-      type='${filterConfig.type}'
-      checked 
+    class='hidden' 
+    id='${filterConfig.id}' 
+    name='${filterConfig.name}' 
+    type='${filterConfig.type}'
+    checked 
     >
+    <span class='map__filter-fake-box map__filter-fake-box--${filterConfig.type}'>
+      ${svgs.checked("#ededfa")}
+      ${svgs.removed("#ededfa")}    
+    </span>
+    <span class='map__filter-title'>${filterConfig.label}</span>
   </label>`;
 }
 
@@ -317,25 +333,31 @@ function wrappedInput(filterConfig) {
  * @returns {string} HTML of a wrapper radio input.
  */
 function wrappedRadioInput(filterConfig) {
-  const labelsAndInputs = filterConfig.radioData.reduce((prev, radioDatum) => {
+  const labelsAndInputs = filterConfig.radioData.reduce((prev, radioDatum, index) => {
     return `${prev}
     <label 
       class="map__filter-label map__filter-label--radio map__filter-label--${filterConfig.name}" 
       for="${filterConfig.id}-${radioDatum.label}">
-      <span class='map__filter-title'>${radioDatum.label}</span>
       <input 
-        class="map__filter-input map__filter-input--${filterConfig.name}"
+        class='hidden'
         id="${filterConfig.id}-${radioDatum.label}"
         name='${filterConfig.name}' 
         type='${filterConfig.type}'
         value='${radioDatum.value}'
+        ${index === 0 ? `checked='checked'` : ""}
       >
-    </label>`;
+      <span class='map__filter-fake-box map__filter-fake-box--${filterConfig.type}'>
+        ${svgs.checked("#5151d3")}
+        ${svgs.removed("#5151d3")}
+      </span>
+      <span class='map__filter-title'>${radioDatum.label}</span>
+    </label>  
+    `;
   }, "");
+
+  // paste in outer.
   return `
     <span class='map__filter-radio-outer'>
-      <span class='map__filter-title map__filter-title--high'>${filterConfig.label}
-      </span>
       ${labelsAndInputs}
     </span>`;
 }
@@ -351,16 +373,24 @@ function activateResetButton() {
  * @param {EntityFilter} entityFilter
  */
 function populateFilterHTML(entityFilter) {
-  const inputRow1 = `<div class='map__filter-row'>
-        ${entityFilter.getRow(1).reduce((prev, filterConfig) => {
-          return prev + wrappedInput(filterConfig);
-        }, "")}
-      </div>`;
-  const inputRow2 = `<div class='map__filter-row'>
-  ${entityFilter.getRow(2).reduce((prev, filterConfig) => {
-    return prev + wrappedRadioInput(filterConfig);
-  }, "")}
-</div>`;
+  const inputRow1 = `
+  <div class='map__filter-row-outer'>
+    <span class='map__filter-row-title'>Typen</span>
+    <div class='map__filter-row'>
+      ${entityFilter.getRow(1).reduce((prev, filterConfig) => {
+        return prev + wrappedInput(filterConfig);
+      }, "")}
+    </div>
+  </div>`;
+  const inputRow2 = `
+  <div class='map__filter-row-outer'>
+  <span class='map__filter-row-title'>Aantal opgevangen</span>
+    <div class='map__filter-row'>
+      ${entityFilter.getRow(2).reduce((prev, filterConfig) => {
+        return prev + wrappedRadioInput(filterConfig);
+      }, "")}
+    </div>
+  </div>`;
 
   document.getElementById("body-filter").innerHTML = `<form action='#' method='GET' id='map-filters'>
     ${inputRow1}

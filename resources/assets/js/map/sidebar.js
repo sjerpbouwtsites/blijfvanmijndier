@@ -29,7 +29,7 @@ function prepareAsideHTML() {
   const section2 = createMapSection("Filter", "");
   aside.innerHTML = `
     ${section1}
-    <div class="divider div-transparent div-arrow-down"></div>
+    <div class="divider div-transparent"></div>
     ${section2}
   `;
 }

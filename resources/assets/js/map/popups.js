@@ -115,7 +115,6 @@ const buttonHandlers = {
   init() {
     document.addEventListener("click", (event) => {
       const t = event.target;
-      console.log(t);
       const actionBtn = utils.findInParents(
         t,
         (el) => {

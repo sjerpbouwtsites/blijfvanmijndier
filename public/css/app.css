@@ -1073,15 +1073,25 @@ styling for both the leaflet popup and the own dialog
   font-family: "Montserrat";
 }
 
-#leaflet-map {
+.map__inner {
+  box-shadow: 2px 0px 6px rgba(33, 33, 33, 0.3);
   flex-grow: 1;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.blurred {
+  opacity: 0.3;
+  filter: greyscale(50%);
 }
 
 .divider {
   position: relative;
-  margin-top: 30px;
+  margin-top: 20px;
   height: 1px;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
   opacity: 0.5;
 }
 
@@ -1289,73 +1299,104 @@ styling for both the leaflet popup and the own dialog
   display: none;
 }
 
+.map__filter-row-outer {
+  margin: 1em 0;
+}
+
 .map__filter-row {
   display: flex;
   font-weight: normal;
-  width: 100%;
+  width: calc(100% + 1em);
   justify-content: space-between;
+  margin: 0.25em 0;
 }
 
-input.map__filter-input {
-  margin-top: 0;
+.map__filter-row-title {
+  font-weight: 700;
+  font-variant: small-caps;
+  letter-spacing: 0.1em;
+  width: 100%;
+  display: inline-block;
+  margin: 0 5px 0;
 }
 
-.map__filter-column {
-  flex-basis: 25%;
+.map__filter-label {
   display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
+  background-color: #383893;
+  transition: 0.2s ease-in-out 0.1s;
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+  margin: 0 0.33em;
+  padding: 4px;
+  color: white;
   font-size: 0.75em;
-  margin-bottom: 10px;
+  width: calc(25% - 1.05em);
+  flex-shrink: 1;
 }
 
-.map__filter-column.map__filter-column--2 {
-  flex-basis: 50%;
+.map__filter-label:hover {
+  background-color: #4848bd;
+  cursor: pointer;
 }
 
-.map__filter-column--2 {
-  flex-basis: 50%;
+.map__filter-label svg {
+  width: 18px;
+  height: 18px;
 }
 
-.map__filter-column-title {
-  font-weight: normal;
-  text-align: right;
-  line-height: 0.9;
-  padding-right: 10px;
-  position: relative;
+.map__filter-label .map__filter-title {
+  text-align: center;
+  line-height: 0.9em;
+  margin-top: 0.25em;
+  opacity: 0.75;
 }
 
-.map__filter-column-title::after {
-  position: absolute;
-  content: "";
-  display: block;
-  height: calc(100% + 30px);
-  width: 3px;
-  background-color: #a29b9b;
-  top: -10%;
-  right: -31px;
+.map__filter-label input:checked ~ .map__filter-title {
+  opacity: 1;
 }
 
-.blurred {
-  opacity: 0.3;
-  filter: greyscale(50%);
+.map__filter-fake-box:hover {
+  cursor: pointer;
 }
 
-.map__filter-column--0 .map__filter-column-title {
-  min-width: 70px;
+.map__filter-fake-box .svg-icon-removed {
+  display: inline-block;
+  opacity: 0.75;
 }
 
-.map__filter-column--1 .map__filter-column-title {
-  min-width: 90px;
-}
-
-.map__filter-column--2 .map__filter-column-title {
-  width: 120px;
-}
-
-.map__filter-column--2 .map__filter-column-title::after {
+.map__filter-fake-box .svg-icon-checked {
   display: none;
+}
+
+input:checked ~ .map__filter-fake-box .svg-icon-removed {
+  display: none;
+  opacity: 1;
+}
+
+input:checked ~ .map__filter-fake-box .svg-icon-checked {
+  display: inline-block;
+}
+
+.map__filter-radio-outer {
+  width: 100%;
+}
+
+.map__filter-radio-outer {
+  display: flex;
+  font-weight: normal;
+  width: calc(100% + 1em);
+  justify-content: space-between;
+  margin: 0.25em 0;
+}
+
+.map__filter-fake-box--radio .svg-icon-checked path + path {
+  fill: #ededfa11;
+}
+
+input:checked ~ .map__filter-fake-box--radio .svg-icon-checked path + path {
+  fill: #ededfa;
 }
 
 .leaflet-shadow-icon {
