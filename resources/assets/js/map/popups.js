@@ -1,7 +1,9 @@
 const Animal = require("./models").Animal;
 const Vet = require("./models").Vet;
-const toCamelCase = require("./util").toCamelCase;
-const getMarkerByIdAndType = require("./util").getMarkerByIdAndType;
+const utils = require("./util");
+const toCamelCase = utils.toCamelCase;
+const getMarkerByIdAndType = utils.getMarkerByIdAndType;
+
 const svgs = require("./svgs");
 
 // #region Button renders
@@ -103,7 +105,9 @@ const buttonHandlers = {
     const knownActions = ["open-animal-dialog", "open-vet-dialog", "open-maya-page", "goto-marker"];
     document.addEventListener("click", (event) => {
       const t = event.target;
-      const actionBtn = this.findAction(t);
+      const actionBtn = utils.findInParents(t, (el) => {
+        return el.hasAttribute("data-action");
+      });
       if (!actionBtn) return;
       event.preventDefault();
       const action = actionBtn.getAttribute("data-action");
@@ -116,22 +120,7 @@ const buttonHandlers = {
       this.callbacks[camelcasedAction](actionBtn);
     });
   },
-  /**
-   * looks 3 layers deep for an data-action attr, otherwise returns false;
-   * @param {*} t
-   * @returns {HTMLelement | bool}
-   */
-  findAction(t) {
-    return t.hasAttribute("data-action")
-      ? t
-      : t.parentNode.hasAttribute("data-action")
-      ? t.parentNode
-      : t.parentNode.parentNode.hasAttribute("data-action")
-      ? t.parentNode.parentNode
-      : t.parentNode.parentNode.parentNode.hasAttribute("data-action")
-      ? t.parentNode.parentNode.parentNode
-      : false;
-  },
+
   callbacks: {
     openAnimalDialog(actionBtn) {
       closeLeaflet();

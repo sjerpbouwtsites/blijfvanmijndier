@@ -161,7 +161,6 @@ class EntityFilter {
     if (fakeStaticBecauseCodeBaseToOld._self) return fakeStaticBecauseCodeBaseToOld._self;
 
     this.configurations = [];
-    this.birthDate = new Date().getMilliseconds();
 
     this.setRow1();
     this.setRow2();
@@ -360,8 +359,6 @@ function setFilterEventHandlers(entityFilter) {
 
 function init() {
   const entityFilter = new EntityFilter();
-  const entityFilter2 = new EntityFilter();
-  console.log(entityFilter, entityFilter2);
   populateFilterHTML(entityFilter);
   setFilterEventHandlers(entityFilter);
 }

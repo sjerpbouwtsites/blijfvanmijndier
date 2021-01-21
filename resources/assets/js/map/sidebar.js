@@ -36,7 +36,6 @@ function prepareAsideHTML() {
 function init() {
   prepareAsideHTML();
   const animals = Animal.all;
-  console.log(animals);
   populateAnimalList(animals);
   addAnimalListEventHandlers(animals);
   filterInit();

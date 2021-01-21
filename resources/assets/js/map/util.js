@@ -19,6 +19,31 @@ function toCamelCase(string) {
     .join("");
 }
 
+/**
+ * searches parents for element with condition.
+ * @param {HTMLElement} startElement
+ * @param {function<boolean>} conditionFunc controleert huidige element aan conditie
+ * @param {number} [maxRecursion=5]
+ * @returns {HTMLElement|null} html element by success or null.
+ */
+function findInParents(startElement, conditionFunc, maxRecursion = 5) {
+  if (conditionFunc(startElement)) {
+    return startElement;
+  }
+  let werkEl = startElement.parentNode;
+  let teller = 0;
+  while (!conditionFunc(werkEl) && teller < maxRecursion) {
+    if (conditionFunc(werkEl)) return werkEl;
+    if (werkEl.parentNode && werkEl.parentNode.className !== "container content") {
+      werkEl = werkEl.parentNode;
+      teller = teller + 1;
+    } else {
+      return null;
+    }
+  }
+  return null;
+}
+
 function getMarkerByIdAndType(id, type) {
   const marker = document.getElementById(`marker-${type}-id-${id}`);
   if (!marker) {
@@ -70,6 +95,7 @@ function showHideNodes(nodes, showNodes = true, hideClass = "blurred") {
 module.exports = {
   BEMMapper,
   toCamelCase,
+  findInParents,
   getMarkerByIdAndType,
   showHideNodes,
   throwError,
