@@ -311,10 +311,6 @@ svg.leaflet-image-layer.lei path {
 }
 
 /* general typography */
-.leaflet-container {
-  font: 12px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
-}
-
 /* general toolbar styles */
 .leaflet-bar {
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.65);
@@ -772,7 +768,6 @@ styling for both the leaflet popup and the own dialog
   border-top-style: none;
   border-top-width: 0px;
   box-sizing: border-box;
-  color: white;
   cursor: pointer;
   font-family: Tahoma, Verdana, sans-serif;
   font-feature-settings: normal;
@@ -810,12 +805,12 @@ styling for both the leaflet popup and the own dialog
   text-decoration-style: solid;
   text-decoration-thickness: auto;
   top: 0px;
+  color: #f2f2f2;
 }
 
 .map__dialog-close:hover,
 .leaflet-container a.leaflet-popup-close-button:hover {
-  color: #333;
-  background-color: #7be653;
+  color: #c2c2c2;
 }
 
 .leaflet-popup-tip {
@@ -833,7 +828,6 @@ styling for both the leaflet popup and the own dialog
 .bvmd-popup__header-title {
   margin: 0;
   font-weight: bold;
-  font-variant: small-caps;
   display: block;
 }
 
@@ -845,6 +839,8 @@ styling for both the leaflet popup and the own dialog
   font-size: 0.66em;
   opacity: 0.66;
   display: block;
+  margin-top: 0.33em;
+  text-transform: uppercase;
 }
 
 .bvmd-popup__list-wrapper {
@@ -1046,6 +1042,21 @@ styling for both the leaflet popup and the own dialog
   opacity: 1;
 }
 
+/** hier gezet tbv komende generale stijling, uit aside */
+.map__link-style-button--text-btn {
+  display: inline-block;
+  vertical-align: middle;
+  position: relative;
+  top: -3px;
+}
+
+.map__link-style-button--text-btn svg {
+  margin: 0;
+  width: 24px;
+  height: 24px;
+  transform: rotate(90deg);
+}
+
 .map__outer {
   height: 100vh;
   width: 100vw;
@@ -1056,11 +1067,47 @@ styling for both the leaflet popup and the own dialog
   overflow: hidden;
   display: flex;
   flex-direction: row;
-  font-family: "Montserrat", sans-serif;
+}
+
+[class^="map__"] {
+  font-family: "Montserrat";
 }
 
 #leaflet-map {
   flex-grow: 1;
+}
+
+.divider {
+  position: relative;
+  margin-top: 30px;
+  height: 1px;
+  margin-bottom: 30px;
+  opacity: 0.5;
+}
+
+.div-transparent::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 5%;
+  right: 5%;
+  width: 90%;
+  height: 1px;
+  background-image: linear-gradient(to right, transparent, #303133, transparent);
+}
+
+.div-arrow-down:after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  top: -7px;
+  left: calc(50% - 7px);
+  width: 14px;
+  height: 14px;
+  transform: rotate(45deg);
+  background-color: #f6eff2;
+  border-bottom: 1px solid #303133;
+  border-right: 1px solid #303133;
 }
 
 .map-aside {
@@ -1077,10 +1124,22 @@ styling for both the leaflet popup and the own dialog
 
 .map-aside__section {
   position: relative;
+  min-height: 200px;
 }
 
 .map-aside__section + .map-aside__section {
   margin-top: 40px;
+}
+
+.map-aside__section + .map-aside__section::before {
+  content: "";
+  display: block;
+  position: absolute;
+  top: -22px;
+  left: -0;
+  height: 4px;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
 .map-aside__header {
@@ -1094,16 +1153,28 @@ styling for both the leaflet popup and the own dialog
   z-index: 10000000000000000;
   width: 200px;
   font-size: 1.2em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.1);
 }
 
-.map__link-style-button--text-btn {
+.map-aside__heading {
+  margin: 0;
+  color: white;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.map-aside .map__link-style-button--text-btn {
   display: inline-block;
   vertical-align: middle;
   position: relative;
   top: -3px;
 }
 
-.map__link-style-button--text-btn svg {
+.map-aside .map__link-style-button--text-btn svg {
   margin: 0;
   width: 24px;
   height: 24px;
@@ -1122,21 +1193,6 @@ styling for both the leaflet popup and the own dialog
   font-weight: 500;
 }
 
-.map-aside__header {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: rgba(0, 0, 0, 0.1);
-}
-
-.map-aside__heading {
-  margin: 0;
-  color: white;
-  font-weight: 900;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
 .map-aside__list {
   list-style-type: none;
   margin: 0;
@@ -1145,10 +1201,33 @@ styling for both the leaflet popup and the own dialog
 
 .map-aside__list--ordered {
   list-style-type: lower-latin;
+  margin-left: 2em;
 }
 
 .map-aside__list-item--ordered {
   list-style-type: lower-latin;
+}
+
+.map-aside__body > .map-aside__paragraph,
+.map-aside__body > .map-aside__list,
+.map-aside__body > .map-aside__input {
+  margin-top: 0.66em;
+  margin-bottom: 0.66em;
+  display: block;
+}
+
+.map-aside__input--text-field {
+  border: 0;
+  padding: 0.5em 1em;
+  width: 100%;
+  box-shadow: inset 1px 1px 4px rgba(81, 81, 211, 0.2);
+  transition: 0.4s ease-in-out 0.1s;
+}
+
+.map-aside__input--text-field:focus {
+  box-shadow: inset 1px -1px 3px rgba(81, 81, 211, 0.4);
+  border: 0;
+  outline: 0;
 }
 
 .animal-list {
@@ -1165,7 +1244,7 @@ styling for both the leaflet popup and the own dialog
 }
 
 .animal-list__item {
-  max-width: 100%;
+  max-width: calc(100% - 21px);
 }
 
 .animal-list__item + .animal-list__item {
@@ -1182,28 +1261,6 @@ styling for both the leaflet popup and the own dialog
 
 .animal-list .hidden {
   display: none !important;
-}
-
-.map-aside__body > .map-aside__paragraph,
-.map-aside__body > .map-aside__list,
-.map-aside__body > .map-aside__input {
-  margin-top: 0.66em;
-  margin-bottom: 0.66em;
-  display: block;
-}
-
-.map-aside__input {
-  border: 0;
-  padding: 0.5em 1em;
-  width: 100%;
-  box-shadow: inset 1px 1px 4px rgba(81, 81, 211, 0.2);
-  transition: 0.4s ease-in-out 0.1s;
-}
-
-.map-aside__input:focus {
-  box-shadow: inset 1px -1px 3px rgba(81, 81, 211, 0.4);
-  border: 0;
-  outline: 0;
 }
 
 .animal-list .map__button-wrapper--animal {

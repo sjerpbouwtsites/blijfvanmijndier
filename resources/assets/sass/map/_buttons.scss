@@ -61,3 +61,18 @@
 .map__link-style-button:hover svg {
   opacity: 1;
 }
+
+/** hier gezet tbv komende generale stijling, uit aside */
+.map__link-style-button--text-btn {
+  display: inline-block;
+  vertical-align: middle;
+  position: relative;
+  top: -3px;
+
+  svg {
+    margin: 0;
+    width: 24px;
+    height: 24px;
+    transform: rotate(90deg);
+  }
+}

@@ -29,6 +29,7 @@ function prepareAsideHTML() {
   const section2 = createMapSection("Filter", "");
   aside.innerHTML = `
     ${section1}
+    <div class="divider div-transparent div-arrow-down"></div>
     ${section2}
   `;
 }
@@ -70,7 +71,7 @@ function populateAnimalList(animals) {
     .join(``);
 
   animalListWrapper.innerHTML = `
-    <input class='map-aside__input' type='text' tabindex='1' id='animal-list-search' placeholder='Zoek...'>    
+    <input class='map-aside__input map-aside__input--text-field' type='text' tabindex='1' id='animal-list-search' placeholder='Zoek...'>    
     <ul class='map-aside__list animal-list'>
       ${animalListHTML}
     </ul>
