@@ -116,11 +116,17 @@ class FilterObject {
    * @memberof FilterObject
    */
   getRadioEvalFunc(radioNameValue) {
-    const radioEvalFunc = this.radioData.find(radioDatum.value === radioNameValue).evalFunc;
-    return (
-      (radioEvalFunc && radioEvalFunc.type === "function" && radioEvalFunc) ||
-      utils.throwError(` no radioFunc for ${radioNameValue}`)
-    );
+    const radioFound = this.radioData.find((radioDatum) => {
+      return radioDatum.value === radioNameValue;
+    });
+    if (!radioFound) {
+      throw new Error("no radio config with value set as ", radioNameValue);
+    }
+    const radioEvalFunc = radioFound.evalFunc;
+    if (!radioEvalFunc || typeof radioEvalFunc !== "function") {
+      utils.throwError(` no radioFunc for ${radioNameValue}`);
+    }
+    return radioEvalFunc;
   }
 
   /**
@@ -136,6 +142,7 @@ class FilterObject {
       failure: [],
     };
     // get evalfunc from radioData.
+    const radioEvalFunc = this.getRadioEvalFunc(radioNameValue);
 
     // test every single entity and push marker.
     this.entities.forEach((entity) => {
@@ -216,7 +223,7 @@ class EntityFilter {
           radioConfig("0", "nul", (entity) => {
             return entity.animalsOnSite.length === 0;
           }),
-          radioConfig("1", "e&eacute;n", (entity) => {
+          radioConfig("1", "een", (entity) => {
             return entity.animalsOnSite.length === 1;
           }),
           radioConfig("Meerdere", "multiple", (entity) => {
@@ -274,6 +281,13 @@ class EntityFilter {
       }
       throw new Error("unknown type");
     });
+    filterForm().addEventListener("reset", (event) => {
+      Array.from(filterForm().querySelectorAll(".map__filter-input")).forEach((input) => {
+        const e = new Event("change");
+        input.dispatchEvent(e);
+        console.log(e);
+      });
+    });
   }
 }
 
@@ -304,8 +318,8 @@ function wrappedInput(filterConfig) {
  */
 function wrappedRadioInput(filterConfig) {
   const labelsAndInputs = filterConfig.radioData.reduce((prev, radioDatum) => {
-    prev +
-      `
+    console.log(radioDatum);
+    return `${prev}
     <label 
       class="map__filter-label map__filter-label--radio map__filter-label--${filterConfig.name}" 
       for="${filterConfig.id}-${radioDatum.label}">
@@ -327,6 +341,12 @@ function wrappedRadioInput(filterConfig) {
     </span>`;
 }
 
+function activateResetButton() {
+  document.getElementById("filter-form-reset").addEventListener("click", () => {
+    filterForm().reset();
+  });
+}
+
 /**
  * reduces filter config to label & input HTML for form
  * @param {EntityFilter} entityFilter
@@ -346,7 +366,7 @@ function populateFilterHTML(entityFilter) {
   document.getElementById("body-filter").innerHTML = `<form action='#' method='GET' id='map-filters'>
     ${inputRow1}
     ${inputRow2}
-    <input type='reset' class='map-aside__input--reset' value='leeg'></form>`;
+    <input type='reset' id='filter-form-reset' class='map-aside__input--reset' value='leeg'></form>`;
 }
 
 /**
@@ -361,6 +381,7 @@ function init() {
   const entityFilter = new EntityFilter();
   populateFilterHTML(entityFilter);
   setFilterEventHandlers(entityFilter);
+  activateResetButton();
 }
 
 module.exports = {

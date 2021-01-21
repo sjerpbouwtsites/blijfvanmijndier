@@ -17,7 +17,7 @@ styling for both the leaflet popup and the own dialog
 
 .map__dialog {
   position: fixed;
-  z-index: 501;
+  z-index: 1001;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);

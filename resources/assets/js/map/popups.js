@@ -102,32 +102,26 @@ const buttonHandlers = {
    * adds the data-action event listener
    */
   init() {
-    const knownActions = ["open-animal-dialog", "open-vet-dialog", "open-maya-page", "goto-marker"];
     document.addEventListener("click", (event) => {
       const t = event.target;
       const actionBtn = utils.findInParents(t, (el) => {
         return el.hasAttribute("data-action");
       });
-      if (!actionBtn) return;
-      event.preventDefault();
-      const action = actionBtn.getAttribute("data-action");
-      if (!knownActions.includes(action)) {
-        alert(`unknown action: ${action}`);
+      if (!actionBtn) {
         return;
       }
-
-      const camelcasedAction = toCamelCase(action);
-      this.callbacks[camelcasedAction](actionBtn);
+      event.preventDefault();
+      this.callbacks[toCamelCase(actionBtn.getAttribute("data-action"))](actionBtn);
     });
   },
 
   callbacks: {
     openAnimalDialog(actionBtn) {
       closeLeaflet();
-      setOwnDialogState(true);
       const animalId = actionBtn.getAttribute("data-id");
       const animal = Animal.find(animalId);
       populateDialogWithAnimal(animal);
+      setOwnDialogState(true);
     },
     openVetDialog(actionBtn) {
       setOwnDialogState(false);
