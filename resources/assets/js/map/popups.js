@@ -167,23 +167,11 @@ const buttonHandlers = {
      */
     openMayaPage(actionBtn) {
       this.genericCallback();
-      const singularId = actionBtn.href.replace(/\W/g, "");
-      const wrapperDiv = document.createElement("div");
-      wrapperDiv.id = singularId;
-      wrapperDiv.classList.add("map__iframe-wrapper");
-      const closeBtn = document.createElement("button");
-      closeBtn.className = "map__iframe-close";
-      closeBtn.innerHTML = svgs.arrowBack("#fff");
-      closeBtn.id = `${singularId}__close`;
-      wrapperDiv.innerHTML = `<iframe scrolling="auto" src="${actionBtn.href}"></iframe>`;
-      const docBody = document.getElementsByTagName("body")[0];
-      wrapperDiv.appendChild(closeBtn);
-      docBody.appendChild(wrapperDiv);
-      document.getElementById(`${singularId}__close`).addEventListener("click", removeIframeWrapper);
-    },
+      window.open(actionBtn.href)
+   },
     /** removes all screens. */
     genericCallback() {
-      removeIframeWrapper();
+     // removeIframeWrapper();
       closeLeaflet();
       setOwnDialogState(false);
     },
@@ -194,10 +182,10 @@ const buttonHandlers = {
 /**
  * removes the maya iframe it
  */
-function removeIframeWrapper() {
-  const wrapperEl = document.querySelector(".map__iframe-wrapper");
-  if (wrapperEl) wrapperEl.parentNode.removeChild(wrapperEl);
-}
+// function removeIframeWrapper() {
+//   const wrapperEl = document.querySelector(".map__iframe-wrapper");
+//   if (wrapperEl) wrapperEl.parentNode.removeChild(wrapperEl);
+// }
 
 // #region popup HTML renderfuncs
 
@@ -535,7 +523,7 @@ function closeLeaflet() {
 function closeAllDialogsPopupsIframesEscape() {
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
-      removeIframeWrapper();
+     // removeIframeWrapper();
       closeLeaflet();
       setOwnDialogState(false);
     }
