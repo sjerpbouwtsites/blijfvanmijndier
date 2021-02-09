@@ -84,10 +84,6 @@ function initMap() {
     postLeafletFixes();
     sidebar.init();
     globalLeafletMap.setZoom(8);
-    setTimeout(() => {
-      console.warn("dev dingetje invalidate size");
-      globalLeafletMap.invalidateSize();
-    }, 500);
   });
 }
 

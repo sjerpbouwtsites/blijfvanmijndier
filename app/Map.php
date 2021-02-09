@@ -8,24 +8,24 @@ use Illuminate\Support\Facades\DB;
 class Map extends Model
 {
 
-    public function tables()
-    {
-        return $this->belongsToMany(Table::class);
+  public function tables()
+  {
+    return $this->belongsToMany(Table::class);
+  }
+
+  /**
+   * DB::table -> get all tables to get and return json encoded.
+   * @return json all map data tables
+   */
+  public static function map_data()
+  {
+    $tables_to_get = ['addresses', 'guests', 'vets', 'shelters', 'owners'];
+
+    $all_tables = [];
+    foreach ($tables_to_get as $table) {
+      $all_tables[$table] = DB::table($table)->limit(100)->get();
     }
-
-    /**
-     * DB::table -> get all tables to get and return json encoded.
-     * @return json all map data tables
-     */
-    public static function map_data()
-    {
-        $tables_to_get = ['addresses', 'guests', 'vets', 'shelters', 'owners'];
-
-        $all_tables = [];
-        foreach ($tables_to_get as $table) {
-            $all_tables[$table] = DB::table($table)->get();
-        }
-        $all_tables['animals'] = DB::select("SELECT an.id as id,
+    $all_tables['animals'] = DB::select("SELECT an.id as id,
         an.name as name,
         an.shelter_id as shelter_id,
         an.owner_id as owner_id,
@@ -46,6 +46,6 @@ class Map extends Model
         LEFT JOIN tables tGenderType ON tGenderType.id = an.gendertype_id;
       ");
 
-        return json_encode($all_tables);
-    }
+    return json_encode($all_tables);
+  }
 }

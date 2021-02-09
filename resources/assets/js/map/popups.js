@@ -130,31 +130,31 @@ const buttonHandlers = {
       this.callbacks[toCamelCase(actionBtn.getAttribute("data-action"))](actionBtn);
     });
   },
-
   callbacks: {
     openAnimalDialog(actionBtn) {
-      closeLeaflet();
+      this.genericCallback();
       const animalId = actionBtn.getAttribute("data-id");
       const animal = Animal.find(animalId);
       populateDialogWithAnimal(animal);
       setOwnDialogState(true);
     },
     openVetDialog(actionBtn) {
-      setOwnDialogState(false);
+      this.genericCallback();
       const vetId = actionBtn.getAttribute("data-id");
       const vet = Vet.find(vetId);
       const marker = getMarkerByIdAndType(vet.id, "vet");
       marker && marker.click();
     },
     gotoMarker(actionBtn) {
-      setOwnDialogState(false);
+      this.genericCallback();
       const buttonId = actionBtn.getAttribute("data-id");
       const buttonType = actionBtn.getAttribute("data-type");
       const marker = getMarkerByIdAndType(buttonId, buttonType);
+      console.log(marker);
       marker && marker.click();
     },
     openExplanation(actionBtn) {
-      closeLeaflet();
+      this.genericCallback();
       const textId = actionBtn.getAttribute("data-text-id");
       console.log(textId);
       populateDialogWithText(textId);
@@ -166,8 +166,7 @@ const buttonHandlers = {
      * @param {*} actionBtn
      */
     openMayaPage(actionBtn) {
-      closeLeaflet();
-      setOwnDialogState(false);
+      this.genericCallback();
       const singularId = actionBtn.href.replace(/\W/g, "");
       const wrapperDiv = document.createElement("div");
       wrapperDiv.id = singularId;
@@ -181,6 +180,12 @@ const buttonHandlers = {
       wrapperDiv.appendChild(closeBtn);
       docBody.appendChild(wrapperDiv);
       document.getElementById(`${singularId}__close`).addEventListener("click", removeIframeWrapper);
+    },
+    /** removes all screens. */
+    genericCallback() {
+      removeIframeWrapper();
+      closeLeaflet();
+      setOwnDialogState(false);
     },
   },
 };

@@ -41,7 +41,8 @@ function findInParents(startElement, conditionFunc, maxRecursion = 5) {
     }
     const tParent = werkEl.parentNode;
     // zijn we al op body?
-    if (tParent.id === "app-body") {
+
+    if (!tParent || tParent.id === "app-body") {
       //   console.log("mis!");
       return null;
     }
@@ -94,7 +95,7 @@ function showHideNodes(nodes, showNodes = true, hideClass = "blurred") {
       return node;
     });
   } catch (err) {
-    console.error(`show hide nodes error with nodes: ${typeof nodes} nodes.length`);
+    console.error(`show hide nodes error with nodes:  ${nodes.length} ${typeof nodes}`);
     console.log(nodes);
     throw new Error(err);
   }
