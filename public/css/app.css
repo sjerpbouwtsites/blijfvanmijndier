@@ -1089,7 +1089,7 @@ styling for both the leaflet popup and the own dialog
 
 .blurred {
   opacity: 0.3;
-  filter: greyscale(50%);
+  filter: greyscale(50%) blur(1px);
 }
 
 .divider {
@@ -1410,18 +1410,6 @@ input:checked ~ .map__filter-fake-box--radio .svg-icon-checked path + path {
 
 .lmi {
   transition: 0.2s ease-in-out;
-}
-
-.lmi.color-red {
-  filter: hue-rotate(140deg);
-}
-
-.lmi.color-purple {
-  filter: hue-rotate(65deg);
-}
-
-.lmi.color-green {
-  filter: hue-rotate(310deg);
 }
 
 /*# sourceMappingURL=app.css.map */

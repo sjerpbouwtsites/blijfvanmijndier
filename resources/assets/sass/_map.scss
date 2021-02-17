@@ -30,7 +30,7 @@
 
 .blurred {
   opacity: 0.3;
-  filter: greyscale(50%);
+  filter: greyscale(50%) blur(1px);
 }
 
 // kop
@@ -45,15 +45,6 @@
 
 .lmi {
   transition: 0.2s ease-in-out;
-  &.color-red {
-    filter: hue-rotate(140deg);
-  }
-  &.color-purple {
-    filter: hue-rotate(65deg);
-  }
-  &.color-green {
-    filter: hue-rotate(310deg);
-  }
   &[alt~="is-shelter"],
   &[alt~="is-guest"] {
     // &[alt~="has-animals"] {

@@ -96,23 +96,25 @@ function initMap() {
 
 function setMarkerRotateFixesHandlers(locatedEntities, globalLeafletMap) {
   runMarkerRotateFixes(locatedEntities);
-  
 
-    [("moveend", "viewreset", "zoomend")].forEach((eventNaam) => {
-      globalLeafletMap.on(eventNaam, function (e) {
-        runMarkerRotateFixes(locatedEntities);
-      });
+  [("moveend", "viewreset", "zoomend")].forEach((eventNaam) => {
+    globalLeafletMap.on(eventNaam, function (e) {
+      runMarkerRotateFixes(locatedEntities);
     });
+  });
 }
 
 let laatsteMarkerRotateFix = null;
 function runMarkerRotateFixes(locatedEntities, tijd = 500) {
   if (laatsteMarkerRotateFix) {
-    clearTimeout(laatsteMarkerRotateFix);
+    setTimeout(()=>{
+      runMarkerRotateFixes(locatedEntities, tijd)
+    }, 1000)
   }
 
   laatsteMarkerRotateFix = setTimeout(() => {
     leafletShell.checkAndFixMarkersToClose(locatedEntities);
+    clearTimeout(laatsteMarkerRotateFix);
   }, tijd);
 }
 

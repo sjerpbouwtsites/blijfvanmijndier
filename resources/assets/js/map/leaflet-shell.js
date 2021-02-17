@@ -16,28 +16,35 @@ function maakAlt(locatedEntity) {
         check: (str) => {
           return str === "vet";
         },
-        res: "color-red",
+        res: "marker-vet",
       },
       {
         key: "type",
         check: (str) => {
           return str === "shelter";
         },
-        res: "color-purple",
+        res: "marker-shelter",
       },
       {
         key: "type",
         check: (str) => {
           return str === "guest";
         },
-        res: "color-green",
+        res: "marker-guest",
       },
       {
         key: "type",
         check: (str) => {
           return str === "owner";
         },
-        res: "color-blue",
+        res: "marker-owner",
+      },
+      {
+        key: "type",
+        check: (str) => {
+          return str === "pension";
+        },
+        res: "marker-pension",
       },
       {
         key: "animals",
@@ -59,6 +66,13 @@ function maakAlt(locatedEntity) {
           return animalsOnSite.length > 1;
         },
         res: "animals-on-site",
+      },
+      {
+        key: "animalsOnSite",
+        check: (animalsOnSite) => {
+          return animalsOnSite.length === 0;
+        },
+        res: "no-animals",
       },
     ]
       .map((condition) => {
@@ -99,7 +113,6 @@ function locationMapper(locatedEntity, globalLeafletMap) {
 }
 
 function checkAndFixMarkersToClose(locatedEntities) {
-
   const markers = locatedEntities.map((locatedEntity) => {
     return locatedEntity.marker;
   });
@@ -178,13 +191,17 @@ function checkAndFixMarkersToClose(locatedEntities) {
 
     try {
       const bestaandeStijl = getComputedStyle(roteerMarkerData.marker);
-      
+
       const transformMatch = bestaandeStijl.transform
-      .replace('matrix(','').replace(')','').split(',').slice(4,6).map(n => Number(n.trim()))
+        .replace("matrix(", "")
+        .replace(")", "")
+        .split(",")
+        .slice(4, 6)
+        .map((n) => Number(n.trim()));
 
       if (!transformMatch || !transformMatch.length) {
-        console.log('geen transform in ', bestaandeStijl.transform);
-        throw new Error('mislukte transform match')
+        console.log("geen transform in ", bestaandeStijl.transform);
+        throw new Error("mislukte transform match");
       }
 
       const [transformX, transformY] = transformMatch;

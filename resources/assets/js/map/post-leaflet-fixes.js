@@ -1,3 +1,28 @@
+const { ownerBtn } = require("./popups");
+
+const markerSrcConfig = {
+  guest: {
+    "animals-on-site": "guest/marker-groen.png",
+    "no-animals": "guest/marker-groenblauw.png",
+  },
+  owner: {
+    "animals-on-site": "owner/marker-diepblauw-fel.png",
+    "no-animals": "owner/marker-diepblauw.png",
+  },
+  pension: {
+    "animals-on-site": "pension/marker-magenta-fel.png",
+    "no-animals": "pension/marker-magenta.png",
+  },
+  shelter: {
+    "animals-on-site": "shelter/marker-lichtblauw-fel.png",
+    "no-animals": "shelter/marker-lichtblauw.png",
+  },
+  vet: {
+    "animals-on-site": "vet/marker-rood.png",
+    "no-animals": "vet/marker-rood.png",        
+  }
+};
+
 /**
  * using the alt attribute is nice but a bit shit too.
  * move all to data-attributes after initialization.
@@ -91,9 +116,12 @@ function postLeafletWork() {
 
     // MOVE ANIMAL QUANTITY TO DATA ATTR
     const animalAmountData = markerAltData.filter((altPiece) => {
-      return ["has-animals", "multiple-animals", "animals-on-site"].includes(
-        altPiece
-      );
+      return [
+        "has-animals",
+        "multiple-animals",
+        "animals-on-site",
+        "no-animals",
+      ].includes(altPiece);
     });
     if (animalAmountData) {
       animalAmountData.forEach((animalAD) => {
@@ -105,7 +133,11 @@ function postLeafletWork() {
     marker.removeAttribute("alt");
 
     // FIX THE SRC ATTRIBUTE
-    marker.src = "/img/marker.png";
+
+    let typeSrcConfig = markerSrcConfig[markerTempType];
+    let markerSrc = animalAmountData.includes('no-animals') ? typeSrcConfig['no-animals'] : typeSrcConfig['animals-on-site']
+
+    marker.src = `/img/markers/${markerSrc}`;
     shadowMarker.src = "/img/marker-shadow.png";
   });
 
