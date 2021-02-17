@@ -23,12 +23,13 @@
     @include('form_text', ['field' => 'house_number', 'label' => 'Huisnummer'])
     @include('form_text', ['field' => 'postal_code', 'label' => 'Postcode'])
     @include('form_text', ['field' => 'city', 'label' => 'Woonplaats'])
-    <div class="form-group">
+    <?php if (!empty($longitude)) : ?><div class="form-group">
       <label for="city" class="control-label col-md-4">Lat & lon</label>
       <div class="col-md-8">
         <span class='form-control form-control--fake'><?=$longitude?>; <?=$lattitude?></span>
       </div>
   </div>    
+  <?php endif;?>
     
   
 

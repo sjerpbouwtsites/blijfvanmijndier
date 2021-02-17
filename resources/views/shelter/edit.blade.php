@@ -24,7 +24,8 @@
             @include('form_text', ['field' => 'name', 'label' => 'Naam'])
 						
 						@include('form_group_address' ,							['lattitude' => $shelter['lattitude'],
-						'longitude' => $shelter['longitude'])
+						'longitude' => $shelter['longitude']
+						])
             @include('form_text', ['field' => 'phone_number', 'label' => 'Telefoonnummer'])
             @include('form_text', ['field' => 'email_address', 'label' => 'Emailadres'])
             @include('form_text', ['field' => 'website', 'label' => 'Website'])

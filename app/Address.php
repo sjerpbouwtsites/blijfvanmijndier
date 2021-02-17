@@ -101,7 +101,7 @@ class Address extends Model
         $street = str_replace(' ', '', $attributeList['street']);
         $house_number = str_replace(' ', '', $attributeList['house_number']);
 
-        $geo_query = "$city $street $house_number";
+        $geo_query = "Netherlands $city $street $house_number";
 
         $url = "https://eu1.locationiq.com/v1/search.php?key=b7a32fa378c135&q=" . urlencode($geo_query) . "&limit=1";
 
