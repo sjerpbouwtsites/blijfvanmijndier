@@ -1088,7 +1088,7 @@ styling for both the leaflet popup and the own dialog
 }
 
 .blurred {
-  opacity: 0.3;
+  opacity: 0.2;
   filter: greyscale(50%) blur(1px);
 }
 

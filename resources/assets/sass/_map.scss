@@ -29,7 +29,7 @@
 }
 
 .blurred {
-  opacity: 0.3;
+  opacity: 0.2;
   filter: greyscale(50%) blur(1px);
 }
 
@@ -45,15 +45,4 @@
 
 .lmi {
   transition: 0.2s ease-in-out;
-  &[alt~="is-shelter"],
-  &[alt~="is-guest"] {
-    // &[alt~="has-animals"] {
-    //   border-right: 3px solid red;
-    //   width: 28px !important;
-    //   &[alt~="multiple-animals"] {
-    //     border-right: 6px solid red;
-    //     width: 31px !important;
-    //   }
-    // }
-  }
 }

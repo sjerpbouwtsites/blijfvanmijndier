@@ -130,12 +130,12 @@ function checkAndFixMarkersToClose(locatedEntities) {
       return {
         x,
         y,
-        // gebied van 7.5px hoog en 7.5px breed rondom marker.
+        // gebied van 20px hoog en 20px breed rondom marker.
         eigenGebied: {
-          xMin: x - 3.75,
-          xMax: x + 3.75,
-          yMin: y - 3.75,
-          yMax: x + 3.75,
+          xMin: x - 5,
+          xMax: x + 5,
+          yMin: y - 5,
+          yMax: x + 5,
         },
         // markers gaan geroteerd worden om elkaar niet in de weg te zitten.
         rotatie: 0,
@@ -174,8 +174,11 @@ function checkAndFixMarkersToClose(locatedEntities) {
   if (!teRoterenMarkers.length) return;
 
   // nu te dichtbijzijnde markers rotatie berekenen.
+
+  // als er veel markers zijn, > 4. waaier links laten beginenn op helft.
+
   teRoterenMarkers.forEach((markerData) => {
-    let rotatieVerhoging = 1;
+    let rotatieVerhoging = markerData.markersInGebied.length < 4 ? 1 : Math.floor(markerData.markersInGebied.length / -2) + 1;
     markerData.markersInGebied.forEach((markerInGebied, index) => {
       // als deze marker reeds is bijgewerkt, skip.
       if (markerData.bijgewerktDoor !== null) return;
