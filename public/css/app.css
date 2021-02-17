@@ -54,6 +54,7 @@ aanpassingen:
 
 .lmi,
 .leaflet-marker-shadow {
+  transform-origin: center;
   display: block;
 }
 
@@ -284,6 +285,10 @@ aanpassingen:
 .leaflet-pane > svg path,
 .leaflet-tile-container {
   pointer-events: none;
+}
+
+.lmi:hover {
+  z-index: 500 !important;
 }
 
 .lmi.lei,

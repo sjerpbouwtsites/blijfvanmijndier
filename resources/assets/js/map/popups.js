@@ -19,15 +19,25 @@ const svgs = require("./svgs");
 function buttonBase(buttonData, modifiers, action) {
   if (buttonData === null) return ``;
 
-  const CssClasses = ["", "does-action"].concat(modifiers).map((modifierBase) => {
-    return {
-      wrapper: modifierBase ? `map__button-wrapper--${modifierBase}` : `map__button-wrapper`,
-      button: modifierBase ? `map__link-style-button--${modifierBase}` : `map__link-style-button`,
-    };
-  });
+  const CssClasses = ["", "does-action"]
+    .concat(modifiers)
+    .map((modifierBase) => {
+      return {
+        wrapper: modifierBase
+          ? `map__button-wrapper--${modifierBase}`
+          : `map__button-wrapper`,
+        button: modifierBase
+          ? `map__link-style-button--${modifierBase}`
+          : `map__link-style-button`,
+      };
+    });
 
-  const wrapperCss = CssClasses.map((selectorSet) => selectorSet.wrapper).join("  ");
-  const buttonCss = CssClasses.map((selectorSet) => selectorSet.button).join("  ");
+  const wrapperCss = CssClasses.map((selectorSet) => selectorSet.wrapper).join(
+    "  "
+  );
+  const buttonCss = CssClasses.map((selectorSet) => selectorSet.button).join(
+    "  "
+  );
   return `
     <span class='${wrapperCss}'>
       <a 
@@ -80,7 +90,9 @@ function vetBtn(vetData) {
 function textBtn(slug, modifier = "") {
   return `<a 
     class="map__link-style-button map__link-style-button--text-btn ${modifier}" 
-    data-action='open-explanation' data-text-id='${slug.toLowerCase()}' href="#">${svgs.info("#5151d3")}</a>`;
+    data-action='open-explanation' data-text-id='${slug.toLowerCase()}' href="#">${svgs.info(
+    "#5151d3"
+  )}</a>`;
 }
 
 /**
@@ -97,7 +109,9 @@ function mayaBtn(entity, edit = false, modifier = "") {
   const r = entity.mayaRoute(edit);
   return `<a 
     class="map__link-style-button map__link-style-button--maya-btn ${m} " 
-    data-action='open-maya-page' href="${r}">${t} ${svgs.open("rgb(81, 81, 211)")}</a>`;
+    data-action='open-maya-page' href="${r}">${t} ${svgs.open(
+    "rgb(81, 81, 211)"
+  )}</a>`;
 }
 
 //#endregion Button renders
@@ -127,7 +141,9 @@ const buttonHandlers = {
       }
       event.preventDefault();
       console.log(actionBtn);
-      this.callbacks[toCamelCase(actionBtn.getAttribute("data-action"))](actionBtn);
+      this.callbacks[toCamelCase(actionBtn.getAttribute("data-action"))](
+        actionBtn
+      );
     });
   },
   callbacks: {
@@ -167,11 +183,11 @@ const buttonHandlers = {
      */
     openMayaPage(actionBtn) {
       this.genericCallback();
-      window.open(actionBtn.href)
-   },
+      window.open(actionBtn.href);
+    },
     /** removes all screens. */
     genericCallback() {
-     // removeIframeWrapper();
+      // removeIframeWrapper();
       closeLeaflet();
       setOwnDialogState(false);
     },
@@ -213,7 +229,9 @@ function popupDataRow(left, right) {
  */
 function popupDataList(rowList = [], title = "", modifier = "") {
   if (rowList.length < 1) return "";
-  const titleHtml = !title ? `` : `<h3 class='bvmd-popup__list-title'>${title}</h3>`;
+  const titleHtml = !title
+    ? ``
+    : `<h3 class='bvmd-popup__list-title'>${title}</h3>`;
   return `
   <div class='bvmd-popup__list-wrapper'>
     ${titleHtml}
@@ -236,7 +254,11 @@ function popupFooter(entity, rijen = []) {
           // links for all animals to maya.
           return popupDataRow(
             `${animal.breed} ${animal.name}`,
-            `${mayaBtn(animal, false, "in-popup-footer")} | ${mayaBtn(animal, true, "in-popup-footer")}`
+            `${mayaBtn(animal, false, "in-popup-footer")} | ${mayaBtn(
+              animal,
+              true,
+              "in-popup-footer"
+            )}`
           );
         })
       : "";
@@ -270,7 +292,9 @@ function popupHeader(title, subtitle = null) {
 
   const widthCh = `width: calc(${maxChars}ch + 1em);`;
   const maxWidthCh = `max-width: calc(${25}ch + 1em);`; // no too long titles.
-  const subtitleHTML = !subtitle ? `` : `<small class='bvmd-popup__header-subtitle'>${subtitle}</small>`;
+  const subtitleHTML = !subtitle
+    ? ``
+    : `<small class='bvmd-popup__header-subtitle'>${subtitle}</small>`;
 
   return `<header 
     class='bvmd-popup__header'
@@ -290,13 +314,22 @@ function popupHeader(title, subtitle = null) {
 function populateDialogWithAnimal(animal) {
   document.getElementById("dialog-print-target").innerHTML = `
     <div class='bvmd-popup'>
-      ${popupHeader(animal.name, `${animal.breed} ${animal.animal_type.toLowerCase()}`)}
+      ${popupHeader(
+        animal.name,
+        `${animal.breed} ${animal.animal_type.toLowerCase()}`
+      )}
       <div class='bvmd-popup__brood'>
       ${popupDataList(
         [
           popupDataRow("Chip nr", animal.chip_nr),
-          popupDataRow("Geboren", new Date(animal.birth_date).toLocaleDateString()),
-          popupDataRow("Geregistreerd", new Date(animal.reg_data).toLocaleDateString()),
+          popupDataRow(
+            "Geboren",
+            new Date(animal.birth_date).toLocaleDateString()
+          ),
+          popupDataRow(
+            "Geregistreerd",
+            new Date(animal.reg_data).toLocaleDateString()
+          ),
           popupDataRow("Geslacht", animal.gender),
           popupDataRow("Max uren alleen", animal.max_hours_alone),
           popupDataRow("Misbruik", animal.abuseConsolidatedText),
@@ -318,7 +351,9 @@ function populateDialogWithAnimal(animal) {
 function populateDialogWithText(textId) {
   const textCollection = texts[textId];
   console.log(textCollection);
-  document.getElementById("dialog-print-target").innerHTML = `<div class='bvmd-popup'>
+  document.getElementById(
+    "dialog-print-target"
+  ).innerHTML = `<div class='bvmd-popup'>
     ${popupHeader(textCollection.title, textCollection.subtitle)}
     <div class='bvmd-popup__brood'>
       ${textCollection.body}
@@ -366,9 +401,12 @@ const markerHTML = {
       if (noWww.length < 18) {
         return noWww;
       } else {
-        return `${`${noWww[0]}${noWww[1]}${noWww[2]}${noWww[3]}${noWww[5]}`.padEnd(8, ".")}${noWww[noWww.length - 1]}${
-          noWww[noWww.length - 2]
-        }${noWww[noWww.length - 3]}${noWww[noWww.length - 4]}${noWww[noWww.length - 5]}`;
+        return `${`${noWww[0]}${noWww[1]}${noWww[2]}${noWww[3]}${noWww[5]}`.padEnd(
+          8,
+          "."
+        )}${noWww[noWww.length - 1]}${noWww[noWww.length - 2]}${
+          noWww[noWww.length - 3]
+        }${noWww[noWww.length - 4]}${noWww[noWww.length - 5]}`;
       }
     }
   },
@@ -409,7 +447,10 @@ const markerHTML = {
         }).map(([contactKey, contactNl]) => {
           // contactKey bv phone_number, contactNl de NL string
           if (!c[contactKey]) return ``;
-          return popupDataRow(contactNl, this.addressHelper1(contactKey, c[contactKey]));
+          return popupDataRow(
+            contactNl,
+            this.addressHelper1(contactKey, c[contactKey])
+          );
         }),
         "Contact",
         "contact"
@@ -477,7 +518,9 @@ const markerHTML = {
     }
     return popupDataList(
       locatedEntity.animals.map((animal) => {
-        return locatedEntity.is("owner") ? this.animalListItemOwner(animal) : this.animalListItemSafeHouse(animal);
+        return locatedEntity.is("owner")
+          ? this.animalListItemOwner(animal)
+          : this.animalListItemSafeHouse(animal);
       }),
       "Dieren & verblijf",
       "animals"
@@ -516,14 +559,16 @@ function closeDialogClickHandler() {
 }
 
 function closeLeaflet() {
-  const mightBeAnchorElement = document.querySelector(".leaflet-popup-close-button");
+  const mightBeAnchorElement = document.querySelector(
+    ".leaflet-popup-close-button"
+  );
   if (mightBeAnchorElement) mightBeAnchorElement.click();
 }
 
 function closeAllDialogsPopupsIframesEscape() {
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
-     // removeIframeWrapper();
+      // removeIframeWrapper();
       closeLeaflet();
       setOwnDialogState(false);
     }

@@ -61,7 +61,10 @@ class FilterObject {
    */
   get inputCurrentValue() {
     if (this.type === "checkbox") {
-      return document.getElementById(this.id) && document.getElementById(this.id).checked;
+      return (
+        document.getElementById(this.id) &&
+        document.getElementById(this.id).checked
+      );
     } else if (this.type === "radio") {
       // create radioButtonList and get the value from there
       // note: radios give their name as the value.
@@ -88,7 +91,9 @@ class FilterObject {
    * @returns {object} width success.array of markers & failure.array of markers.
    */
   evaluate(evaluateWith) {
-    return this.type === "checkbox" ? this.evaluateCheckbox(evaluateWith) : this.evaluateRadio(evaluateWith);
+    return this.type === "checkbox"
+      ? this.evaluateCheckbox(evaluateWith)
+      : this.evaluateRadio(evaluateWith);
   }
 
   /**
@@ -166,7 +171,8 @@ let fakeStaticBecauseCodeBaseToOld = {};
 class EntityFilter {
   constructor() {
     // singleton enforecen.
-    if (fakeStaticBecauseCodeBaseToOld._self) return fakeStaticBecauseCodeBaseToOld._self;
+    if (fakeStaticBecauseCodeBaseToOld._self)
+      return fakeStaticBecauseCodeBaseToOld._self;
 
     this.configurations = [];
 
@@ -253,7 +259,9 @@ class EntityFilter {
    * @returns {FilterConfig} filterConfig from this.configurations.
    */
   getByName(name) {
-    const re = this.configurations.find((filterConfig) => filterConfig.name === name);
+    const re = this.configurations.find(
+      (filterConfig) => filterConfig.name === name
+    );
     return re;
   }
   /**
@@ -294,11 +302,13 @@ class EntityFilter {
       throw new Error("unknown type");
     });
     filterForm().addEventListener("reset", (event) => {
-      Array.from(filterForm().querySelectorAll(".map__filter-input")).forEach((input) => {
-        const e = new Event("change");
-        input.dispatchEvent(e);
-        console.log(e);
-      });
+      Array.from(filterForm().querySelectorAll(".map__filter-input")).forEach(
+        (input) => {
+          const e = new Event("change");
+          input.dispatchEvent(e);
+          console.log(e);
+        }
+      );
     });
   }
 }
@@ -310,7 +320,9 @@ class EntityFilter {
 function wrappedInput(filterConfig) {
   return `
   <label 
-    class='map__filter-label map__filter-label--${filterConfig.type} map__filter-label--${filterConfig.name}' 
+    class='map__filter-label map__filter-label--${
+      filterConfig.type
+    } map__filter-label--${filterConfig.name}' 
     for='${filterConfig.id}'>
     <input 
     class='hidden' 
@@ -319,7 +331,9 @@ function wrappedInput(filterConfig) {
     type='${filterConfig.type}'
     checked 
     >
-    <span class='map__filter-fake-box map__filter-fake-box--${filterConfig.type}'>
+    <span class='map__filter-fake-box map__filter-fake-box--${
+      filterConfig.type
+    }'>
       ${svgs.checked("#ededfa")}
       ${svgs.removed("#ededfa")}    
     </span>
@@ -333,10 +347,13 @@ function wrappedInput(filterConfig) {
  * @returns {string} HTML of a wrapper radio input.
  */
 function wrappedRadioInput(filterConfig) {
-  const labelsAndInputs = filterConfig.radioData.reduce((prev, radioDatum, index) => {
-    return `${prev}
+  const labelsAndInputs = filterConfig.radioData.reduce(
+    (prev, radioDatum, index) => {
+      return `${prev}
     <label 
-      class="map__filter-label map__filter-label--radio map__filter-label--${filterConfig.name}" 
+      class="map__filter-label map__filter-label--radio map__filter-label--${
+        filterConfig.name
+      }" 
       for="${filterConfig.id}-${radioDatum.label}">
       <input 
         class='hidden'
@@ -346,14 +363,18 @@ function wrappedRadioInput(filterConfig) {
         value='${radioDatum.value}'
         ${index === 0 ? `checked='checked'` : ""}
       >
-      <span class='map__filter-fake-box map__filter-fake-box--${filterConfig.type}'>
+      <span class='map__filter-fake-box map__filter-fake-box--${
+        filterConfig.type
+      }'>
         ${svgs.checked("#5151d3")}
         ${svgs.removed("#5151d3")}
       </span>
       <span class='map__filter-title'>${radioDatum.label}</span>
     </label>  
     `;
-  }, "");
+    },
+    ""
+  );
 
   // paste in outer.
   return `
@@ -392,7 +413,9 @@ function populateFilterHTML(entityFilter) {
     </div>
   </div>`;
 
-  document.getElementById("body-filter").innerHTML = `<form action='#' method='GET' id='map-filters'>
+  document.getElementById(
+    "body-filter"
+  ).innerHTML = `<form action='#' method='GET' id='map-filters'>
     ${inputRow1}
     ${inputRow2}
     <input type='reset' id='filter-form-reset' class='map-aside__input--reset' value='leeg'></form>`;

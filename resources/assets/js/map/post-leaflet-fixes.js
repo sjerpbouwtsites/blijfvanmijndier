@@ -7,8 +7,12 @@
  *
  */
 function postLeafletWork() {
-  const markerImages = Array.from(document.querySelectorAll(".leaflet-marker-pane img"));
-  const shadowImages = Array.from(document.querySelectorAll(".leaflet-shadow-pane img"));
+  const markerImages = Array.from(
+    document.querySelectorAll(".leaflet-marker-pane img")
+  );
+  const shadowImages = Array.from(
+    document.querySelectorAll(".leaflet-shadow-pane img")
+  );
 
   stylesheetHTMLArray = [];
 
@@ -31,9 +35,15 @@ function postLeafletWork() {
       })
       .replace("is-", "");
     marker.setAttribute("id", `marker-${markerTempType}-${markerId}`);
-    marker.setAttribute("data-shadow-id", `shadow-${markerTempType}-${markerId}`);
+    marker.setAttribute(
+      "data-shadow-id",
+      `shadow-${markerTempType}-${markerId}`
+    );
     shadowMarker.setAttribute("id", `shadow-${markerTempType}-${markerId}`);
-    shadowMarker.setAttribute("data-marker-id", `marker-${markerTempType}-${markerId}`);
+    shadowMarker.setAttribute(
+      "data-marker-id",
+      `marker-${markerTempType}-${markerId}`
+    );
     //    marker.setAttribute("alt", markerAltData.join(" "));
 
     // CUT INLINE STYLES TO STYLESHEET
@@ -81,7 +91,9 @@ function postLeafletWork() {
 
     // MOVE ANIMAL QUANTITY TO DATA ATTR
     const animalAmountData = markerAltData.filter((altPiece) => {
-      return ["has-animals", "multiple-animals", "animals-on-site"].includes(altPiece);
+      return ["has-animals", "multiple-animals", "animals-on-site"].includes(
+        altPiece
+      );
     });
     if (animalAmountData) {
       animalAmountData.forEach((animalAD) => {

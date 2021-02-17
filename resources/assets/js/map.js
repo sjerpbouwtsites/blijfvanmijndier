@@ -71,7 +71,12 @@ function initMap() {
   globalLeafletMap = createMap();
   getMapAPIData().then((dataModels) => {
     _globalModels = dataModels;
-    [...dataModels.guests, ...dataModels.vets, ...dataModels.shelters, ...dataModels.owners].map(function (model) {
+    const locatedEntities = []
+      .concat(dataModels.guests)
+      .concat(dataModels.vets)
+      .concat(dataModels.shelters)
+      .concat(dataModels.owners);
+    locatedEntities.forEach(function (model) {
       try {
         return leafletShell.locationMapper(model, globalLeafletMap);
       } catch (error) {
@@ -80,11 +85,35 @@ function initMap() {
         throw new Error(`Fout in de location mapper met gelogde model`);
       }
     });
+
     addInteractive();
     postLeafletFixes();
+    setMarkerRotateFixesHandlers(locatedEntities, globalLeafletMap);
+
     sidebar.init();
-    globalLeafletMap.setZoom(8);
   });
+}
+
+function setMarkerRotateFixesHandlers(locatedEntities, globalLeafletMap) {
+  runMarkerRotateFixes(locatedEntities);
+  
+
+    [("moveend", "viewreset", "zoomend")].forEach((eventNaam) => {
+      globalLeafletMap.on(eventNaam, function (e) {
+        runMarkerRotateFixes(locatedEntities);
+      });
+    });
+}
+
+let laatsteMarkerRotateFix = null;
+function runMarkerRotateFixes(locatedEntities, tijd = 500) {
+  if (laatsteMarkerRotateFix) {
+    clearTimeout(laatsteMarkerRotateFix);
+  }
+
+  laatsteMarkerRotateFix = setTimeout(() => {
+    leafletShell.checkAndFixMarkersToClose(locatedEntities);
+  }, tijd);
 }
 
 initMap();

@@ -65,7 +65,10 @@ class MayaModel {
 
   get marker() {
     const r = document.getElementById(`marker-${this.type}-id-${this.id}`);
-    if (!r) throw new Error(`geen marker gevonden met type ${this.type} en id ${this.id}`);
+    if (!r)
+      throw new Error(
+        `geen marker gevonden met type ${this.type} en id ${this.id}`
+      );
     return r;
   }
 
@@ -94,7 +97,15 @@ class LocatedEntity extends MayaModel {
   constructor(type, config, addresses) {
     super(type);
 
-    const addressKeys = ["phone_number", "prefix", "surname", "email_address", "name", "website", "contact_person"];
+    const addressKeys = [
+      "phone_number",
+      "prefix",
+      "surname",
+      "email_address",
+      "name",
+      "website",
+      "contact_person",
+    ];
 
     this.name = config.name;
     this.contact = {};
@@ -113,7 +124,9 @@ class LocatedEntity extends MayaModel {
       delete l.updated_at;
       this.location = l;
     } catch (error) {
-      throw new Error(`${config.name} location niet gevonden in _locations. ${error.message}`);
+      throw new Error(
+        `${config.name} location niet gevonden in _locations. ${error.message}`
+      );
     }
     if (config.text) {
       this.text = config.text;
@@ -143,7 +156,9 @@ class LocatedEntity extends MayaModel {
   }
 
   static find() {
-    throw new Error("using find method of LocatedEntity, please implement in child");
+    throw new Error(
+      "using find method of LocatedEntity, please implement in child"
+    );
   }
   get hasAnimals() {
     return this.animals.length > 0;

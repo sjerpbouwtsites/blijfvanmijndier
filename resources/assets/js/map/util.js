@@ -14,7 +14,9 @@ function toCamelCase(string) {
   return string
     .split("-")
     .map((word, index) => {
-      return index > 0 ? word[0].toUpperCase() + word.substring(1, word.length) : word;
+      return index > 0
+        ? word[0].toUpperCase() + word.substring(1, word.length)
+        : word;
     })
     .join("");
 }
@@ -56,7 +58,9 @@ function findInParents(startElement, conditionFunc, maxRecursion = 5) {
 function getMarkerByIdAndType(id, type) {
   const marker = document.getElementById(`marker-${type}-id-${id}`);
   if (!marker) {
-    throw new Error(`Marker for id ${id}, id attr val marker-${type}-id-${id}, not found`);
+    throw new Error(
+      `Marker for id ${id}, id attr val marker-${type}-id-${id}, not found`
+    );
   }
   return marker;
 }
@@ -68,8 +72,12 @@ function getMarkerByIdAndType(id, type) {
  * @returns {string} Bemmed CSS selectors
  */
 function BEMMapper(selectors, modifier) {
-  const workSelectors = Array.isArray(selectors) ? selectors : selectors.split(" ");
-  return workSelectors.map((selector) => `${selector} ${selector}--${modifier}`).join(" ");
+  const workSelectors = Array.isArray(selectors)
+    ? selectors
+    : selectors.split(" ");
+  return workSelectors
+    .map((selector) => `${selector} ${selector}--${modifier}`)
+    .join(" ");
 }
 
 /**
@@ -84,7 +92,10 @@ function showHideNodes(nodes, showNodes = true, hideClass = "blurred") {
     if (typeof nodes.length !== "undefined" && nodes.length === 0) {
       return "";
     }
-    const workNodes = typeof nodes.length !== "undefined" && typeof nodes.map !== "undefined" ? nodes : [nodes];
+    const workNodes =
+      typeof nodes.length !== "undefined" && typeof nodes.map !== "undefined"
+        ? nodes
+        : [nodes];
     workNodes.map((node) => {
       const isHidden = node.classList.contains(hideClass);
       if (showNodes && isHidden) {
@@ -95,7 +106,9 @@ function showHideNodes(nodes, showNodes = true, hideClass = "blurred") {
       return node;
     });
   } catch (err) {
-    console.error(`show hide nodes error with nodes:  ${nodes.length} ${typeof nodes}`);
+    console.error(
+      `show hide nodes error with nodes:  ${nodes.length} ${typeof nodes}`
+    );
     console.log(nodes);
     throw new Error(err);
   }

@@ -47,6 +47,7 @@ aanpassingen:
 }
 .lmi,
 .leaflet-marker-shadow {
+  transform-origin: center;
   display: block;
 }
 /* .leaflet-container svg: reset svg max-width decleration shipped in Joomla! (joomla.org) 3.x */
@@ -258,6 +259,9 @@ aanpassingen:
 .leaflet-pane > svg path,
 .leaflet-tile-container {
   pointer-events: none;
+}
+.lmi:hover {
+  z-index: 500 !important;
 }
 
 .lmi.lei,

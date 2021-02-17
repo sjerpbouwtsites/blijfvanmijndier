@@ -80,22 +80,26 @@ function populateAnimalList(animals) {
 
 function addAnimalListEventHandlers(animals) {
   let waitingForEndOfTyping;
-  document.getElementById("animal-list-search").addEventListener("keyup", (e) => {
-    clearTimeout(waitingForEndOfTyping);
-    waitingForEndOfTyping = setTimeout(() => {
-      searchAnimalList(e, animals);
-    }, 250);
-  });
+  document
+    .getElementById("animal-list-search")
+    .addEventListener("keyup", (e) => {
+      clearTimeout(waitingForEndOfTyping);
+      waitingForEndOfTyping = setTimeout(() => {
+        searchAnimalList(e, animals);
+      }, 250);
+    });
   document.getElementById("animal-list-search").focus();
 }
 
 function undoSearchAnimal() {
   document.getElementById("animal-list-search").value = "";
   document.getElementById("animal-list-search").blur();
-  Array.from(document.querySelectorAll(".animal-list__item")).forEach((animalListItem) =>
-    animalListItem.classList.remove("hidden")
-  );
-  Array.from(document.querySelectorAll(".animal-list .map__link-style-button")).forEach((button) => {
+  Array.from(
+    document.querySelectorAll(".animal-list__item")
+  ).forEach((animalListItem) => animalListItem.classList.remove("hidden"));
+  Array.from(
+    document.querySelectorAll(".animal-list .map__link-style-button")
+  ).forEach((button) => {
     button.removeAttribute("tabindex");
   });
   document.getElementById("animal-list").scrollTop = 0;
@@ -120,11 +124,15 @@ function searchAnimalList(event, animals) {
     .map((animal) => animal.id.toString());
 
   // now filter in the animal list.
-  const animalItems = Array.from(document.querySelectorAll(".animal-list__item"));
+  const animalItems = Array.from(
+    document.querySelectorAll(".animal-list__item")
+  );
   const passedAnimals = [];
   const droppedAnimals = [];
   animalItems.forEach((animalItem) => {
-    const localAnimalId = animalItem.querySelector(".map__link-style-button--animal").getAttribute("data-id");
+    const localAnimalId = animalItem
+      .querySelector(".map__link-style-button--animal")
+      .getAttribute("data-id");
     if (passingAnimalIds.includes(localAnimalId)) {
       passedAnimals.push(animalItem);
     } else {
@@ -133,14 +141,18 @@ function searchAnimalList(event, animals) {
   });
 
   passedAnimals.forEach((animalItem, animalItemIndex) => {
-    animalItem.classList.contains("hidden") && animalItem.classList.remove("hidden");
-    animalItem.querySelectorAll(".map__link-style-button").forEach((button, buttonIndex) => {
-      const tabIndex = animalItemIndex * 3 + buttonIndex + 1;
-      button.setAttribute("tabindex", tabIndex);
-    });
+    animalItem.classList.contains("hidden") &&
+      animalItem.classList.remove("hidden");
+    animalItem
+      .querySelectorAll(".map__link-style-button")
+      .forEach((button, buttonIndex) => {
+        const tabIndex = animalItemIndex * 3 + buttonIndex + 1;
+        button.setAttribute("tabindex", tabIndex);
+      });
   });
   droppedAnimals.forEach((animalItem) => {
-    !animalItem.classList.contains("hidden") && animalItem.classList.add("hidden");
+    !animalItem.classList.contains("hidden") &&
+      animalItem.classList.add("hidden");
     animalItem.querySelectorAll(".map__link-style-button").forEach((button) => {
       button.removeAttribute("tabindex");
     });
