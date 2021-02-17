@@ -23,6 +23,13 @@ h7{
 .form-group{
    margin-bottom: 5px;
 }
+.form-control.form-control--fake {
+   border-color: transparent;
+
+ }
+ .form-control.form-control--fake:hover {
+   cursor: not-allowed
+ }
 
 .img_margin_bottom{
    margin-bottom: 15px;

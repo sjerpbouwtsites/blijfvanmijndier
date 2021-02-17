@@ -69,6 +69,7 @@ abstract class AbstractController extends Controller
    */
   public function edit($id)
   {
+
     return $this->get_view($this->view_prefix . ".edit", [
       $this->singular => $this->get_hydrated($id),
     ]);

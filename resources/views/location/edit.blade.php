@@ -24,7 +24,10 @@
 
 			<input type='hidden' name='address_id' value="<?=$location['address_id']?>" >
             @include('form_text', ['field' => 'name', 'label' => 'Naam'])
-            @include('form_group_address')
+            @include('form_group_address', [
+							'lattitude' => $location['lattitude'],
+							'longitude' => $location['longitude']
+						])
             @include('form_text', ['field' => 'phone_number', 'label' => 'Telefoonnummer'])
             @include('form_text', ['field' => 'email_address', 'label' => 'Emailadres'])
 

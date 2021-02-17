@@ -25,7 +25,8 @@
             @include('form_text', ['field' => 'prefix', 'label' => 'Tussenvoegsel'])
 						@include('form_text', ['field' => 'surname', 'label' => 'Achternaam'])
 						
-						@include('form_group_address')
+						@include('form_group_address' ,							['lattitude' => $owner['lattitude'],
+						'longitude' => $owner['longitude'])
 
             @include('form_text', ['field' => 'phone_number', 'label' => 'Telefoonnummer'])
             @include('form_text', ['field' => 'email_address', 'label' => 'Emailadres'])
