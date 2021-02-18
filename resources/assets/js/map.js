@@ -3,7 +3,6 @@ const leafletShell = require("./map/leaflet-shell");
 const sidebar = require("./map/sidebar");
 const postLeafletFixes = require("./map/post-leaflet-fixes");
 const popups = require("./map/popups");
-const debug = require("./map/debug");
 
 function addInteractive() {
   //debug.overwriteEventListener();
@@ -71,6 +70,10 @@ function initMap() {
   }
 
   globalLeafletMap = createMap();
+  const globalInfobtn = popups.textBtn('algemeen', 'absoluut-op-kaart');
+  const emptyDiv = document.createElement('div');
+  emptyDiv.innerHTML = globalInfobtn;  
+  document.getElementById('leaflet-map').appendChild(emptyDiv)
 
   getMapAPIData().then((dataModels) => {
 

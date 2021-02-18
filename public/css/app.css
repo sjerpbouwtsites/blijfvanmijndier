@@ -923,6 +923,12 @@ styling for both the leaflet popup and the own dialog
   margin: 0;
 }
 
+.bvmd-popup__table {
+  margin: 10px 0;
+  font-size: .75em;
+  width: 100%;
+}
+
 .bvmd-popup__footer {
   margin-top: 2em;
 }
@@ -1059,6 +1065,22 @@ styling for both the leaflet popup and the own dialog
   width: 24px;
   height: 24px;
   transform: rotate(90deg);
+}
+
+.map__link-style-button.map__link-style-button--text-btn.absoluut-op-kaart {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  width: 50px;
+  height: 50px;
+}
+
+.map__link-style-button.map__link-style-button--text-btn.absoluut-op-kaart svg {
+  margin: 0;
+  width: 50px;
+  height: 50px;
+  transform: rotate(0deg);
 }
 
 .map__outer {
