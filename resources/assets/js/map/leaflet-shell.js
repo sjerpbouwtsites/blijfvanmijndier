@@ -1,6 +1,6 @@
+const { readyException } = require("jquery");
 const { LocatedEntity } = require("./models");
 const popups = require("./popups");
-const { marker } = require("./svgs");
 
 /**
  * create alt attribute which is a general styling & identifying attribute in this app for markers.
@@ -113,30 +113,24 @@ function locationMapper(locatedEntity, globalLeafletMap) {
 }
 
 function checkAndFixMarkersToClose(locatedEntities) {
+  console.log("check and fix markers");
   const markers = locatedEntities.map((locatedEntity) => {
     return locatedEntity.marker;
   });
 
-  // reset de style van de markers.
-  markers.forEach((marker) => {
-    //marker.removeAttribute('style')
-  });
 
   // creeer markers met x en y, afkomstig uit leaflet, map en sort per X.
   const markersPerXPositie = markers
     .map((marker) => {
-      const x = marker._leaflet_pos.x;
-      const y = marker._leaflet_pos.y;
+      const rect = marker.getBoundingClientRect();
+      const eigenGebied = {
+        left: rect.left,
+        right: rect.right,
+        top: rect.top + 20, // boven mogen ze overlappen
+        bottom: rect.bottom,
+      };
       return {
-        x,
-        y,
-        // gebied van 20px hoog en 20px breed rondom marker.
-        eigenGebied: {
-          xMin: x - 5,
-          xMax: x + 5,
-          yMin: y - 5,
-          yMax: x + 5,
-        },
+        eigenGebied,
         // markers gaan geroteerd worden om elkaar niet in de weg te zitten.
         rotatie: 0,
         // de eerste marker vanaf links regelt voor alle markers die in zijn gebied zijn dat ze geroteerd worden; vervolgens hoeven die markers zelf er niets meer mee.
@@ -147,8 +141,9 @@ function checkAndFixMarkersToClose(locatedEntities) {
       };
     })
     .sort((marker1Data, marker2Data) => {
-      if (marker1Data.x > marker2Data.x) return 1;
-      if (marker1Data.x < marker2Data.x) return -1;
+      if (marker1Data.eigenGebied.left > marker2Data.eigenGebied.left) return 1;
+      if (marker1Data.eigenGebied.left < marker2Data.eigenGebied.left)
+        return -1;
       return 0;
     });
   // nu per marker, zoek nabijgelegen markers.
@@ -157,12 +152,19 @@ function checkAndFixMarkersToClose(locatedEntities) {
       // skip zelf.
       if (markerRefData.marker.id === markerData.marker.id) return false;
 
-      return (
-        markerRefData.x > markerData.eigenGebied.xMin &&
-        markerRefData.x < markerData.eigenGebied.xMax &&
-        markerRefData.y > markerData.eigenGebied.yMin &&
-        markerRefData.y < markerData.eigenGebied.yMax
-      );
+      const gevonden =
+        !(
+          markerData.eigenGebied.right < markerRefData.eigenGebied.left ||
+          markerData.eigenGebied.left > markerRefData.eigenGebied.right ||
+          markerData.eigenGebied.bottom < markerRefData.eigenGebied.top ||
+          markerData.eigenGebied.top > markerRefData.eigenGebied.bottom
+        ) ||
+        (markerData.eigenGebied.left === markerRefData.eigenGebied.left &&
+          markerData.eigenGebied.right === markerRefData.eigenGebied.right &&
+          markerData.eigenGebied.top === markerRefData.eigenGebied.top &&
+          markerData.eigenGebied.bottom === markerRefData.eigenGebied.bottom);
+
+      return gevonden;
     });
   });
 
@@ -171,14 +173,20 @@ function checkAndFixMarkersToClose(locatedEntities) {
     return markerData.markersInGebied.length > 0;
   });
 
-  if (!teRoterenMarkers.length) return;
+  if (!teRoterenMarkers.length) {
+    console.log("niets te roteren");
+    return;
+  }
 
   // nu te dichtbijzijnde markers rotatie berekenen.
 
   // als er veel markers zijn, > 4. waaier links laten beginenn op helft.
 
   teRoterenMarkers.forEach((markerData) => {
-    let rotatieVerhoging = markerData.markersInGebied.length < 4 ? 1 : Math.floor(markerData.markersInGebied.length / -2) + 1;
+    let rotatieVerhoging =
+      markerData.markersInGebied.length < 4
+        ? 1
+        : Math.floor(markerData.markersInGebied.length / -2) + 1;
     markerData.markersInGebied.forEach((markerInGebied, index) => {
       // als deze marker reeds is bijgewerkt, skip.
       if (markerData.bijgewerktDoor !== null) return;
@@ -193,29 +201,83 @@ function checkAndFixMarkersToClose(locatedEntities) {
     const rotatieDeg = roteerMarkerData.rotatie * 15;
 
     try {
-      const bestaandeStijl = getComputedStyle(roteerMarkerData.marker);
 
-      const transformMatch = bestaandeStijl.transform
-        .replace("matrix(", "")
-        .replace(")", "")
-        .split(",")
-        .slice(4, 6)
-        .map((n) => Number(n.trim()));
+      const stijlAttrWaarde = roteerMarkerData.marker.getAttribute('style') ||'';
 
-      if (!transformMatch || !transformMatch.length) {
-        console.log("geen transform in ", bestaandeStijl.transform);
-        throw new Error("mislukte transform match");
-      }
+      const bestaandeStijlArray = stijlAttrWaarde.split(';').filter(a => a).map(CSSRegel => {
+        if (!CSSRegel.includes('transform')) return CSSRegel;
+        if (!CSSRegel.includes('rotate')) return `${CSSRegel} rotate(${rotatieDeg}deg)`;
+        return CSSRegel.replace(/rotate\(\d+deg\)/, `rotate(${rotatieDeg}deg)`)
+      });
+      const nieuweStijl = bestaandeStijlArray.join(';')
+      roteerMarkerData.marker.setAttribute('style', nieuweStijl);
 
-      const [transformX, transformY] = transformMatch;
-
-      const transformString = `transform: translate3d(${transformX}px, ${transformY}px, 0px) rotate(${rotatieDeg}deg); transform-origin: bottom center`;
-
-      roteerMarkerData.marker.setAttribute("style", transformString);
     } catch (error) {
       console.error(error);
     }
   });
 }
 
-module.exports = { maakAlt, locationMapper, checkAndFixMarkersToClose };
+function setLeafletEventListeners(leafletMap, locatedEntities) {
+  
+// Select the node that will be observed for mutations
+const targetNode = document.querySelector('.leaflet-marker-pane .lmi');
+
+// Options for the observer (which mutations to observe)
+const config = { attributes: true };
+
+let laatsteTransformWaardeMarker1 = null;
+
+function callback(mutationList, observer) {
+  mutationList.forEach( (mutation) => {
+    switch(mutation.type) {
+      case 'attributes':
+        if (mutation.attributeName === 'style') {
+          const transformMomenteelMatch = mutation.target.getAttribute('style').split(';').filter(CSSRegel => {
+            return CSSRegel.includes('transform:')
+          })
+
+          if (!transformMomenteelMatch || !transformMomenteelMatch.length) return;
+
+          if (transformMomenteelMatch[0] !== laatsteTransformWaardeMarker1) {
+            laatsteTransformWaardeMarker1 = transformMomenteelMatch[0];
+            
+            setTimeout(()=>{
+              runMarkerRotateFixes(locatedEntities)
+            }, 1000)
+          } else {
+            console.log('bleef zelfde qwaarde')
+          }
+
+
+        }
+        break;
+    }
+  });
+}
+
+
+// Create an observer instance linked to the callback function
+const observer = new MutationObserver(callback);
+
+// Start observing the target node for configured mutations
+observer.observe(targetNode, config);
+// Later, you can stop observing
+//observer.disconnect();
+}
+
+function runMarkerRotateFixes(locatedEntities, event = null) {
+
+  if (event) {
+    console.log("afkomstig van event", event);
+  }
+
+  checkAndFixMarkersToClose(locatedEntities);
+}
+
+module.exports = {
+  maakAlt,
+  locationMapper,
+  checkAndFixMarkersToClose,
+  setLeafletEventListeners,
+};

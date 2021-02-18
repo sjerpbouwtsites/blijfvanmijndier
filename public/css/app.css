@@ -54,7 +54,6 @@ aanpassingen:
 
 .lmi,
 .leaflet-marker-shadow {
-  transform-origin: center;
   display: block;
 }
 
@@ -232,7 +231,7 @@ aanpassingen:
 }
 
 .lza {
-  transform-origin: 0 0;
+  transform-origin: bottom center;
 }
 
 .leaflet-zoom-anim .lza {
@@ -1090,6 +1089,7 @@ styling for both the leaflet popup and the own dialog
 .blurred {
   opacity: 0.2;
   filter: greyscale(50%) blur(1px);
+  z-index: 100 !important;
 }
 
 .divider {

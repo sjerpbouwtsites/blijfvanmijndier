@@ -19,8 +19,8 @@ const markerSrcConfig = {
   },
   vet: {
     "animals-on-site": "vet/marker-rood.png",
-    "no-animals": "vet/marker-rood.png",        
-  }
+    "no-animals": "vet/marker-rood.png",
+  },
 };
 
 /**
@@ -72,18 +72,18 @@ function postLeafletWork() {
     //    marker.setAttribute("alt", markerAltData.join(" "));
 
     // CUT INLINE STYLES TO STYLESHEET
-    const markerInlineStyle = marker.getAttribute("style");
-    const shadowInlineStyle = shadowMarker.getAttribute("style");
-    stylesheetHTMLArray.push(`
-      #marker-${markerTempType}-${markerId} {
-        ${markerInlineStyle}
-      }
-      #shadow-${markerTempType}-${markerId} {
-        ${shadowInlineStyle}
-      }      
-    `);
-    marker.removeAttribute("style");
-    shadowMarker.removeAttribute("style");
+    // const markerInlineStyle = marker.getAttribute("style");
+    // const shadowInlineStyle = shadowMarker.getAttribute("style");
+    // stylesheetHTMLArray.push(`
+    //   #marker-${markerTempType}-${markerId} {
+    //     ${markerInlineStyle}
+    //   }
+    //   #shadow-${markerTempType}-${markerId} {
+    //     ${shadowInlineStyle}
+    //   }      
+    // `);
+    // marker.removeAttribute("style");
+    // shadowMarker.removeAttribute("style");
 
     // RENAME BULKY CLASSNAMES
     if (marker.classList.contains("leaflet-marker-icon")) {
@@ -135,7 +135,9 @@ function postLeafletWork() {
     // FIX THE SRC ATTRIBUTE
 
     let typeSrcConfig = markerSrcConfig[markerTempType];
-    let markerSrc = animalAmountData.includes('no-animals') ? typeSrcConfig['no-animals'] : typeSrcConfig['animals-on-site']
+    let markerSrc = animalAmountData.includes("no-animals")
+      ? typeSrcConfig["no-animals"]
+      : typeSrcConfig["animals-on-site"];
 
     marker.src = `/img/markers/${markerSrc}`;
     shadowMarker.src = "/img/marker-shadow.png";

@@ -31,6 +31,7 @@
 .blurred {
   opacity: 0.2;
   filter: greyscale(50%) blur(1px);
+  z-index: 100 !important;
 }
 
 // kop
