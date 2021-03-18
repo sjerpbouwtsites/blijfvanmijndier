@@ -128,6 +128,46 @@ class FilterObject {
   }
 
   /**
+   * @param {array} evaluateWith list of chosen options
+   * @param {string} metaName name of meta key
+   * @returns {object} width success.array of markers & failure.array of markers.
+   */
+   evaluateSelect(evaluateWith, metaName) {
+    let success = [];
+    let failure = [];
+    this.entities.forEach(entity =>{
+  
+      if (evaluateWith.includes('NONE')) {
+        success.push(entity.marker)
+        return;
+      }
+  
+      if (!entity.shown) {
+        failure.push(entity.marker)
+        return;
+      }
+  
+      const foundWithMeta = entity.meta[metaName].filter(entityMetaValue => {
+        return evaluateWith.includes(entityMetaValue);
+    });
+      if (foundWithMeta.length > 0) {
+        success.push(entity.marker);
+      } else {
+        failure.push(entity.marker);
+      }
+    })
+    
+    success = this.addShadows(success) 
+    failure = this.addShadows(failure) 
+    return {
+      success,
+      failure
+    }
+  }
+
+
+
+  /**
    * adds shadowmarkers to array of markers in order to 
    * also animate that.
    *
@@ -327,7 +367,14 @@ class EntityFilter {
         row: 3,
         selectData: meta.animal_preference.map(animalPreference => {
           return [animalPreference, animalPreference.toLowerCase().replace(/\s/g, '-')]
-        })
+        }),
+        enforces(){
+          
+          return {
+            'filter-input-is-guest': true
+          }
+          
+        } 
       })
     );
   }
@@ -388,67 +435,31 @@ class EntityFilter {
   }
 
   static runFilter(filterConfig, event){
+    
     const type = filterConfig.type;
+    let evaluatedMarkers;
 
     if (type === "checkbox") {
       // either all markers go or not.
-      const evaluatedMarkers = filterConfig.evaluate(event.target.checked);
-      showHideNodes(evaluatedMarkers.success, true);
-      showHideNodes(evaluatedMarkers.failure, false);
-
-      return;
+      evaluatedMarkers = filterConfig.evaluate(event.target.checked);
     }
     if (type === "radio") {
       // value is name
-      
+     
       const value = event.target.form[event.target.name].value;
-      const evaluatedMarkers = filterConfig.evaluateRadio(value);
-      showHideNodes(evaluatedMarkers.success, true);
-      showHideNodes(evaluatedMarkers.failure, false);
-      return;
+      evaluatedMarkers = filterConfig.evaluateRadio(value);
     } 
     if (type === 'select') {
       const selectedOptions = Array.from(event.target.selectedOptions).map(option => option.value)
       const trueInputName = event.target.name.replace('filter-input-','');
-
-      const success = [];
-      const failure = [];
-      filterConfig.entities.forEach(entity =>{
-
-        if (selectedOptions.includes('NONE')) {
-          success.push(entity.marker)
-          return;
-        }
-
-        console.log(typeof entity.shown, entity)
-        if (!entity.shown) {
-          failure.push(entity.marker)
-          return;
-        }
-
-        console.log(entity.meta[trueInputName])
-        
-        const foundWithMeta = entity.meta[trueInputName].filter(entityMetaValue => {
-          return selectedOptions.includes(entityMetaValue);
-      });
-        if (foundWithMeta.length > 0) {
-          success.push(entity.marker);
-        } else {
-          failure.push(entity.marker);
-        }
-      })
-      console.log(success.length, failure.length);
-
-      showHideNodes(success, true);
-      showHideNodes(failure, false);
-
-      return;
-
-      // showHideNodes(evaluatedMarkers.success, true);
-      // showHideNodes(evaluatedMarkers.failure, false);
-      // return;      
+      evaluatedMarkers = filterConfig.evaluateSelect(selectedOptions,  trueInputName);
+    
     }
-    throw new Error("unknown type");    
+
+    showHideNodes(evaluatedMarkers.success, true);
+    showHideNodes(evaluatedMarkers.failure, false);
+
+    return;
   }
 
   setEventHandlers() {
@@ -589,7 +600,7 @@ function wrappedRadioInput(filterConfig) {
       <select name='${filterConfig.name}' class="map__filter-label map__filter-label--select map__filter-label--${
         filterConfig.name
       }"  id='${filterConfig.id}' multiple>
-        <option value='NONE' name='${filterConfig.id}'>${filterConfig.name}</option>
+        <option value='NONE' name='${filterConfig.id}'>Geen keuze</option>
         ${(filterConfig.selectData.map(([optionName, optionValue])=>{
           return`<option name='${filterConfig.id}' value='${optionValue}'>${optionName}</option>`;
         }).join(''))}

@@ -1418,6 +1418,10 @@ input:checked ~ .map__filter-fake-box .svg-icon-checked {
   display: inline-block;
 }
 
+.map__filter-select-outer {
+  width: 100%;
+}
+
 .map__filter-radio-outer {
   width: 100%;
 }
