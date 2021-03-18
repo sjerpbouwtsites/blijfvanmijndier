@@ -54,7 +54,6 @@ function getMapAPIData() {
     .then((jsonBlob) => {
       const baseData = JSON.parse(jsonBlob);
       const dataModel = models.create(baseData);
-
       return dataModel;
     })
     .catch((err) => {
@@ -82,8 +81,9 @@ function initMap() {
       const locatedEntities = []
         .concat(dataModels.guests)
         .concat(dataModels.vets)
-        .concat(dataModels.shelters)
-        .concat(dataModels.owners);
+        .concat(dataModels.shelters) 
+        .concat(dataModels.owners)
+        .concat(dataModels.locations);
       
       locatedEntities.forEach(function (model) {
         try {

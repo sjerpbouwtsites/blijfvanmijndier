@@ -7,6 +7,8 @@ const models = {};
  * @returns models
  */
 function create(baseData) {
+
+  console.log(baseData)
   const addresses = baseData.addresses;
 
   models.animals = baseData.animals.map((baseAnimal) => {
@@ -25,6 +27,9 @@ function create(baseData) {
   models.owners = baseData.owners.map((baseOwner) => {
     return new Owner(baseOwner, addresses);
   });
+  models.locations = baseData.locations.map((baseLocation) => {
+    return new Location(baseLocation, addresses);
+  });  
 
   return models;
 }
@@ -195,6 +200,19 @@ class Shelter extends LocatedEntity {
   }
   static get all() {
     return models.shelters;
+  }
+}
+
+class Location extends LocatedEntity {
+  constructor(config, locations) {
+    super("location", config, locations);
+  }
+
+  get animalsOnSite() {
+    return this.animals;
+  }
+  static get all() {
+    return models.locations;
   }
 }
 

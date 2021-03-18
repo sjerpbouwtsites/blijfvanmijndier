@@ -21,6 +21,10 @@ const markerSrcConfig = {
     "animals-on-site": "vet/marker-rood.png",
     "no-animals": "vet/marker-rood.png",
   },
+  location: {
+    "animals-on-site": "location/marker-geel-fel.png",
+    "no-animals": "location/marker-geel.png",
+  },  
 };
 
 /**

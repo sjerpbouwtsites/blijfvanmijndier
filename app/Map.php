@@ -19,7 +19,7 @@ class Map extends Model
    */
   public static function map_data()
   {
-    $tables_to_get = ['addresses', 'guests', 'vets', 'shelters', 'owners'];
+    $tables_to_get = ['addresses', 'guests', 'vets', 'shelters', 'owners', 'locations'];
 
     $all_tables = [];
     foreach ($tables_to_get as $table) {
@@ -29,6 +29,7 @@ class Map extends Model
         an.name as name,
         an.shelter_id as shelter_id,
         an.owner_id as owner_id,
+        an.guest_id as guest_id,
         an.guest_id as guest_id,
         tBreed.description as breed,
         tAnimalType.description as animal_type,

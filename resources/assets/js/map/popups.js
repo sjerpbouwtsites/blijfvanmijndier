@@ -464,6 +464,9 @@ const markerHTML = {
   ownerBody(locatedEntity) {
     return ``;
   },
+  locationBody(locatedEntity) {
+    return ``;
+  },  
   shelterBody(locatedEntity) {
     return "";
   },
