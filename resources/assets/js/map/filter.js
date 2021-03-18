@@ -8,6 +8,7 @@ const Vet = modelsModule.Vet;
 const Guest = modelsModule.Guest;
 const Shelter = modelsModule.Shelter;
 const Owner = modelsModule.Owner;
+const Location = modelsModule.Location;
 
 /**
  * document.getElementById('map-filter')
@@ -224,7 +225,15 @@ class EntityFilter {
         entities: Shelter.all,
         row: 1,
         requiresName: "animals-on-site",
-      })
+      }),
+      new FilterObject({
+        entityFilter: this,
+        name: `is-location`,
+        label: "Op vang",
+        entities: Location.all,
+        row: 1,
+        requiresName: "",
+      })      
     );
   }
   setRow2() {

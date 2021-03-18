@@ -350,4 +350,5 @@ module.exports = {
   Guest,
   Shelter,
   Owner,
+  Location
 };
