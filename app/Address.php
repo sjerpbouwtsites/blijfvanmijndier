@@ -23,7 +23,7 @@ class Address extends Model
     ];
 
     public $fillable = [
-        'street', 'house_number', 'postal_code', 'city', 'uuid', 'lattitude', 'longitude'
+        'street', 'house_number', 'postal_code', 'city', 'lattitude', 'longitude'
     ];
 
     /**
@@ -49,12 +49,17 @@ class Address extends Model
     }
 
     /**
-     * used this' required array to push form input values as both attributes' keys and direct properties onto this. 
+     * used this' fillable array to push form input values as both attributes' keys and direct properties onto this. 
      */
     public function setNewValues(array $formInput): void
     {
-        for ($i = 0; $i < count($this->required); $i++) {
-            $key = $this->required[$i];
+        for ($i = 0; $i < count($this->fillable); $i++) {
+            $key = $this->fillable[$i];
+            if (!array_key_exists($key, $formInput)) {
+                $this->$key = '';
+                $this->attributes[$key] = '';                
+                continue;
+            }
             $this->$key = $formInput[$key];
             $this->attributes[$key] = $formInput[$key];
         }
@@ -79,124 +84,6 @@ class Address extends Model
         $this->uuid = $uuid;
         $this->attributes['uuid'] = $uuid;
         return $uuid;
-    }
-
-    /**
-     * goes by geoip service. writes to class properties.
-     * @throws when curl error, geo ip registrations found !== 1. 
-     */
-    public function geoIpRoundTrip(array $attributeList): array
-    {
-
-        if (array_key_exists('manual_geolocation', $attributeList)  && $attributeList['manual_geolocation']) {
-            $this->longitude = $this->attributes['longitude'];
-            $this->lattitude = $this->attributes['lattitude'];
-            return [
-                'status' => 'success'
-            ];
-        }
-
-
-        $city = str_replace(' ', '', $attributeList['city']);
-        $street = str_replace(' ', '', $attributeList['street']);
-        $house_number = str_replace(' ', '', $attributeList['house_number']);
-
-        $geo_query = "Netherlands $city $street $house_number";
-
-        $url = "https://eu1.locationiq.com/v1/search.php?key=b7a32fa378c135&q=" . urlencode($geo_query) . "&limit=1";
-
-        $adres_back_html = $this->address_error_back_HTML($geo_query);
-
-        $curl = new Curl();
-        $curl->get($url, [
-            "format" => "json"
-        ]);
-
-        $curl_console = `
-            <script>console.dir(` . $curl->rawResponse . `);</script>
-            `;
-
-        $basis_ret = [
-            'status' => null,
-            'console' => $curl_console,
-            'reason' => null,
-            'return_html' => $adres_back_html
-        ];
-
-        $status = 'success'; // assume eh;
-
-        // error in curl zelf.
-        if ($curl->error !== FALSE) {
-            $basis_ret['reason'] = 'curl error: ' . $curl->errorMessage;
-            $status = 'fail';
-        }
-        $curl->close();
-
-        // no response.
-        if ($status !== 'fail') {
-            if (!property_exists($curl, 'response') || is_null($curl->response)) {
-                $basis_ret['reason'] = "curl response does not exist or is null";
-                $status = 'fail';
-            }
-        }
-
-        // geoIq error: response has error. response error is protected btw
-        if ($status !== 'fail' && is_array($curl->response)) {
-            if (!empty($curl->response['error'])) {
-                $basis_ret['reason'] = "error in geoIq system: $curl->response['error']";
-                $status = 'fail';
-            }
-        }
-
-
-        // de reactie is geen array?
-        if ($status !== 'fail') {
-            if (!is_array($curl->response)) {
-                $basis_ret['reason'] = "geo iq response is not an array.";
-                $status = 'fail';
-            }
-        }
-
-        // alweer niets gevonden door geo iq?
-
-        $response = $curl->response;
-        if ($status !== 'fail') {
-            if (empty($response)) {
-                $basis_ret['reason'] = "geo iq did not find anything.";
-                $status = 'fail';
-            }
-        }
-
-        if ($status !== 'fail') {
-            if (!property_exists($response[0], 'lat') || !property_exists($response[0], 'lon')) {
-                $basis_ret['reason'] = 'lat and or lon not set on response[0].';
-                $status = 'fail';
-            }
-        }
-
-        // we laten het hierbij!
-        $basis_ret['status'] = $status;
-
-        if ($status === 'fail') {
-            return $basis_ret;
-        }
-
-        // what the whole sham was about
-        $this->longitude = $this->attributes['longitude'] = $response[0]->lon;
-        $this->lattitude = $this->attributes['lattitude'] = $response[0]->lat;
-
-        return [
-            'status' => 'success'
-        ];
-    }
-
-    private function address_error_back_HTML($geo_query)
-    {
-        return `
-            <h1>Er heeft zich een fout in de adresopzoeking voorgedaan.</h1>
-            <p>We zochten met deze info: $geo_query</p>
-            <p>Als dit niet klopt <button onclick="history.back()">klik dan hier</button></p>
-        `;
     }
 
     /**
@@ -278,23 +165,21 @@ class Address extends Model
      * @return array save address array with address_id and geo iq res
      * @param bool create: required. whether or not to save or create the address.
      */
-    public static function save_or_create_address($create): array
+    public static function save_or_create_address()
     {
-        if (!is_bool($create)) {
-            throw new \Exception('save or create address without craate param');
-        }
         $postdata = Input::all();
-        $Address = $create ? new Address() : Address::find($postdata['address_id']);
+
+        $Address = $postdata['address_id'] === '' ? new Address() : Address::find($postdata['address_id']);
+
         $Address->setNewValues($postdata);
         $ai = $Address->uuid_check($postdata);
-        $geo_res = $Address->geoIpRoundTrip($postdata);
-        if ($geo_res['status'] === 'success') {
-            $Address->save();
-        }
+     
+        $Address->save();
+
         return [
-            'geo_res' => $geo_res,
             'address_id' => $ai
         ];
+
     }
 
     /**

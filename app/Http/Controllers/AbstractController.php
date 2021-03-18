@@ -119,14 +119,9 @@ abstract class AbstractController extends Controller
         ->withErrors($this->validator)
         ->withInput();
     }
-    $add_res = \App\Address::save_or_create_address(true);
-    if ($add_res['geo_res']['status'] !== 'success') {
-      // error in curl / geo iq
-      Session::flash('message', 'geolocatie faal: ' . $add_res['geo_res']['reason']);
-      echo $add_res['geo_res']['return_html'];
-      echo $add_res['geo_res']['console'];
-      return $this->create();
-    }
+    $add_res = \App\Address::save_or_create_address();
+
+    
 
     $this->create_or_save($request, $add_res['address_id']);
     Session::flash('message', 'Succesvol toegevoegd!');
@@ -144,26 +139,9 @@ abstract class AbstractController extends Controller
         ->withErrors($this->validator)
         ->withInput();
     }
-    $add_res = \App\Address::save_or_create_address(false);
-    if ($add_res['geo_res']['status'] !== 'success') {
-      // error in curl / geo iq
-      $reason = $add_res['geo_res']['reason'];
-      $return_html = $add_res['geo_res']['return_html'];
-      $js_console = $add_res['geo_res']['console'];
-      Session::put('geolocation_success', false);
-      if (!empty($js_console)) {
-        Session::flash(
-          'js_console',
-          $js_console
-        );
-      }
-      Session::flash(
-        'message',
-        "geolocatie is mislukt. Server meld: $reason. $return_html"
-      );
-      return $this->edit($request->id);
-    }
-    Session::put('geolocation_success', true);
+    $add_res = \App\Address::save_or_create_address();
+   
+    
     $this->create_or_save($request, $add_res['address_id']);
     Session::flash('message', 'Succesvol gewijzigd!');
     return redirect()->action($this->model_name . 'Controller@show', $request->id);
