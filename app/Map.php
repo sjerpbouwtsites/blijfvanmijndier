@@ -19,12 +19,75 @@ class Map extends Model
    */
   public static function map_data()
   {
-    $tables_to_get = ['addresses', 'guests', 'vets', 'shelters', 'owners', 'locations'];
+    $tables_to_get = ['addresses', 'vets', 'shelters', 'owners', 'locations'];
 
     $all_tables = [];
     foreach ($tables_to_get as $table) {
       $all_tables[$table] = DB::table($table)->limit(100)->get();
     }
+
+    $diervoorkeur = DB::table('tables')->where('tablegroup_id', '4')->limit(1000)->get()->all();
+    $gedrag = DB::table('tables')->where('tablegroup_id', '2')->limit(1000)->get()->all();
+    $wonen = DB::table('tables')->where('tablegroup_id', '5')->limit(1000)->get()->all();
+
+    $guests = DB::select("SELECT g.id as id,
+    g.name as name,
+    g.phone_number as phone_number,
+    g.email_address as email_address,
+    g.max_hours_alone as max_hours_alone,
+    g.address_id as address_id,
+    g.text as text,
+    gt.table_ids as table_ids
+  FROM guests g
+    LEFT JOIN (
+        SELECT guest_id, GROUP_CONCAT(table_id) as table_ids FROM guest_table GROUP BY guest_id
+    ) gt on gt.guest_id = g.id
+  ");
+
+
+$tabel_descriptions = [];
+foreach($diervoorkeur as $meta) {
+    $tabel_descriptions[$meta->id] = $meta->description;
+}
+$gedrag_descriptions = [];
+foreach($gedrag as $meta) {
+    $gedrag_descriptions[$meta->id] = $meta->description;
+}        
+$wonen_descriptions = [];
+foreach($wonen as $meta) {
+    $wonen_descriptions[$meta->id] = $meta->description;
+}        
+
+foreach($guests as $guest) {
+    $guest->table_ids . "<br>";
+    $guest->animal_preference = [];
+    $guest->behaviour = [];
+    $guest->residence = [];
+    if (empty($guest->table_ids)) continue;
+    foreach(explode(',', $guest->table_ids) as $table_id) {
+
+        if (array_key_exists($table_id, $tabel_descriptions)) {
+            $guest->animal_preference[] = $tabel_descriptions[$table_id];
+        } 
+        if (array_key_exists($table_id, $gedrag_descriptions)) {
+            $guest->behaviour[] = $gedrag_descriptions[$table_id];
+        }                 
+        if (array_key_exists($table_id, $wonen_descriptions)) {
+            $guest->residence[] = $wonen_descriptions[$table_id];
+        }    
+
+    }
+
+}
+
+    $all_tables['guests'] = $guests;
+
+    $all_tables['meta'] = [
+      'animal_preference' => array_values($tabel_descriptions),
+      'behaviour' => array_values($gedrag_descriptions),
+      'residence' => array_values($wonen_descriptions)
+    ];
+
     $all_tables['animals'] = DB::select("SELECT an.id as id,
         an.name as name,
         an.shelter_id as shelter_id,

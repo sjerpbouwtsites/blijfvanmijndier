@@ -34,12 +34,12 @@ function prepareAsideHTML() {
   `;
 }
 
-function init() {
+function init(meta) {
   prepareAsideHTML();
   const animals = Animal.all;
   populateAnimalList(animals);
   addAnimalListEventHandlers(animals);
-  filterInit();
+  filterInit(meta);
 }
 
 /**

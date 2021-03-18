@@ -1373,6 +1373,18 @@ styling for both the leaflet popup and the own dialog
   height: 18px;
 }
 
+.map__filter-label--select {
+  width: 100%;
+  border: 0;
+  font-weight: bold;
+  font-size: 1em;
+  padding: .4em;
+}
+
+.map__filter-label--select option {
+  font-family: inherit;
+}
+
 .map__filter-label .map__filter-title {
   text-align: center;
   line-height: 0.9em;

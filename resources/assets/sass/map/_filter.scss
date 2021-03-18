@@ -45,6 +45,16 @@
     width: 18px;
     height: 18px;
   }
+  &--select {
+    width: 100%;
+    border: 0;
+    font-weight: bold;
+    font-size: 1em;
+    padding: .4em;
+    option {
+      font-family: inherit;
+    }
+  }
 }
 .map__filter-label .map__filter-title {
   text-align: center;

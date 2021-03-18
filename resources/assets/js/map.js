@@ -54,6 +54,7 @@ function getMapAPIData() {
     .then((jsonBlob) => {
       const baseData = JSON.parse(jsonBlob);
       const dataModel = models.create(baseData);
+      dataModel.meta = baseData.meta;
       return dataModel;
     })
     .catch((err) => {
@@ -76,8 +77,10 @@ function initMap() {
 
   getMapAPIData().then((dataModels) => {
 
+    const meta = dataModels.meta;
     return new Promise((resolve, reject) => {
       _globalModels = dataModels;
+
       const locatedEntities = []
         .concat(dataModels.guests)
         .concat(dataModels.vets)
@@ -97,7 +100,7 @@ function initMap() {
   
       addInteractive();
       postLeafletFixes();
-      sidebar.init();
+      sidebar.init(meta);
       resolve({dataModels, locatedEntities})
     }).then(({dataModels, locatedEntities}) =>{
       //leafletShell.setLeafletEventListeners(globalLeafletMap, dataModels);

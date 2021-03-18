@@ -198,15 +198,20 @@ let fakeStaticBecauseCodeBaseToOld = {};
  * @property {Array<FilterObject>} configurations
  */
 class EntityFilter {
-  constructor() {
+
+  constructor(meta) {
     // singleton enforecen.
     if (fakeStaticBecauseCodeBaseToOld._self)
       return fakeStaticBecauseCodeBaseToOld._self;
 
+    
     this.configurations = [];
 
     this.setRow1();
     this.setRow2();
+    this.setRow3(meta);
+    this.setRow4(meta);
+    this.setRow5(meta);
     fakeStaticBecauseCodeBaseToOld._self = this;
   }
 
@@ -311,6 +316,48 @@ class EntityFilter {
       })
     );
   }
+  setRow3(meta) {
+    this.configurations.push(
+      new FilterObject({
+        entityFilter: this,
+        name: `animal-preference`,
+        label: "Dier voorkeur",
+        entities: Guest.all,
+        row: 3,
+        selectData: meta.animal_preference.map(animalPreference => {
+          return [animalPreference, animalPreference.toLowerCase().replace(/\s/g, '-')]
+        })
+      })
+    );
+  }
+  setRow4(meta) {
+    this.configurations.push(
+      new FilterObject({
+        entityFilter: this,
+        name: `behaviour`,
+        label: "Gedrag",
+        entities: Guest.all,
+        row: 4,
+        selectData: meta.behaviour.map(behaviour => {
+          return [behaviour, behaviour.toLowerCase().replace(/\s/g, '-')]
+        })
+      })
+    );
+  }
+  setRow5(meta) {
+    this.configurations.push(
+      new FilterObject({
+        entityFilter: this,
+        name: `residence`,
+        label: "Woonstijl",
+        entities: Guest.all,
+        row: 5,
+        selectData: meta.residence.map(residential => {
+          return [residential, residential.toLowerCase().replace(/\s/g, '-')]
+        })
+      })
+    );
+  }    
   /**
    * @param {string} name
    * @returns {FilterConfig} filterConfig from this.configurations.
@@ -342,7 +389,6 @@ class EntityFilter {
 
     if (type === "checkbox") {
       // either all markers go or not.
-      console.log(' set to ', event.target.checked)
       const evaluatedMarkers = filterConfig.evaluate(event.target.checked);
       showHideNodes(evaluatedMarkers.success, true);
       showHideNodes(evaluatedMarkers.failure, false);
@@ -488,11 +534,35 @@ function wrappedRadioInput(filterConfig) {
     },
     ""
   );
+  
 
   // paste in outer.
   return `
     <span class='map__filter-radio-outer'>
       ${labelsAndInputs}
+    </span>`;
+}
+
+/**
+ *
+ * @param {FilterConfig} filterConfig
+ * @returns {string} HTML of a wrapper radio input.
+ */
+ function wrappedSelectInput(filterConfig) {
+
+  return `
+    <span class='map__filter-select-outer'>
+    
+      <select class="map__filter-label map__filter-label--select map__filter-label--${
+        filterConfig.name
+      }"  id='${filterConfig.id}' multiselect>
+        <option>${filterConfig.name}</option>
+        ${(filterConfig.selectData.map(([optionName, optionValue])=>{
+          return`<option value='${optionValue}'>${optionName}</option>`;
+        }).join(''))}
+      </select>
+
+    
     </span>`;
 }
 
@@ -531,11 +601,25 @@ function populateFilterHTML(entityFilter) {
     </div>
   </div>`;
 
+  const selectNamen = [null,null,null,'Dier voorkeur', 'Gedrag', 'Woonstijl'];
+  const inputRow345 = [3,4,5].map(rowNumber =>{
+    return `
+    <div class='map__filter-row-outer'>
+    <span class='map__filter-row-title'>${selectNamen[rowNumber]} </span>
+      <div class='map__filter-row'>
+        ${entityFilter.getRow(rowNumber).reduce((prev, filterConfig) => {
+          return prev + wrappedSelectInput(filterConfig);
+        }, "")}
+      </div>
+    </div>`;
+  }).join('')
+
   document.getElementById(
     "body-filter"
   ).innerHTML = `<form action='#' method='GET' id='map-filters'>
     ${inputRow1}
     ${inputRow2}
+    ${inputRow345}
     `;
     // skipping reset button for now.
     // <input type='reset' id='filter-form-reset' class='map-aside__input--reset' value='leeg'></form>`
@@ -549,13 +633,13 @@ function setFilterEventHandlers(entityFilter) {
   entityFilter.setEventHandlers();
 }
 
-function init() {
-  const entityFilter = new EntityFilter();
+function init(meta) {
+  const entityFilter = new EntityFilter(meta);
   populateFilterHTML(entityFilter);
   setFilterEventHandlers(entityFilter);
   activateResetButton();
 }
-
+ 
 module.exports = {
   init,
 };
