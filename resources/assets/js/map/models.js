@@ -77,6 +77,10 @@ class MayaModel {
     return r;
   }
 
+  get shown(){
+    return !this.marker.classList.contains('blurred');
+  }
+
   /**
    * Creates a route to a maya-single page.
    *
@@ -179,6 +183,17 @@ class LocatedEntity extends MayaModel {
 class Guest extends LocatedEntity {
   constructor(config, locations) {
     super("guest", config, locations);
+    this.meta = {
+      animal_preference: config.animal_preference.map(a => a.toLowerCase().replace(/\s/,'-')),
+      behaviour: config.behaviour.map(a => a.toLowerCase().replace(/\s/,'-')),
+      residence: config.residence.map(a => a.toLowerCase().replace(/\s/,'-'))
+    }
+    this.verwijderOudeMeta();
+  }
+  verwijderOudeMeta(){
+    delete this.animal_preference;
+    delete this.behaviour;
+    delete this.residence;
   }
 
   get animalsOnSite() {

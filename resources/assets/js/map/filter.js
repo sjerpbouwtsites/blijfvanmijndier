@@ -320,9 +320,10 @@ class EntityFilter {
     this.configurations.push(
       new FilterObject({
         entityFilter: this,
-        name: `animal-preference`,
+        name: `animal_preference`,
         label: "Dier voorkeur",
         entities: Guest.all,
+        type: "select",
         row: 3,
         selectData: meta.animal_preference.map(animalPreference => {
           return [animalPreference, animalPreference.toLowerCase().replace(/\s/g, '-')]
@@ -336,6 +337,7 @@ class EntityFilter {
         entityFilter: this,
         name: `behaviour`,
         label: "Gedrag",
+        type: "select",
         entities: Guest.all,
         row: 4,
         selectData: meta.behaviour.map(behaviour => {
@@ -350,6 +352,7 @@ class EntityFilter {
         entityFilter: this,
         name: `residence`,
         label: "Woonstijl",
+        type: "select",
         entities: Guest.all,
         row: 5,
         selectData: meta.residence.map(residential => {
@@ -392,10 +395,6 @@ class EntityFilter {
       const evaluatedMarkers = filterConfig.evaluate(event.target.checked);
       showHideNodes(evaluatedMarkers.success, true);
       showHideNodes(evaluatedMarkers.failure, false);
-      //  // TODO UGLY FIX. GET SHADOWS FROM MARKERS.
-      //  showHideNodes(filterConfig.markers.map(marker => {
-      //    return document.getElementById(marker.id.replace('marker', 'shadow'))
-      //  }), event.target.checked)
 
       return;
     }
@@ -406,21 +405,55 @@ class EntityFilter {
       const evaluatedMarkers = filterConfig.evaluateRadio(value);
       showHideNodes(evaluatedMarkers.success, true);
       showHideNodes(evaluatedMarkers.failure, false);
-       // TODO UGLY FIX. GET SHADOWS FROM MARKERS.
-       showHideNodes(evaluatedMarkers.success.map(marker => {
-        return document.getElementById(marker.id.replace('marker', 'shadow'))
-      }), true)
-       // TODO UGLY FIX. GET SHADOWS FROM MARKERS.
-       showHideNodes(evaluatedMarkers.failure.map(marker => {
-        return document.getElementById(marker.id.replace('marker', 'shadow'))
-      }), false)
       return;
+    } 
+    if (type === 'select') {
+      const selectedOptions = Array.from(event.target.selectedOptions).map(option => option.value)
+      const trueInputName = event.target.name.replace('filter-input-','');
+
+      const success = [];
+      const failure = [];
+      filterConfig.entities.forEach(entity =>{
+
+        if (selectedOptions.includes('NONE')) {
+          success.push(entity.marker)
+          return;
+        }
+
+        console.log(typeof entity.shown, entity)
+        if (!entity.shown) {
+          failure.push(entity.marker)
+          return;
+        }
+
+        console.log(entity.meta[trueInputName])
+        
+        const foundWithMeta = entity.meta[trueInputName].filter(entityMetaValue => {
+          return selectedOptions.includes(entityMetaValue);
+      });
+        if (foundWithMeta.length > 0) {
+          success.push(entity.marker);
+        } else {
+          failure.push(entity.marker);
+        }
+      })
+      console.log(success.length, failure.length);
+
+      showHideNodes(success, true);
+      showHideNodes(failure, false);
+
+      return;
+
+      // showHideNodes(evaluatedMarkers.success, true);
+      // showHideNodes(evaluatedMarkers.failure, false);
+      // return;      
     }
     throw new Error("unknown type");    
   }
 
   setEventHandlers() {
     filterForm().addEventListener("change", (event) => {
+
       // FilterConfig from this.configurations.
       const filterConfig = this.getByName(event.target.name);
       EntityFilter.runFilter(filterConfig, event);
@@ -553,12 +586,12 @@ function wrappedRadioInput(filterConfig) {
   return `
     <span class='map__filter-select-outer'>
     
-      <select class="map__filter-label map__filter-label--select map__filter-label--${
+      <select name='${filterConfig.name}' class="map__filter-label map__filter-label--select map__filter-label--${
         filterConfig.name
-      }"  id='${filterConfig.id}' multiselect>
-        <option>${filterConfig.name}</option>
+      }"  id='${filterConfig.id}' multiple>
+        <option value='NONE' name='${filterConfig.id}'>${filterConfig.name}</option>
         ${(filterConfig.selectData.map(([optionName, optionValue])=>{
-          return`<option value='${optionValue}'>${optionName}</option>`;
+          return`<option name='${filterConfig.id}' value='${optionValue}'>${optionName}</option>`;
         }).join(''))}
       </select>
 
