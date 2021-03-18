@@ -97,6 +97,14 @@ class FilterObject {
       : this.evaluateRadio(evaluateWith);
   }
 
+  disables(){
+    return null
+  }
+
+  enforces(){
+    return null
+  }
+
   /**
    * @param {bool} evaluateWith checkbox res
    * @returns {object} width success.array of markers & failure.array of markers.
@@ -105,14 +113,28 @@ class FilterObject {
     // checkbox are really straightforward.
     if (evaluateWith === true) {
       return {
-        success: this.markers,
+        success: this.addShadows(this.markers),
         failure: [],
       };
     }
     return {
       success: [],
-      failure: this.markers,
+      failure: this.addShadows(this.markers),
     };
+  }
+
+  /**
+   * adds shadowmarkers to array of markers in order to 
+   * also animate that.
+   *
+   * @param {*} markerList
+   * @memberof FilterObject
+   */
+  addShadows(markerList){
+    const shadows = markerList.map(marker => {
+      return document.getElementById(marker.id.replace('marker','shadow'))
+    })
+    return markerList.concat(shadows)
   }
 
   /**
@@ -159,6 +181,8 @@ class FilterObject {
         r.failure.push(entity.marker);
       }
     });
+    r.success = this.addShadows(r.success)
+    r.failure = this.addShadows(r.failure)
     return r;
   }
 }
@@ -201,7 +225,7 @@ class EntityFilter {
         label: "Gast gezin",
         entities: Guest.all,
         row: 1,
-        requiresName: "animals-on-site",
+        requiresName: ["animals-on-site"],
       }),
       new FilterObject({
         entityFilter: this,
@@ -209,6 +233,11 @@ class EntityFilter {
         label: "Dieren artsen",
         entities: Vet.all,
         row: 1,
+        enforces(){
+          return {
+            'filter-input-animals-on-site-negeer': true
+          }
+        }
       }),
       new FilterObject({
         entityFilter: this,
@@ -216,7 +245,7 @@ class EntityFilter {
         label: "Eigen aar",
         entities: Owner.all,
         row: 1,
-        requiresName: "animals-on-site",
+        requiresName: ["animals-on-site"],
       }),
       new FilterObject({
         entityFilter: this,
@@ -224,7 +253,7 @@ class EntityFilter {
         label: "Pen sion",
         entities: Shelter.all,
         row: 1,
-        requiresName: "animals-on-site",
+        requiresName: ["animals-on-site"],
       }),
       new FilterObject({
         entityFilter: this,
@@ -232,7 +261,12 @@ class EntityFilter {
         label: "Op vang",
         entities: Location.all,
         row: 1,
-        requiresName: "",
+        requiresName: ["animals-on-site"],
+        enforces(){
+          return {
+            'filter-input-animals-on-site-negeer': true
+          }
+        }        
       })      
     );
   }
@@ -259,7 +293,13 @@ class EntityFilter {
         ],
         entities: [Guest.all, Owner.all, Shelter.all].flat(),
         row: 2,
-        requiresName: ["is-shelter", "is-guest", "is-pension"],
+        disables(){
+          if (document.querySelector('input[name="animals-on-site"]:checked').value !== 'skip') {
+            return["is-vet", "is-location"];
+          } else {
+            return []
+          }
+        },
       })
     );
   }
@@ -289,26 +329,78 @@ class EntityFilter {
     return this.configurations.filter((configObj) => configObj.row === row);
   }
 
+  static runFilter(filterConfig, event){
+    const type = filterConfig.type;
+
+    if (type === "checkbox") {
+      // either all markers go or not.
+      console.log(' set to ', event.target.checked)
+      const evaluatedMarkers = filterConfig.evaluate(event.target.checked);
+      showHideNodes(evaluatedMarkers.success, true);
+      showHideNodes(evaluatedMarkers.failure, false);
+      //  // TODO UGLY FIX. GET SHADOWS FROM MARKERS.
+      //  showHideNodes(filterConfig.markers.map(marker => {
+      //    return document.getElementById(marker.id.replace('marker', 'shadow'))
+      //  }), event.target.checked)
+
+      return;
+    }
+    if (type === "radio") {
+      // value is name
+      
+      const value = event.target.form[event.target.name].value;
+      const evaluatedMarkers = filterConfig.evaluateRadio(value);
+      showHideNodes(evaluatedMarkers.success, true);
+      showHideNodes(evaluatedMarkers.failure, false);
+       // TODO UGLY FIX. GET SHADOWS FROM MARKERS.
+       showHideNodes(evaluatedMarkers.success.map(marker => {
+        return document.getElementById(marker.id.replace('marker', 'shadow'))
+      }), true)
+       // TODO UGLY FIX. GET SHADOWS FROM MARKERS.
+       showHideNodes(evaluatedMarkers.failure.map(marker => {
+        return document.getElementById(marker.id.replace('marker', 'shadow'))
+      }), false)
+      return;
+    }
+    throw new Error("unknown type");    
+  }
+
   setEventHandlers() {
     filterForm().addEventListener("change", (event) => {
       // FilterConfig from this.configurations.
       const filterConfig = this.getByName(event.target.name);
-      const type = filterConfig.type;
+      EntityFilter.runFilter(filterConfig, event);
 
-      if (type === "checkbox") {
-        // either all markers go or not.
-        showHideNodes(filterConfig.markers, event.target.checked);
-        return;
-      }
-      if (type === "radio") {
-        // value is name
-        const value = event.target.form[event.target.name].value;
-        const evaluatedMarkers = filterConfig.evaluateRadio(value);
-        showHideNodes(evaluatedMarkers.success, true);
-        showHideNodes(evaluatedMarkers.failure, false);
-        return;
-      }
-      throw new Error("unknown type");
+      // TODO UGLY
+      if (filterConfig.disables()) {
+        
+        setTimeout(()=>{
+          filterConfig.disables().forEach(disabledOption => {
+            const thisDisabledInput = document.querySelector(`[name="${disabledOption}"]`);
+            thisDisabledInput.checked = false;
+            const changeEvent = new Event('change');
+            thisDisabledInput.dispatchEvent(changeEvent);
+            EntityFilter.runFilter(this.getByName(disabledOption), changeEvent, false);
+          })
+        }, 150);
+        
+      } 
+
+      // TODO UGLY
+      if (filterConfig.enforces()) {
+        
+        setTimeout(()=>{
+          Object.entries(filterConfig.enforces()).forEach(([enforcedOptionId, enforcedOptionValue]) => {
+            const thisEnforcedInput = document.getElementById(enforcedOptionId);
+            thisEnforcedInput.checked = enforcedOptionValue;
+            const changeEvent = new Event('change');
+            thisEnforcedInput.dispatchEvent(changeEvent);
+            EntityFilter.runFilter(this.getByName(thisEnforcedInput.name), changeEvent, false);
+          })
+        }, 300)
+        
+      }   
+
     });
     filterForm().addEventListener("reset", (event) => {
       Array.from(filterForm().querySelectorAll(".map__filter-input")).forEach(
@@ -392,10 +484,15 @@ function wrappedRadioInput(filterConfig) {
     </span>`;
 }
 
+/**
+ * THIS HAS NOT BEEN BUILD YET
+ * @TODO
+ *
+ */
 function activateResetButton() {
-  document.getElementById("filter-form-reset").addEventListener("click", () => {
-    filterForm().reset();
-  });
+  // document.getElementById("filter-form-reset").addEventListener("click", () => {
+  //   filterForm().reset();
+  // });
 }
 
 /**
@@ -427,7 +524,9 @@ function populateFilterHTML(entityFilter) {
   ).innerHTML = `<form action='#' method='GET' id='map-filters'>
     ${inputRow1}
     ${inputRow2}
-    <input type='reset' id='filter-form-reset' class='map-aside__input--reset' value='leeg'></form>`;
+    `;
+    // skipping reset button for now.
+    // <input type='reset' id='filter-form-reset' class='map-aside__input--reset' value='leeg'></form>`
 }
 
 /**
