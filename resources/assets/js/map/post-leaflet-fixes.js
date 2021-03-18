@@ -73,36 +73,37 @@ function postLeafletWork() {
       "data-marker-id",
       `marker-${markerTempType}-${markerId}`
     );
+    
     //    marker.setAttribute("alt", markerAltData.join(" "));
-
+    
     // CUT INLINE STYLES TO STYLESHEET
     // const markerInlineStyle = marker.getAttribute("style");
     // const shadowInlineStyle = shadowMarker.getAttribute("style");
     // stylesheetHTMLArray.push(`
     //   #marker-${markerTempType}-${markerId} {
-    //     ${markerInlineStyle}
+      //     ${markerInlineStyle}
     //   }
     //   #shadow-${markerTempType}-${markerId} {
-    //     ${shadowInlineStyle}
-    //   }      
-    // `);
-    // marker.removeAttribute("style");
-    // shadowMarker.removeAttribute("style");
-
-    // RENAME BULKY CLASSNAMES
-    if (marker.classList.contains("leaflet-marker-icon")) {
-      marker.classList.remove("leaflet-marker-icon");
-      marker.classList.add("lmi");
-    }
-    if (marker.classList.contains("leaflet-zoom-animated")) {
-      marker.classList.remove("leaflet-zoom-animated");
-      marker.classList.add("lza");
+      //     ${shadowInlineStyle}
+      //   }      
+      // `);
+      // marker.removeAttribute("style");
+      // shadowMarker.removeAttribute("style");
+      
+      // RENAME BULKY CLASSNAMES
+      if (marker.classList.contains("leaflet-marker-icon")) {
+        marker.classList.remove("leaflet-marker-icon");
+        marker.classList.add("lmi");
+      }
+      if (marker.classList.contains("leaflet-zoom-animated")) {
+        marker.classList.remove("leaflet-zoom-animated");
+        marker.classList.add("lza");
     }
     if (marker.classList.contains("leaflet-interactive")) {
       marker.classList.remove("leaflet-interactive");
       marker.classList.add("lei");
     }
-
+    
     // MOVE ALT BASED STYLES TO CLASSES
     const markerColor = markerAltData.find((altPiece) => {
       return altPiece.includes("color-");
@@ -110,14 +111,15 @@ function postLeafletWork() {
     if (markerColor) {
       marker.classList.add(markerColor);
     }
-
+    
     // MOVE TYPE ALT ENTRY TO DATA-TYPE
     const type = markerAltData.find((altPiece) => {
       return altPiece.includes("is-");
     });
     marker.setAttribute("data-type", type.replace("is-", ""));
+    marker.setAttribute('title', type.replace("is-", ""));
     //    marker.setAttribute("alt", marker.alt.replace(type, ""));
-
+    
     // MOVE ANIMAL QUANTITY TO DATA ATTR
     const animalAmountData = markerAltData.filter((altPiece) => {
       return [
@@ -132,18 +134,18 @@ function postLeafletWork() {
         marker.setAttribute(`data-${animalAD}`, "true");
       });
     }
-
+    
     // DESTROY THE ALT ATTRIBUTE
     marker.removeAttribute("alt");
-
+    
     // FIX THE SRC ATTRIBUTE
-
+    
     let typeSrcConfig = markerSrcConfig[markerTempType];
     let markerSrc = animalAmountData.includes("no-animals")
       ? typeSrcConfig["no-animals"]
       : typeSrcConfig["animals-on-site"];
 
-    marker.src = `/img/markers/${markerSrc}`;
+      marker.src = `/img/markers/${markerSrc}`;
     shadowMarker.src = "/img/marker-shadow.png";
   });
 

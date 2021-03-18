@@ -53,6 +53,10 @@ class FilterObject {
     return `filter-input-${this.name}`;
   }
 
+  get isChecked(){
+    return document.getElementById(this.id).checked === true
+  }
+
   /**
    * retrieve current value of corresponding input in DOM.
    *
@@ -225,7 +229,6 @@ class EntityFilter {
         label: "Gast gezin",
         entities: Guest.all,
         row: 1,
-        requiresName: ["animals-on-site"],
       }),
       new FilterObject({
         entityFilter: this,
@@ -234,9 +237,12 @@ class EntityFilter {
         entities: Vet.all,
         row: 1,
         enforces(){
-          return {
-            'filter-input-animals-on-site-negeer': true
-          }
+          if (this.isChecked) {
+            return {
+              'filter-input-animals-on-site-negeer': true
+            }
+          } return null;
+
         }
       }),
       new FilterObject({
@@ -245,7 +251,6 @@ class EntityFilter {
         label: "Eigen aar",
         entities: Owner.all,
         row: 1,
-        requiresName: ["animals-on-site"],
       }),
       new FilterObject({
         entityFilter: this,
@@ -253,7 +258,6 @@ class EntityFilter {
         label: "Pen sion",
         entities: Shelter.all,
         row: 1,
-        requiresName: ["animals-on-site"],
       }),
       new FilterObject({
         entityFilter: this,
@@ -261,11 +265,12 @@ class EntityFilter {
         label: "Op vang",
         entities: Location.all,
         row: 1,
-        requiresName: ["animals-on-site"],
         enforces(){
-          return {
-            'filter-input-animals-on-site-negeer': true
-          }
+          if (this.isChecked) {
+            return {
+              'filter-input-animals-on-site-negeer': true
+            }
+          } return null;
         }        
       })      
     );
@@ -282,13 +287,16 @@ class EntityFilter {
             return true;
           }),
           radioConfig("nul", "nul", (entity) => {
-            return entity.animalsOnSite.length === 0;
+            const entityCheckboxInput = this.getByName(`is-${entity.type}`);
+            return entityCheckboxInput.isChecked && entity.animalsOnSite.length === 0;
           }),
           radioConfig("&eacute;&eacute;n", "een", (entity) => {
-            return entity.animalsOnSite.length === 1;
+            const entityCheckboxInput = this.getByName(`is-${entity.type}`);
+            return entityCheckboxInput.isChecked && entity.animalsOnSite.length === 1;
           }),
           radioConfig("meer", "multiple", (entity) => {
-            return entity.animalsOnSite.length > 1;
+            const entityCheckboxInput = this.getByName(`is-${entity.type}`);
+            return entityCheckboxInput.isChecked && entity.animalsOnSite.length > 1;
           }),
         ],
         entities: [Guest.all, Owner.all, Shelter.all].flat(),
@@ -377,10 +385,12 @@ class EntityFilter {
         setTimeout(()=>{
           filterConfig.disables().forEach(disabledOption => {
             const thisDisabledInput = document.querySelector(`[name="${disabledOption}"]`);
-            thisDisabledInput.checked = false;
-            const changeEvent = new Event('change');
-            thisDisabledInput.dispatchEvent(changeEvent);
-            EntityFilter.runFilter(this.getByName(disabledOption), changeEvent, false);
+            if (thisDisabledInput.checked) {
+              thisDisabledInput.checked = false;
+              const changeEvent = new Event('change');
+              thisDisabledInput.dispatchEvent(changeEvent);
+              EntityFilter.runFilter(this.getByName(disabledOption), changeEvent, false);
+            }
           })
         }, 150);
         
@@ -392,10 +402,12 @@ class EntityFilter {
         setTimeout(()=>{
           Object.entries(filterConfig.enforces()).forEach(([enforcedOptionId, enforcedOptionValue]) => {
             const thisEnforcedInput = document.getElementById(enforcedOptionId);
-            thisEnforcedInput.checked = enforcedOptionValue;
-            const changeEvent = new Event('change');
-            thisEnforcedInput.dispatchEvent(changeEvent);
-            EntityFilter.runFilter(this.getByName(thisEnforcedInput.name), changeEvent, false);
+            if (thisEnforcedInput.checked !== enforcedOptionValue) {
+              thisEnforcedInput.checked = enforcedOptionValue;
+              const changeEvent = new Event('change');
+              thisEnforcedInput.dispatchEvent(changeEvent);
+              EntityFilter.runFilter(this.getByName(thisEnforcedInput.name), changeEvent, false);
+            }
           })
         }, 300)
         
