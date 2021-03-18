@@ -12,6 +12,7 @@
       width: 100%;
       height: 500px;
       z-index: 10;
+      margin: 20px 0;
     }
     .leaflet-control-zoom {
       display: none;
@@ -55,16 +56,23 @@
   
   <script>
     // This is an example of Leaflet usage; you should modify this for your needs.
-var map = L.map('map').setView([52.195, 4.036], 7);
-L.tileLayer('https://{s}-tiles.locationiq.com/v2/obk/r/{z}/{x}/{y}.png?key=b7a32fa378c135').addTo(map);
+  var map = L.map('map').setView([52.195, 4.036], 7);
+  L.tileLayer('https://{s}-tiles.locationiq.com/v2/obk/r/{z}/{x}/{y}.png?key=b7a32fa378c135').addTo(map);
+
+  const marker = L.marker(
+        [document.getElementById('lattitude').value, document.getElementById('longitude').value]
+      ).addTo(map);        
 
   var geocoder=L.control.geocoder('b7a32fa378c135').addTo(map);
 
     // open location IQ control.
 
     geocoder.on('select', function (e) {
+      marker._icon.classList.add('hidden')
+      marker._shadow.classList.add('hidden')
       document.getElementById('lattitude').value = e.latlng.lat;
       document.getElementById('longitude').value = e.latlng.lng;
+      
     });
 
     function expandGeocoderAlsNietExpanded(){
