@@ -98,8 +98,9 @@ function locationMapper(locatedEntity, globalLeafletMap) {
       alt: maakAlt(locatedEntity),
     };
   } catch (error) {
-    console.error(locatedEntity);
-    throw new Error(`fout in maakAlt, ${error.message}`);
+    console.error('fout in maken alts met:');
+    console.log(locatedEntity)
+    throw error;
   }
 
   const marker = L.marker(

@@ -258,7 +258,7 @@ class Owner extends LocatedEntity {
 
   get animalsOnSite() {
     return this.animals.filter((ownedAnimals) => {
-      return ownedAnimals.staysAt.location.uuid === this.location.uuid;
+      return ownedAnimals && ownedAnimals.staysAt && ownedAnimals.staysAt.location.uuid === this.location.uuid;
     });
   }
   static get all() {
