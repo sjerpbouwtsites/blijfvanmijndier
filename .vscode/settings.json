@@ -12,6 +12,20 @@
       "name": "bvmd-local",
       "database": "bvmd",
       "username": "sjerp"
+    },
+    {
+      "mysqlOptions": {
+        "authProtocol": "default"
+      },
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 3306,
+      "driver": "MySQL",
+      "name": "bvmd-2",
+      "group": "bvmd",
+      "database": "bvmd_2",
+      "username": "sjerp",
+      "password": "sjerp"
     }
   ]
 }
