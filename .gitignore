@@ -7,7 +7,10 @@ composer.lock
 *.pem
 *.ovpn
 *.totp
+*.supersecret
 vpn
+
+database/no-git-plz
 
 # Laravel 4 specific
 bootstrap/compiled.php
