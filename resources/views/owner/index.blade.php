@@ -13,15 +13,19 @@
 					<th>Naam</th>
 					<th>Adres</th>
 					<th>Telefoonnummer</th>
+					<th>Link</th>
 				</tr>
 			</thead>
 			<tbody>
 
 			@foreach ($owners as $owner)
-				<tr onclick="window.document.location='{{ URL::to('owners/' . $owner->id) }}';">
-					<td>{{ $owner->name }} {{ $owner->prefix }} {{ $owner->surname }}</td>
-					<td>{{ $owner->street }} {{ $owner->house_number }} {{ $owner->city }}</td>
-					<td>{{ $owner->phone_number }}</td>
+				<tr >
+					<td onclick="window.document.location='{{ URL::to('owners/' . $owner->id) }}';">{{ $owner->name }} {{ $owner->prefix }} {{ $owner->surname }}</td>
+					<td onclick="window.document.location='{{ URL::to('owners/' . $owner->id) }}';">{{ $owner->street }} {{ $owner->house_number }} {{ $owner->city }}</td>
+					<td onclick="window.document.location='{{ URL::to('owners/' . $owner->id) }}';">{{ $owner->phone_number }}</td>
+					<td>
+							<a href='{{ URL::to('owners/' . $owner->id) }}/edit' title='openen in nieuw tabblad' target='_blank'>✍</a>
+					</td>
 				</tr>
 			@endforeach	
 
