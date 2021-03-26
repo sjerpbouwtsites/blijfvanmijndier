@@ -90,19 +90,22 @@ abstract class AbstractController extends Controller
 
     foreach ($this->required as $key) {
 
-      switch ($key) {
-        case 'email_address':
-          $this->validator_config[$key] = "required|email:rfc";
-          break;
-        case 'phone_number':
-          $this->validator_config[$key] = "required|min:10";
-          break;
-        case 'postal_code':
-          $this->validator_config[$key] = "required|max:7|regex:/^([0-9]{4}[ ]{0,1}[a-zA-Z]{2})$/";
-          break;
-        default:
-          $this->validator_config[$key] = 'required';
-      }
+      $this->validator_config[$key] = '';
+
+      // switch ($key) {
+      //   case 'email_address':
+      //     //$this->validator_config[$key] = "required|email:rfc";
+      //     $this->validator_config[$key] = "required"; //TODO LELIJKE FIX OMDAT LIVE DATA raar is
+      //     break;
+      //   case 'phone_number':
+      //     $this->validator_config[$key] = "required|min:10";
+      //     break;
+      //   case 'postal_code':
+      //     $this->validator_config[$key] = "required|max:7|regex:/^([0-9]{4}[ ]{0,1}[a-zA-Z]{2})$/";
+      //     break;
+      //   default:
+      //     $this->validator_config[$key] = 'required';
+      // }
     }
     $this->validator = Validator::make(Input::all(), $this->validator_config);
   }
