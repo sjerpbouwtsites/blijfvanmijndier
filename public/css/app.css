@@ -453,7 +453,7 @@ svg.leaflet-image-layer.lei path {
 
 /* Default icon URLs */
 .leaflet-default-icon-path {
-  background-image: url(img/marker-icon.png);
+  background-image: url(/img/markers/marker.png);
 }
 
 /* attribution and scale controls */
