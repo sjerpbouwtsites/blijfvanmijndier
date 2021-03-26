@@ -99,12 +99,10 @@
       const street = document.getElementById('street').value
       const houseNumber = document.getElementById('house_number').value
 
-
       document.querySelector('.leaflet-locationiq-input').value = `${city} ${postalCode} ${street} ${houseNumber}`;
 
       clearTimeout(wachtEvenDanZoeken)
       wachtEvenDanZoeken = setTimeout(()=>{
-        location.hash = '#street';
         document.querySelector('.leaflet-locationiq-input').click();
       }, 1500)
       
@@ -118,6 +116,13 @@
       document.getElementById('postal_code').addEventListener('keyup', schrijfAdresNaarGeocoder)
       document.getElementById('street').addEventListener('keyup', schrijfAdresNaarGeocoder)
       document.getElementById('house_number').addEventListener('keyup', schrijfAdresNaarGeocoder)
+      var nameInput = document.getElementById('name');
+      if (nameInput) {
+        setTimeout(()=>{
+          nameInput.focus(); 
+          schrijfAdresNaarGeocoder();
+        }, 150)
+      }      
     }
 
     window.addEventListener('load', initGeocoderVoorAdres)
