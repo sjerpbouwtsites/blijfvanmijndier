@@ -115,9 +115,9 @@ class Address extends Model
     public static function validate_address_collection(Collection $collection, string $className): bool
     {
 
-        if ($collection->count() > 1) {
-            throw new \Exception('Meerdere adressen voor ' . $className . ' gevonden', E_USER_NOTICE);
-        }
+        // if ($collection->count() > 1) {
+        //     throw new \Exception('Meerdere adressen voor ' . $className . ' gevonden', E_USER_NOTICE);
+        // }
         if ($collection->count() < 1) {
             throw new \Exception('Geen bijpassend adres voor ' . $className, E_USER_NOTICE);
         }
