@@ -23,7 +23,7 @@ class Map extends Model
 
     $all_tables = [];
     foreach ($tables_to_get as $table) {
-      $all_tables[$table] = DB::table($table)->limit(100)->get();
+      $all_tables[$table] = DB::table($table)->limit(1000)->get();
     }
 
     $diervoorkeur = DB::table('tables')->where('tablegroup_id', '4')->limit(1000)->get()->all();
