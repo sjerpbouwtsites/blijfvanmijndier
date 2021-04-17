@@ -51,7 +51,7 @@ class MayaModel {
   }
   get pluralType() {
     return this.type + "s";
-  }
+  }  
 
   get type() {
     return this._type;
@@ -80,7 +80,7 @@ class MayaModel {
   get shown(){
     return !this.marker.classList.contains('blurred');
   }
-
+  
   /**
    * Creates a route to a maya-single page.
    *

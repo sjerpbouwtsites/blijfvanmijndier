@@ -29,6 +29,82 @@ function radioConfig(label, value, evalFunc) {
   };
 }
 
+const evaluator = {
+  data: {
+    dropouts: [],
+    failure: [],
+    success: [],
+  },
+  run(changedFilterConfig, event) {
+    this.checkAllFilters(changedFilterConfig, event);
+    this.addShadows();
+    this.animate();
+    this.cleanupAfterFilters();
+  },
+  checkAllFilters(changedFilterConfig, event) {
+
+    const filterForm = event.target.form;
+    changedFilterConfig.entityFilter.configurations.forEach((filterConfig) => {
+      const type = filterConfig.type;
+      let evaluatedMarkers;
+
+      if (type === "checkbox") {
+        // either all markers go or not.
+        evaluatedMarkers = filterConfig.evaluate(filterConfig.isChecked);
+      }
+      if (type === "radio") {
+        // value is name
+        const value = filterForm[filterConfig.name].value;
+        evaluatedMarkers = filterConfig.evaluateRadio(value);
+      }
+      if (type === "select") {
+        const selectedOptions = Array.from(filterForm[filterConfig.name].selectedOptions).map((option) => option.value);
+        evaluatedMarkers = filterConfig.evaluateSelect(selectedOptions, filterConfig.name);
+      }
+
+      this.data.dropouts = this.data.dropouts.concat(evaluatedMarkers.failure);
+    });
+
+    this.data.failure = Array.from(new Set(this.data.dropouts));
+    const failureIds = this.data.failure.map((failureMarker) => failureMarker.id);
+
+    this.data.success = [...Guest.all, ...Vet.all, ...Location.all, Shelter.all, ...Owner.all]
+      .map((locatedEntity) => {
+        return locatedEntity.marker;
+      })
+      .filter((marker) => {
+        return marker && !failureIds.includes(marker.id);
+      });
+
+    console.log(this.data.success.length, this.data.failure.length);
+  },
+  cleanupAfterFilters() {
+    this.data.dropouts = [];
+    this.data.success = [];
+    this.data.failure = [];
+  },
+
+  /**
+   * adds shadowmarkers to array of markers in order to
+   * also animate that.
+   *
+   */
+  addShadows() {
+    const failureShadows = this.data.failure.map((marker) => {
+      return document.getElementById(marker.id.replace("marker", "shadow"));
+    });
+    const successShadows = this.data.success.map((marker) => {
+      return document.getElementById(marker.id.replace("marker", "shadow"));
+    });
+    this.data.failure = this.data.failure.concat(failureShadows);
+    this.data.success = this.data.success.concat(successShadows);
+  },
+  animate() {
+    showHideNodes(this.data.failure, false);
+    showHideNodes(this.data.success, true);
+  },
+};
+
 /**
  * One filterObject per filter 'rule' / input
  * @property {string} name used internally
@@ -53,8 +129,8 @@ class FilterObject {
     return `filter-input-${this.name}`;
   }
 
-  get isChecked(){
-    return document.getElementById(this.id).checked === true
+  get isChecked() {
+    return document.getElementById(this.id).checked === true;
   }
 
   /**
@@ -66,10 +142,7 @@ class FilterObject {
    */
   get inputCurrentValue() {
     if (this.type === "checkbox") {
-      return (
-        document.getElementById(this.id) &&
-        document.getElementById(this.id).checked
-      );
+      return document.getElementById(this.id) && document.getElementById(this.id).checked;
     } else if (this.type === "radio") {
       // create radioButtonList and get the value from there
       // note: radios give their name as the value.
@@ -96,17 +169,15 @@ class FilterObject {
    * @returns {object} width success.array of markers & failure.array of markers.
    */
   evaluate(evaluateWith) {
-    return this.type === "checkbox"
-      ? this.evaluateCheckbox(evaluateWith)
-      : this.evaluateRadio(evaluateWith);
+    return this.type === "checkbox" ? this.evaluateCheckbox(evaluateWith) : this.evaluateRadio(evaluateWith);
   }
 
-  disables(){
-    return null
+  disables() {
+    return null;
   }
 
-  enforces(){
-    return null
+  enforces() {
+    return null;
   }
 
   /**
@@ -117,13 +188,13 @@ class FilterObject {
     // checkbox are really straightforward.
     if (evaluateWith === true) {
       return {
-        success: this.addShadows(this.markers),
+        success: this.markers,
         failure: [],
       };
     }
     return {
       success: [],
-      failure: this.addShadows(this.markers),
+      failure: this.markers,
     };
   }
 
@@ -132,53 +203,28 @@ class FilterObject {
    * @param {string} metaName name of meta key
    * @returns {object} width success.array of markers & failure.array of markers.
    */
-   evaluateSelect(evaluateWith, metaName) {
+  evaluateSelect(evaluateWith, metaName) {
     let success = [];
     let failure = [];
-    this.entities.forEach(entity =>{
-  
-      if (evaluateWith.includes('NONE')) {
-        success.push(entity.marker)
-        return;
-      }
-  
-      if (!entity.shown) {
-        failure.push(entity.marker)
-        return;
-      }
-  
-      const foundWithMeta = entity.meta[metaName].filter(entityMetaValue => {
+    this.entities.forEach((entity, index) => {
+      const foundWithMeta = entity.meta[metaName].filter((entityMetaValue) => {
         return evaluateWith.includes(entityMetaValue);
-    });
+      });
+      if (evaluateWith.includes("NONE") || !evaluateWith.length) {
+        foundWithMeta.push('not filtering')
+      }
+
       if (foundWithMeta.length > 0) {
         success.push(entity.marker);
       } else {
         failure.push(entity.marker);
       }
-    })
-    
-    success = this.addShadows(success) 
-    failure = this.addShadows(failure) 
+    });
+
     return {
       success,
-      failure
-    }
-  }
-
-
-
-  /**
-   * adds shadowmarkers to array of markers in order to 
-   * also animate that.
-   *
-   * @param {*} markerList
-   * @memberof FilterObject
-   */
-  addShadows(markerList){
-    const shadows = markerList.map(marker => {
-      return document.getElementById(marker.id.replace('marker','shadow'))
-    })
-    return markerList.concat(shadows)
+      failure,
+    };
   }
 
   /**
@@ -225,8 +271,7 @@ class FilterObject {
         r.failure.push(entity.marker);
       }
     });
-    r.success = this.addShadows(r.success)
-    r.failure = this.addShadows(r.failure)
+
     return r;
   }
 }
@@ -238,13 +283,10 @@ let fakeStaticBecauseCodeBaseToOld = {};
  * @property {Array<FilterObject>} configurations
  */
 class EntityFilter {
-
   constructor(meta) {
     // singleton enforecen.
-    if (fakeStaticBecauseCodeBaseToOld._self)
-      return fakeStaticBecauseCodeBaseToOld._self;
+    if (fakeStaticBecauseCodeBaseToOld._self) return fakeStaticBecauseCodeBaseToOld._self;
 
-    
     this.configurations = [];
 
     this.setRow1();
@@ -274,6 +316,16 @@ class EntityFilter {
         label: "Gast gezin",
         entities: Guest.all,
         row: 1,
+        enforces() {
+          if (!this.isChecked) {
+            return {
+              "filter-input-animal_preference": "NONE",
+              "filter-input-behaviour": "NONE",
+              "filter-input-residence": "NONE",
+            };
+          }
+          return null;
+        },
       }),
       new FilterObject({
         entityFilter: this,
@@ -281,14 +333,14 @@ class EntityFilter {
         label: "Dieren artsen",
         entities: Vet.all,
         row: 1,
-        enforces(){
+        enforces() {
           if (this.isChecked) {
             return {
-              'filter-input-animals-on-site-negeer': true
-            }
-          } return null;
-
-        }
+              "filter-input-animals-on-site-negeer": true,
+            };
+          }
+          return null;
+        },
       }),
       new FilterObject({
         entityFilter: this,
@@ -310,14 +362,15 @@ class EntityFilter {
         label: "Op vang",
         entities: Location.all,
         row: 1,
-        enforces(){
+        enforces() {
           if (this.isChecked) {
             return {
-              'filter-input-animals-on-site-negeer': true
-            }
-          } return null;
-        }        
-      })      
+              "filter-input-animals-on-site-negeer": true,
+            };
+          }
+          return null;
+        },
+      })
     );
   }
   setRow2() {
@@ -346,11 +399,11 @@ class EntityFilter {
         ],
         entities: [Guest.all, Owner.all, Shelter.all].flat(),
         row: 2,
-        disables(){
-          if (document.querySelector('input[name="animals-on-site"]:checked').value !== 'skip') {
-            return["is-vet", "is-location"];
+        disables() {
+          if (document.querySelector('input[name="animals-on-site"]:checked').value !== "skip") {
+            return ["is-vet", "is-location"];
           } else {
-            return []
+            return [];
           }
         },
       })
@@ -365,16 +418,14 @@ class EntityFilter {
         entities: Guest.all,
         type: "select",
         row: 3,
-        selectData: meta.animal_preference.map(animalPreference => {
-          return [animalPreference, animalPreference.toLowerCase().replace(/\s/g, '-')]
+        selectData: meta.animal_preference.map((animalPreference) => {
+          return [animalPreference, animalPreference.toLowerCase().replace(/\s/g, "-")];
         }),
-        enforces(){
-          
+        enforces() {
           return {
-            'filter-input-is-guest': true
-          }
-          
-        } 
+            "filter-input-is-guest": true,
+          };
+        },
       })
     );
   }
@@ -387,9 +438,9 @@ class EntityFilter {
         type: "select",
         entities: Guest.all,
         row: 4,
-        selectData: meta.behaviour.map(behaviour => {
-          return [behaviour, behaviour.toLowerCase().replace(/\s/g, '-')]
-        })
+        selectData: meta.behaviour.map((behaviour) => {
+          return [behaviour, behaviour.toLowerCase().replace(/\s/g, "-")];
+        }),
       })
     );
   }
@@ -402,20 +453,18 @@ class EntityFilter {
         type: "select",
         entities: Guest.all,
         row: 5,
-        selectData: meta.residence.map(residential => {
-          return [residential, residential.toLowerCase().replace(/\s/g, '-')]
-        })
+        selectData: meta.residence.map((residential) => {
+          return [residential, residential.toLowerCase().replace(/\s/g, "-")];
+        }),
       })
     );
-  }    
+  }
   /**
    * @param {string} name
    * @returns {FilterConfig} filterConfig from this.configurations.
    */
   getByName(name) {
-    const re = this.configurations.find(
-      (filterConfig) => filterConfig.name === name
-    );
+    const re = this.configurations.find((filterConfig) => filterConfig.name === name);
     return re;
   }
   /**
@@ -434,84 +483,42 @@ class EntityFilter {
     return this.configurations.filter((configObj) => configObj.row === row);
   }
 
-  static runFilter(filterConfig, event){
-    
-    const type = filterConfig.type;
-    let evaluatedMarkers;
-
-    if (type === "checkbox") {
-      // either all markers go or not.
-      evaluatedMarkers = filterConfig.evaluate(event.target.checked);
-    }
-    if (type === "radio") {
-      // value is name
-     
-      const value = event.target.form[event.target.name].value;
-      evaluatedMarkers = filterConfig.evaluateRadio(value);
-    } 
-    if (type === 'select') {
-      const selectedOptions = Array.from(event.target.selectedOptions).map(option => option.value)
-      const trueInputName = event.target.name.replace('filter-input-','');
-      evaluatedMarkers = filterConfig.evaluateSelect(selectedOptions,  trueInputName);
-    
-    }
-
-    showHideNodes(evaluatedMarkers.success, true);
-    showHideNodes(evaluatedMarkers.failure, false);
-
-    return;
-  }
-
   setEventHandlers() {
     filterForm().addEventListener("change", (event) => {
-
       // FilterConfig from this.configurations.
       const filterConfig = this.getByName(event.target.name);
-      EntityFilter.runFilter(filterConfig, event);
 
-      // TODO UGLY
-      if (filterConfig.disables()) {
-        
-        setTimeout(()=>{
-          filterConfig.disables().forEach(disabledOption => {
-            const thisDisabledInput = document.querySelector(`[name="${disabledOption}"]`);
-            if (thisDisabledInput.checked) {
-              thisDisabledInput.checked = false;
-              const changeEvent = new Event('change');
-              thisDisabledInput.dispatchEvent(changeEvent);
-              EntityFilter.runFilter(this.getByName(disabledOption), changeEvent, false);
-            }
-          })
-        }, 150);
-        
-      } 
+      filterConfig.disables() &&
+        filterConfig.disables().forEach((disabledOption) => {
+          const thisDisabledInput = document.querySelector(`[name="${disabledOption}"]`);
+          if (thisDisabledInput.checked) {
+            thisDisabledInput.checked = false;
+            const changeEvent = new Event("change");
+            thisDisabledInput.dispatchEvent(changeEvent);
+          }
+        });
 
-      // TODO UGLY
-      if (filterConfig.enforces()) {
-        
-        setTimeout(()=>{
-          Object.entries(filterConfig.enforces()).forEach(([enforcedOptionId, enforcedOptionValue]) => {
-            const thisEnforcedInput = document.getElementById(enforcedOptionId);
+      filterConfig.enforces() &&
+        Object.entries(filterConfig.enforces()).forEach(([enforcedOptionId, enforcedOptionValue]) => {
+          const thisEnforcedInput = document.getElementById(enforcedOptionId);
+          console.log(thisEnforcedInput);
+          if (thisEnforcedInput.tagName === 'SELECT') {
+            thisEnforcedInput.value = enforcedOptionValue;
+          } else {
             if (thisEnforcedInput.checked !== enforcedOptionValue) {
               thisEnforcedInput.checked = enforcedOptionValue;
-              const changeEvent = new Event('change');
+              const changeEvent = new Event("change");
               thisEnforcedInput.dispatchEvent(changeEvent);
-              EntityFilter.runFilter(this.getByName(thisEnforcedInput.name), changeEvent, false);
             }
-          })
-        }, 300)
-        
-      }   
-
+          }
+        });
+      evaluator.run(filterConfig, event);
     });
     filterForm().addEventListener("reset", (event) => {
-      Array.from(filterForm().querySelectorAll(".map__filter-input")).forEach(
-        (input) => {
-          const e = new Event("change");
-          input.dispatchEvent(e);
-          console.log(e);
-        }
-      );
+      Array.from(filterForm().querySelectorAll(".map__filter-input")).forEach((input) => {
+        const e = new Event("change");
+        input.dispatchEvent(e);
+      });
     });
   }
 }
@@ -523,9 +530,7 @@ class EntityFilter {
 function wrappedInput(filterConfig) {
   return `
   <label 
-    class='map__filter-label map__filter-label--${
-      filterConfig.type
-    } map__filter-label--${filterConfig.name}' 
+    class='map__filter-label map__filter-label--${filterConfig.type} map__filter-label--${filterConfig.name}' 
     for='${filterConfig.id}'>
     <input 
     class='hidden' 
@@ -534,9 +539,7 @@ function wrappedInput(filterConfig) {
     type='${filterConfig.type}'
     checked 
     >
-    <span class='map__filter-fake-box map__filter-fake-box--${
-      filterConfig.type
-    }'>
+    <span class='map__filter-fake-box map__filter-fake-box--${filterConfig.type}'>
       ${svgs.checked("#ededfa")}
       ${svgs.removed("#ededfa")}    
     </span>
@@ -550,13 +553,10 @@ function wrappedInput(filterConfig) {
  * @returns {string} HTML of a wrapper radio input.
  */
 function wrappedRadioInput(filterConfig) {
-  const labelsAndInputs = filterConfig.radioData.reduce(
-    (prev, radioDatum, index) => {
-      return `${prev}
+  const labelsAndInputs = filterConfig.radioData.reduce((prev, radioDatum, index) => {
+    return `${prev}
     <label 
-      class="map__filter-label map__filter-label--radio map__filter-label--${
-        filterConfig.name
-      }" 
+      class="map__filter-label map__filter-label--radio map__filter-label--${filterConfig.name}" 
       for="${filterConfig.id}-${radioDatum.label}">
       <input 
         class='hidden'
@@ -566,19 +566,14 @@ function wrappedRadioInput(filterConfig) {
         value='${radioDatum.value}'
         ${index === 0 ? `checked='checked'` : ""}
       >
-      <span class='map__filter-fake-box map__filter-fake-box--${
-        filterConfig.type
-      }'>
+      <span class='map__filter-fake-box map__filter-fake-box--${filterConfig.type}'>
         ${svgs.checked("#5151d3")}
         ${svgs.removed("#5151d3")}
       </span>
       <span class='map__filter-title'>${radioDatum.label}</span>
     </label>  
     `;
-    },
-    ""
-  );
-  
+  }, "");
 
   // paste in outer.
   return `
@@ -592,18 +587,19 @@ function wrappedRadioInput(filterConfig) {
  * @param {FilterConfig} filterConfig
  * @returns {string} HTML of a wrapper radio input.
  */
- function wrappedSelectInput(filterConfig) {
-
+function wrappedSelectInput(filterConfig) {
   return `
     <span class='map__filter-select-outer'>
     
       <select name='${filterConfig.name}' class="map__filter-label map__filter-label--select map__filter-label--${
-        filterConfig.name
-      }"  id='${filterConfig.id}' multiple>
+    filterConfig.name
+  }"  id='${filterConfig.id}' multiple>
         <option value='NONE' name='${filterConfig.id}'>Geen keuze</option>
-        ${(filterConfig.selectData.map(([optionName, optionValue])=>{
-          return`<option name='${filterConfig.id}' value='${optionValue}'>${optionName}</option>`;
-        }).join(''))}
+        ${filterConfig.selectData
+          .map(([optionName, optionValue]) => {
+            return `<option name='${filterConfig.id}' value='${optionValue}'>${optionName}</option>`;
+          })
+          .join("")}
       </select>
 
     
@@ -645,9 +641,10 @@ function populateFilterHTML(entityFilter) {
     </div>
   </div>`;
 
-  const selectNamen = [null,null,null,'Dier voorkeur', 'Gedrag', 'Woonstijl'];
-  const inputRow345 = [3,4,5].map(rowNumber =>{
-    return `
+  const selectNamen = [null, null, null, "Dier voorkeur", "Gedrag", "Woonstijl"];
+  const inputRow345 = [3, 4, 5]
+    .map((rowNumber) => {
+      return `
     <div class='map__filter-row-outer'>
     <span class='map__filter-row-title'>${selectNamen[rowNumber]} </span>
       <div class='map__filter-row'>
@@ -656,17 +653,16 @@ function populateFilterHTML(entityFilter) {
         }, "")}
       </div>
     </div>`;
-  }).join('')
+    })
+    .join("");
 
-  document.getElementById(
-    "body-filter"
-  ).innerHTML = `<form action='#' method='GET' id='map-filters'>
+  document.getElementById("body-filter").innerHTML = `<form action='#' method='GET' id='map-filters'>
     ${inputRow1}
     ${inputRow2}
     ${inputRow345}
     `;
-    // skipping reset button for now.
-    // <input type='reset' id='filter-form-reset' class='map-aside__input--reset' value='leeg'></form>`
+  // skipping reset button for now.
+  // <input type='reset' id='filter-form-reset' class='map-aside__input--reset' value='leeg'></form>`
 }
 
 /**
@@ -683,7 +679,7 @@ function init(meta) {
   setFilterEventHandlers(entityFilter);
   activateResetButton();
 }
- 
+
 module.exports = {
   init,
 };
