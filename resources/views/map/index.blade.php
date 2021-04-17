@@ -18,4 +18,4 @@
 
   <link rel="stylesheet" href="css/app.css" />  
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-@endsection;
+@endsection
