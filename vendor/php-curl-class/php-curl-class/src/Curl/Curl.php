@@ -7,10 +7,10 @@ use Curl\Decoder;
 
 class Curl
 {
-    const VERSION = '8.8.0';
+    const VERSION = '8.9.2';
     const DEFAULT_TIMEOUT = 30;
 
-    public $curl;
+    public $curl = null;
     public $id = null;
 
     public $error = false;
@@ -211,8 +211,9 @@ class Curl
      */
     public function close()
     {
-        if (is_resource($this->curl)) {
+        if ($this->curl !== null) {
             curl_close($this->curl);
+            $this->curl = null;
         }
         $this->options = null;
         $this->jsonDecoder = null;
@@ -330,6 +331,106 @@ class Curl
         $this->get($url);
 
         return ! $this->error;
+    }
+
+    /**
+     * Fast download
+     *
+     * @access private
+     * @param  $url
+     * @param  $filename
+     * @param  $connections
+     *
+     * @return boolean
+     */
+    public function _fastDownload($url, $filename, $connections = 4) {
+        // First we need to retrive the 'Content-Length' header.
+        // Use GET because not all hosts support HEAD requests.
+        $this->setOpts([
+            CURLOPT_CUSTOMREQUEST => 'GET',
+            CURLOPT_NOBODY        => true,
+            CURLOPT_HEADER        => true,
+            CURLOPT_ENCODING      => '',
+        ]);
+        $this->setUrl($url);
+        $this->exec();
+
+        $content_length = isset($this->responseHeaders['Content-Length']) ?
+            $this->responseHeaders['Content-Length'] : null;
+
+        // If content length header is missing, use the normal download.
+        if (!$content_length) {
+            return $this->download($url, $filename);
+        }
+
+        // Try to divide chunk_size equally.
+        $chunkSize = ceil($content_length / $connections);
+
+        // First bytes.
+        $offset = 0;
+        $nextChunk = $chunkSize;
+
+        // We need this later.
+        $file_parts = [];
+
+        $multi_curl = new MultiCurl();
+        $multi_curl->setConcurrency($connections);
+
+        $multi_curl->error(function ($instance) {
+            return false;
+        });
+
+        for ($i = 1; $i <= $connections; $i++) {
+            // If last chunk then no need to supply it.
+            // Range starts with 0, so subtract 1.
+            $nextChunk = $i === $connections ? '' : $nextChunk - 1;
+
+            // Create part file.
+            $fpath = "$filename.part$i";
+            if (is_file($fpath)) {
+                unlink($fpath);
+            }
+            $fp = fopen($fpath, 'w');
+
+            // Track all fileparts names; we need this later.
+            $file_parts[] = $fpath;
+
+            $curl = new Curl();
+            $curl->setOpt(CURLOPT_ENCODING, '');
+            $curl->setRange("$offset-$nextChunk");
+            $curl->setFile($fp);
+            $curl->disableTimeout(); // otherwise download may fail.
+            $curl->setUrl($url);
+
+            $curl->complete(function () use ($fp) {
+                fclose($fp);
+            });
+
+            $multi_curl->addCurl($curl);
+
+            if ($i != $connections) {
+                $offset = $nextChunk + 1; // Add 1 to match offset.
+                $nextChunk = $nextChunk + $chunkSize;
+            }
+        }
+
+        // let the magic begin.
+        $multi_curl->start();
+
+        // Concatenate chunks to single.
+        if (is_file($filename)) {
+            unlink($filename);
+        }
+        $mainfp = fopen($filename, 'w');
+        foreach ($file_parts as $part) {
+            $fp = fopen($part, 'r');
+            stream_copy_to_stream($fp, $mainfp);
+            fclose($fp);
+            unlink($part);
+        }
+        fclose($mainfp);
+
+        return true;
     }
 
     /**
@@ -585,9 +686,9 @@ class Curl
      *       - In order to force a 303 redirection to be performed using the same method, the
      *         underlying cURL object must be set in a special state (the CURLOPT_CURSTOMREQUEST
      *         option must be set to the method to use after the redirection). Due to a limitation
-     *         of the cURL extension of PHP < 5.5.11 ([2], [3]) and of HHVM, it is not possible
-     *         to reset this option. Using these PHP engines, it is therefore impossible to
-     *         restore this behavior on an existing php-curl-class Curl object.
+     *         of the cURL extension of PHP < 5.5.11 ([2], [3]), it is not possible to reset this
+     *         option. Using these PHP engines, it is therefore impossible to restore this behavior
+     *         on an existing php-curl-class Curl object.
      *
      * @return mixed Returns the value provided by exec.
      *
@@ -609,9 +710,9 @@ class Curl
             $this->setOpt(CURLOPT_CUSTOMREQUEST, 'POST');
         } else {
             if (isset($this->options[CURLOPT_CUSTOMREQUEST])) {
-                if ((version_compare(PHP_VERSION, '5.5.11') < 0) || defined('HHVM_VERSION')) {
+                if ((version_compare(PHP_VERSION, '5.5.11') < 0)) {
                     trigger_error(
-                        'Due to technical limitations of PHP <= 5.5.11 and HHVM, it is not possible to '
+                        'Due to technical limitations of PHP <= 5.5.11, it is not possible to '
                         . 'perform a post-redirect-get request using a php-curl-class Curl object that '
                         . 'has already been used to perform other types of requests. Either use a new '
                         . 'php-curl-class Curl object or upgrade your PHP engine.',
@@ -965,14 +1066,26 @@ class Curl
      */
     public function setHeaders($headers)
     {
-        foreach ($headers as $key => $value) {
-            $this->headers[$key] = $value;
+        if (ArrayUtil::isArrayAssoc($headers)) {
+            foreach ($headers as $key => $value) {
+                $key = trim($key);
+                $value = trim($value);
+                $this->headers[$key] = $value;
+            }
+        } else {
+            foreach ($headers as $header) {
+                list($key, $value) = explode(':', $header, 2);
+                $key = trim($key);
+                $value = trim($value);
+                $this->headers[$key] = $value;
+            }
         }
 
         $headers = array();
         foreach ($this->headers as $key => $value) {
             $headers[] = $key . ': ' . $value;
         }
+
         $this->setOpt(CURLOPT_HTTPHEADER, $headers);
     }
 
@@ -1192,6 +1305,16 @@ class Curl
     }
 
     /**
+     * Disable Timeout
+     *
+     * @access public
+     */
+    public function disableTimeout()
+    {
+        $this->setTimeout(null);
+    }
+
+    /**
      * Set Url
      *
      * @access public
@@ -1335,7 +1458,7 @@ class Curl
      */
     public function reset()
     {
-        if (function_exists('curl_reset') && is_resource($this->curl)) {
+        if (function_exists('curl_reset') && $this->curl !== null) {
             curl_reset($this->curl);
         } else {
             $this->curl = curl_init();

@@ -36,7 +36,7 @@ class Controller extends BaseController
     public $updatetypeId = 10;
     public $updatetypeOwner = 179;
 
-    public string $model_name;
+    public $model_name;
     public $menuItems = null;
 
     /**

@@ -2,7 +2,7 @@
 
 [![](https://img.shields.io/github/release/php-curl-class/php-curl-class.svg)](https://github.com/php-curl-class/php-curl-class/releases/)
 [![](https://img.shields.io/github/license/php-curl-class/php-curl-class.svg)](https://github.com/php-curl-class/php-curl-class/blob/master/LICENSE)
-[![](https://img.shields.io/travis/php-curl-class/php-curl-class.svg)](https://travis-ci.org/php-curl-class/php-curl-class/)
+[![](https://img.shields.io/github/workflow/status/php-curl-class/php-curl-class/ci)](https://github.com/php-curl-class/php-curl-class/actions/workflows/ci.yml)
 [![](https://img.shields.io/packagist/dt/php-curl-class/php-curl-class.svg)](https://github.com/php-curl-class/php-curl-class/releases/)
 
 PHP Curl Class makes it easy to send HTTP requests and integrate with web APIs.
@@ -34,7 +34,7 @@ For latest commit version:
 
 ### Requirements
 
-PHP Curl Class works with PHP 5.3, 5.4, 5.5, 5.6, 7.0, 7.1, 7.2, 7.3, 7.4, and HHVM.
+PHP Curl Class works with PHP 5.3, 5.4, 5.5, 5.6, 7.0, 7.1, 7.2, 7.3, 7.4, and 8.0.
 
 ### Quick Start and Examples
 
@@ -195,6 +195,7 @@ More examples are available under [/examples](https://github.com/php-curl-class/
 Curl::__construct($base_url = null)
 Curl::__destruct()
 Curl::__get($name)
+Curl::_fastDownload($url, $filename, $connections = 4) {
 Curl::attemptRetry()
 Curl::beforeSend($callback)
 Curl::buildPostData($data)
@@ -202,6 +203,7 @@ Curl::call()
 Curl::close()
 Curl::complete($callback)
 Curl::delete($url, $query_parameters = array(), $data = array())
+Curl::disableTimeout()
 Curl::download($url, $mixed_filename)
 Curl::error($callback)
 Curl::exec($ch = null)
@@ -305,6 +307,7 @@ MultiCurl::addSearch($url, $data = array())
 MultiCurl::beforeSend($callback)
 MultiCurl::close()
 MultiCurl::complete($callback)
+MultiCurl::disableTimeout()
 MultiCurl::error($callback)
 MultiCurl::getOpt($option)
 MultiCurl::removeHeader($key)
@@ -331,6 +334,7 @@ MultiCurl::setProxyAuth($auth)
 MultiCurl::setProxyTunnel($tunnel = true)
 MultiCurl::setProxyType($type)
 MultiCurl::setRange($range)
+MultiCurl::setRateLimit($rate_limit)
 MultiCurl::setReferer($referer)
 MultiCurl::setReferrer($referrer)
 MultiCurl::setRetry($mixed)
