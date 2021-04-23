@@ -27,5 +27,6 @@
       "username": "sjerp",
       "password": "sjerp"
     }
-  ]
+  ],
+  "git.ignoreLimitWarning": true
 }
