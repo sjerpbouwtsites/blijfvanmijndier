@@ -55,6 +55,6 @@
     "preferred-install": "dist",
     "platform": {
       "php": "7.4"
-  }    
+    }    
   }
 }
