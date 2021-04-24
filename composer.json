@@ -7,6 +7,7 @@
   ],
   "license": "MIT",
   "type": "project",
+  
   "require": {
     "php": ">=7.3",
     "laravel/framework": "5.3.*",
@@ -51,6 +52,9 @@
     ]
   },
   "config": {
-    "preferred-install": "dist"
+    "preferred-install": "dist",
+    "platform": {
+      "php": "7.4"
+  }    
   }
 }
