@@ -140,6 +140,10 @@ aanpassingen:
   z-index: 700;
 }
 
+.leaflet-map {
+  height: 100vh;
+}
+
 .leaflet-map-pane canvas {
   z-index: 100;
 }
