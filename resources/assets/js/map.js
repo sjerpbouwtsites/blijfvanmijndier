@@ -105,11 +105,12 @@ function initMap() {
     }).then(({dataModels, locatedEntities}) =>{
       //leafletShell.setLeafletEventListeners(globalLeafletMap, dataModels);
 
-        // invalidate map to paint it correctly.
-        // globalLeafletMap.invalidateSize();
-        // console.log('map invalidated')
-
         setTimeout(()=>{
+
+        // invalidate map to paint it correctly.
+        globalLeafletMap.invalidateSize();
+        console.log('map invalidated')
+
           leafletShell.checkAndFixMarkersToClose(locatedEntities);
           globalLeafletMap.on('zoomend', ()=>{
             leafletShell.checkAndFixMarkersToClose(locatedEntities);
