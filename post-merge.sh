@@ -15,7 +15,7 @@ sudo n 10
 npm install
 echo "npm installed"
 # use gulp
-sudo gulp --production
+sudo gulp --watch
 echo "ran gulp"
 # yeah that was weird'
 sudo find ~/ifawnl_staging -type d -exec chmod 775 {} \;
