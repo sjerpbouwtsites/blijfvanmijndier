@@ -36,7 +36,7 @@ function createMap() {
       id: "mapbox/streets-v11",
       tileSize: 512,
       zoomOffset: -1,
-      accessToken: `pk.eyJ1Ijoic2plcnAtdmFuLXdvdWRlbiIsImEiOiJjajh5NmExaTAxa29iMzJwbDV0eXF4eXh4In0.HVBgF1SbusJzMwmjHcHS2w`,
+      accessToken: `your-access-token`,
     }
   ).addTo(leafletMap);
   return leafletMap;
@@ -109,6 +109,7 @@ function initMap() {
 
         // invalidate map to paint it correctly.
         globalLeafletMap.invalidateSize();
+        globalLeafletMap.resize();
         console.log('map invalidated')
 
           leafletShell.checkAndFixMarkersToClose(locatedEntities);
