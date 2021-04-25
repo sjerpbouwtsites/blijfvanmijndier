@@ -1,3 +1,7 @@
+# stash away earlier postfixes
+git stash
+# pull current work
+git pull
 # scp / git might not leave ownership correct
 sudo chown -R www-data ~/ifawnl_staging
 sudo chgrp -R www-data ~/ifawnl_staging
