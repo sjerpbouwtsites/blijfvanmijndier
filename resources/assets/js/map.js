@@ -36,7 +36,7 @@ function createMap() {
       id: "mapbox/streets-v11",
       tileSize: 512,
       zoomOffset: -1,
-      accessToken: "your.mapbox.access.token",
+      accessToken: `pk.eyJ1Ijoic2plcnAtdmFuLXdvdWRlbiIsImEiOiJjajh5NmExaTAxa29iMzJwbDV0eXF4eXh4In0.HVBgF1SbusJzMwmjHcHS2w`,
     }
   ).addTo(leafletMap);
   return leafletMap;
