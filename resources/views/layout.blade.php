@@ -35,9 +35,9 @@
 	<div class="container content">
 		@yield('content')
 	</div>
-	<br><br>
-
-		
+	
+	<div id='marquee-holder'></div>
+	
 </body>
 
 </html>

@@ -3,7 +3,7 @@ sudo chown -R www-data ~/ifawnl_staging
 sudo chgrp -R www-data ~/ifawnl_staging
 # change .htaccess in public folder
 sudo rm -rf ~/ifawnl_staging/public/.htaccess
-sudo mv ~/ifawnl_staging/public/.htaccess-remote public/.htaccess
+sudo cp ~/ifawnl_staging/public/.htaccess-remote public/.htaccess
 # make writeable for npm
 sudo find ~/ifawnl_staging -type d -exec chmod 777 {} \;
 sudo find ~/ifawnl_staging -type f -exec chmod 777 {} \;
@@ -12,10 +12,10 @@ sudo n 10
 sudo chown -hR ubuntu /usr/local/lib/node_modules
 # install packages
 sudo npm install -g gulp@3.9.1;
+sudo rm -rf /usr/local/lib/node_modules/node-sass
 mkdir /usr/local/lib/node_modules/node-sass
-mkdir /usr/local/lib/node_modules/node-sass
-/build
-sudo npm install -g node-sass
+mkdir /usr/local/lib/node_modules/node-sass/build
+sudo npm install -g node-sass@4.8.3
 sudo npm install bootstrap-sass@3.3.7;
 sudo npm install jquery@3.1.0;
 sudo npm install laravel-elixir@6.0.0-11;

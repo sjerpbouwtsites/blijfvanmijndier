@@ -3,6 +3,24 @@ body {
    color: #4a4f5e;
 }
 
+[data-locatie="development"] #marquee-holder,
+[data-locatie="staging"] #marquee-holder {
+   height: 65px;
+}
+
+.staging-marquee {
+   position: fixed;
+   bottom: 0;
+   left: 0;
+   background-color: purple;
+   color: white;
+   text-align: center;
+   font-size: 3em;
+   font-weight: 900;
+   font-variant: small-caps;
+   height: 65px;
+   width: 100%;
+ }
 a {
    color: #4a4f5e;
 }
