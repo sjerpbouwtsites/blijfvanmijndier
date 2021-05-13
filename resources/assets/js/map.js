@@ -36,7 +36,7 @@ function createMap() {
       id: "mapbox/streets-v11",
       tileSize: 512,
       zoomOffset: -1,
-      accessToken: "your.mapbox.access.token",
+      accessToken: `your-access-token`,
     }
   ).addTo(leafletMap);
   return leafletMap;
@@ -105,10 +105,15 @@ function initMap() {
     }).then(({dataModels, locatedEntities}) =>{
       //leafletShell.setLeafletEventListeners(globalLeafletMap, dataModels);
 
-        // invalidate map to paint it correctly.
-        globalLeafletMap.invalidateSize();
-
         setTimeout(()=>{
+
+        // invalidate map to paint it correctly.
+        setTimeout(()=>{
+          globalLeafletMap.invalidateSize();
+        }, 500)
+        
+        console.log('map invalidated')
+
           leafletShell.checkAndFixMarkersToClose(locatedEntities);
           globalLeafletMap.on('zoomend', ()=>{
             leafletShell.checkAndFixMarkersToClose(locatedEntities);

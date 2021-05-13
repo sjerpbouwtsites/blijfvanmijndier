@@ -18,10 +18,10 @@ use Illuminate\Support\Facades\Input;
 abstract class AbstractController extends Controller
 {
 
-  public string $view_prefix;
-  public string $singular;
-  public string $plural;
-  public string $model_name;
+  public $view_prefix;
+  public $singular;
+  public $plural;
+  public $model_name;
   public $validator;
   // set in setValidator
   public $validator_config = [];
