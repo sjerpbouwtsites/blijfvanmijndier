@@ -56,7 +56,7 @@ function postLeafletWork() {
     if (!markerId) {
       throw new Error(`marker Id unknown ${marker} postLeafletWork func`);
     }
-    //  markerAltData.splice(markerAltData.indexOf(markerId), 1); // just delete alt in the end.
+
 
     const markerTempType = markerAltData
       .find((altPiece) => {
@@ -73,7 +73,14 @@ function postLeafletWork() {
       "data-marker-id",
       `marker-${markerTempType}-${markerId}`
     );
-    
+    const markerTempName = markerAltData
+      .find((altPiece) => {
+        return altPiece.includes("name-");
+      }).replace('name-','')
+      marker.setAttribute(
+        "data-name",
+        markerTempName
+      );    
     //    marker.setAttribute("alt", markerAltData.join(" "));
     
     // CUT INLINE STYLES TO STYLESHEET
@@ -117,7 +124,7 @@ function postLeafletWork() {
       return altPiece.includes("is-");
     });
     marker.setAttribute("data-type", type.replace("is-", ""));
-    marker.setAttribute('title', type.replace("is-", ""));
+    marker.setAttribute('title', type.replace("is-", "") + ` ${markerTempName}`);
     //    marker.setAttribute("alt", marker.alt.replace(type, ""));
     
     // MOVE ANIMAL QUANTITY TO DATA ATTR

@@ -66,7 +66,7 @@ function maakAlt(locatedEntity) {
           return animalsOnSite.length > 1;
         },
         res: "animals-on-site",
-      },
+      }, 
       {
         key: "animalsOnSite",
         check: (animalsOnSite) => {
@@ -80,7 +80,7 @@ function maakAlt(locatedEntity) {
         return condition.check(locationVal) ? condition.res : "";
       })
       .filter((a) => a)
-      .join(" ") + ` is-${locatedEntity.type} id-${locatedEntity.id}`
+      .join(" ") + ` is-${locatedEntity.type} id-${locatedEntity.id} name-${locatedEntity.name}`
   );
 }
 
