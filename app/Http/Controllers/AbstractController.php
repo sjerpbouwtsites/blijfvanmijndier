@@ -26,6 +26,7 @@ abstract class AbstractController extends Controller
   // set in setValidator
   public $validator_config = [];
   public $geolocation_failure = false;
+  public $uses_generic_index = false;
 
   // please override.
   public $required = [];
@@ -49,8 +50,21 @@ abstract class AbstractController extends Controller
    */
   public function index()
   {
+
+    $models = \App\Address::allWithAddress("App\\" . $this->model_name)->sortBy('name');
+
+    if ($this->uses_generic_index) {
+      return $this->get_view("generic.index", [
+        $this->plural => $models,
+        'index_columns' => $this->index_columns,
+        'index_rows' => $this->create_index_rows($models),
+        'index_title'=> $this->singular,
+        'plural_name'=> $this->plural,
+        
+      ]);
+    }
     return $this->get_view($this->view_prefix . ".index", [
-      $this->plural => \App\Address::allWithAddress("App\\" . $this->model_name)->sortBy('name'),
+      $this->plural => $models,
     ]);
   }
 
