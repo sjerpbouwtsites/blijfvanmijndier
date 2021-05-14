@@ -35,6 +35,8 @@ styling for both the leaflet popup and the own dialog
   position: relative;
   padding: 1em;
   border-radius: 0;
+  max-height: 80vh;
+  overflow: auto;
 }
 
 .map__dialog-close,
