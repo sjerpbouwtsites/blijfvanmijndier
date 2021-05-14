@@ -45,6 +45,19 @@ abstract class AbstractController extends Controller
     $this->model_name = ucfirst($this->singular);
   }
 
+/**
+ * used to create table rows in index
+ */
+  public function wrap_in_show_link($id, $to_wrap){
+    $wrapped = '';
+    $wrapped .= "<td>";
+    $wrapped .= "<a href='/".$this->plural."/".$id." '>";
+    $wrapped .= $to_wrap;
+    $wrapped .= "</a>";
+    $wrapped .= "</td>";
+    return $wrapped;
+}
+
   /**
    * plenary view & root endpoint
    */

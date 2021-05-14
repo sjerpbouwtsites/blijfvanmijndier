@@ -38,23 +38,9 @@ class ShelterController extends AbstractController
         foreach ($guests as $guest) {
             $index_rows .= "<tr>";
 
-            $index_rows .= "<td>";
-            $index_rows .= "<a href='/".$this->plural."/".$guest->id." '>";
-            $index_rows .= $guest->name;
-            $index_rows .= "</a>";
-            $index_rows .= "</td>";
-
-            $index_rows .= "<td>";
-            $index_rows .= "<a href='/".$this->plural."/".$guest->id." '>";
-            $index_rows .= "$guest->street $guest->house_number $guest->city";
-            $index_rows .= "</a>";
-            $index_rows .= "</td>";
-
-            $index_rows .= "<td>";
-            $index_rows .= "<a href='/".$this->plural."/".$guest->id." '>";
-            $index_rows .= $guest->phone_number;
-            $index_rows .= "</td>";
-            $index_rows .= "</a>";
+            $index_rows .= $this->wrap_in_show_link($guest->id, $guest->name);
+            $index_rows .= $this->wrap_in_show_link($guest->id, "$guest->street $guest->house_number $guest->city");
+            $index_rows .= $this->wrap_in_show_link($guest->id, "$guest->phone_number");
 
             $index_rows .= "<td><a href='/".$this->plural."/".$guest->id."/edit'>🖊</a></td>";
             $index_rows .= "</tr>";
