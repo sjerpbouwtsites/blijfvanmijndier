@@ -42,16 +42,17 @@ class VetController extends AbstractController
     }
 
 
-    public function create_index_rows($guests){
+    public function create_index_rows($vets){
         $index_rows = '';
-        foreach ($guests as $guest) {
+        foreach ($vets as $vet) {
             $index_rows .= "<tr>";
 
-            $index_rows .= $this->wrap_in_show_link($guest->id, $guest->name);
-            $index_rows .= $this->wrap_in_show_link($guest->id, "$guest->street $guest->house_number $guest->city");
-            $index_rows .= $this->wrap_in_show_link($guest->id, "$guest->phone_number");
+            $index_rows .= $this->wrap_in_show_link($vet->id, $vet->name);
+            $index_rows .= $this->wrap_in_show_link($vet->id, "$vet->street $vet->house_number $vet->city");
+            $index_rows .= $this->wrap_in_show_link($vet->id, "$vet->phone_number");
 
-            $index_rows .= "<td><a href='/".$this->plural."/".$guest->id."/edit'>🖊</a></td>";
+            $index_rows .= "<td><a href='/".$this->plural."/".$vet->id."/edit'>🖊</a></td>";
+            $index_rows .= $this->focus_in_maya_cell($vet->id);
             $index_rows .= "</tr>";
         }
         return $index_rows;

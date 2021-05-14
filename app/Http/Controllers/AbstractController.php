@@ -59,6 +59,20 @@ abstract class AbstractController extends Controller
 }
 
   /**
+   * opens map and opens relevant marker
+   */
+  public function focus_in_maya_cell($id){
+    $wrapped = '';
+    $wrapped .= "<td>";
+    $wrapped .= "<a href='/map?focus=true&focus-type=".$this->singular."&focus-id=".$id."'>";
+    $wrapped .= "🗺";
+    $wrapped .= "</a>";
+    $wrapped .= "</td>";
+    return $wrapped;
+  }
+
+
+  /**
    * plenary view & root endpoint
    */
   public function index()

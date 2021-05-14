@@ -31,16 +31,17 @@ class GuestController extends AbstractController
         parent::__construct('guests');
     }
 
-    public function create_index_rows($guests){
+    public function create_index_rows($models){
         $index_rows = '';
-        foreach ($guests as $guest) {
+        foreach ($models as $model) {
             $index_rows .= "<tr>";
 
-            $index_rows .= $this->wrap_in_show_link($guest->id, $guest->name);
-            $index_rows .= $this->wrap_in_show_link($guest->id, "$guest->street $guest->house_number $guest->city");
-            $index_rows .= $this->wrap_in_show_link($guest->id, "$guest->phone_number");
+            $index_rows .= $this->wrap_in_show_link($model->id, $model->name);
+            $index_rows .= $this->wrap_in_show_link($model->id, "$model->street $model->house_number $model->city");
+            $index_rows .= $this->wrap_in_show_link($model->id, $model->phone_number);
 
-            $index_rows .= "<td><a href='/".$this->plural."/".$guest->id."/edit'>🖊</a></td>";
+            $index_rows .= "<td><a href='/".$this->plural."/".$model->id."/edit'>🖊</a></td>";
+            $index_rows .= $this->focus_in_maya_cell($model->id);  
             $index_rows .= "</tr>";
         }
         return $index_rows;

@@ -161,6 +161,31 @@ function postLeafletWork() {
   styleEl.id = "handmade-marker-styles";
   styleEl.innerHTML = stylesheetHTMLArray.join("");
   document.head.appendChild(styleEl);
+
+  focusOpMarkerIndienNodig();
 }
+/**
+ * vanuit backend kan via GETs gefocust worden op een marker.
+ *
+ * @returns
+ */
+function focusOpMarkerIndienNodig(){
+  if (!location.search) return;
+  const searchRes = location.search.substring(1, location.search.length).split('&')
+  if (!searchRes.includes('focus=true')) return;
+  const searchObj = {};
+  searchRes.forEach(searchR =>{
+      const s = searchR.split('=');
+      searchObj[s[0]] = s[1];
+  });
+
+const markerId = `marker-${searchObj['focus-type']}-id-${searchObj['focus-id']}`;
+  const marker = document.getElementById(markerId)
+  if (!marker) {
+    throw new Error(`tracht te focussen op niet bestaande marker ${markerId}`)
+  }
+  marker.click();
+}
+
 
 module.exports = postLeafletWork;

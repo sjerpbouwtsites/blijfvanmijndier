@@ -63,6 +63,7 @@ function getMapAPIData() {
     });
 }
 
+
 function initMap() {
   if (!location.href.includes("/map")) {
     console.log("no map here");
@@ -112,12 +113,11 @@ function initMap() {
           globalLeafletMap.invalidateSize();
         }, 500)
         
-        console.log('map invalidated')
-
           leafletShell.checkAndFixMarkersToClose(locatedEntities);
           globalLeafletMap.on('zoomend', ()=>{
             leafletShell.checkAndFixMarkersToClose(locatedEntities);
           })
+
         }, 50)
       
     }).catch(err => {

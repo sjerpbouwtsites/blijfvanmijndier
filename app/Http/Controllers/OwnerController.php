@@ -33,16 +33,17 @@ class OwnerController extends AbstractController
         parent::__construct('owners');
     }
 
-    public function create_index_rows($guests){
+    public function create_index_rows($owners){
         $index_rows = '';
-        foreach ($guests as $guest) {
+        foreach ($owners as $owner) {
             $index_rows .= "<tr>";
 
-            $index_rows .= $this->wrap_in_show_link($guest->id, "$guest->name $guest->prefix $guest->surname");
-            $index_rows .= $this->wrap_in_show_link($guest->id, "$guest->street $guest->house_number $guest->city");
-            $index_rows .= $this->wrap_in_show_link($guest->id, "$guest->phone_number");
+            $index_rows .= $this->wrap_in_show_link($owner->id, "$owner->name $owner->prefix $owner->surname");
+            $index_rows .= $this->wrap_in_show_link($owner->id, "$owner->street $owner->house_number $owner->city");
+            $index_rows .= $this->wrap_in_show_link($owner->id, "$owner->phone_number");
 
-            $index_rows .= "<td><a href='/".$this->plural."/".$guest->id."/edit'>🖊</a></td>";
+            $index_rows .= "<td><a href='/".$this->plural."/".$owner->id."/edit'>🖊</a></td>";
+            $index_rows .= $this->focus_in_maya_cell($owner->id);            
             $index_rows .= "</tr>";
         }
         return $index_rows;

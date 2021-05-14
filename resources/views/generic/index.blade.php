@@ -14,6 +14,7 @@
             <th>{{$column_names}}</th>
           @endforeach	
 					<th>Pas aan</th>
+					<th>Maya</th>
 				</tr>
 			</thead>
 			<tbody>
