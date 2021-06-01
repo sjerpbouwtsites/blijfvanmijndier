@@ -845,6 +845,10 @@ styling for both the leaflet popup and the own dialog
   line-height: 0.8em;
 }
 
+.bvmd-popup__header-title--small {
+  font-size: 1em;
+}
+
 .bvmd-popup__header-subtitle {
   font-size: 0.66em;
   opacity: 0.66;
@@ -869,6 +873,11 @@ styling for both the leaflet popup and the own dialog
   background-color: #f5f5f5;
 }
 
+.bvmd-popup__list--ordered {
+  padding-left: 1.66em;
+  list-style-type: number;
+}
+
 .bvmd-popup__list-wrapper + .bvmd-popup__list-wrapper {
   margin-top: 2em;
 }
@@ -884,6 +893,10 @@ styling for both the leaflet popup and the own dialog
   font-weight: 900;
   text-align: left;
   width: 50%;
+}
+
+.bvmd-popup__list-item + .bvmd-popup__list-item {
+  margin-top: .5em;
 }
 
 .bvmd-popup__data-row {

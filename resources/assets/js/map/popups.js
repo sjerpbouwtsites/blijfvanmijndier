@@ -140,7 +140,6 @@ const buttonHandlers = {
         return;
       }
       event.preventDefault();
-      console.log(actionBtn);
       this.callbacks[toCamelCase(actionBtn.getAttribute("data-action"))](
         actionBtn
       );
@@ -350,7 +349,6 @@ function populateDialogWithAnimal(animal) {
 
 function populateDialogWithText(textId) {
   const textCollection = texts[textId];
-  console.log(textCollection);
   document.getElementById(
     "dialog-print-target"
   ).innerHTML = `<div class='bvmd-popup'>

@@ -388,7 +388,7 @@ class EntityFilter {
         entityFilter: this,
         name: `animals-on-site`,
         type: `radio`,
-        label: "Aantal opgevangen",
+        label: "Aantal opgevangen dieren",
         radioData: [
           radioConfig("negeer", "skip", () => {
             return true;
@@ -446,6 +446,11 @@ class EntityFilter {
         selectData: meta.behaviour.map((behaviour) => {
           return [behaviour, behaviour.toLowerCase().replace(/\s/g, "-")];
         }),
+        enforces() {
+          return {
+            "filter-input-is-guest": true,
+          };
+        },        
       })
     );
   }
@@ -461,6 +466,11 @@ class EntityFilter {
         selectData: meta.residence.map((residential) => {
           return [residential, residential.toLowerCase().replace(/\s/g, "-")];
         }),
+        enforces() {
+          return {
+            "filter-input-is-guest": true,
+          };
+        },        
       })
     );
   }
@@ -637,7 +647,7 @@ function populateFilterHTML(entityFilter) {
   </div>`;
   const inputRow2 = `
   <div class='map__filter-row-outer'>
-  <span class='map__filter-row-title'>Aantal opgevangen</span>
+  <span class='map__filter-row-title'>Aantal opgevangen dieren</span>
     <div class='map__filter-row'>
       ${entityFilter.getRow(2).reduce((prev, filterConfig) => {
         return prev + wrappedRadioInput(filterConfig);
