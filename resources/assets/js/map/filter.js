@@ -68,15 +68,19 @@ const evaluator = {
     this.data.failure = Array.from(new Set(this.data.dropouts));
     const failureIds = this.data.failure.map((failureMarker) => failureMarker.id);
 
-    this.data.success = [...Guest.all, ...Vet.all, ...Location.all, Shelter.all, ...Owner.all]
+    this.data.success = [...Guest.all, ...Vet.all, ...Location.all, ...Shelter.all, ...Owner.all]
       .map((locatedEntity) => {
-        return locatedEntity.marker;
+        const m = locatedEntity.marker;
+        if (!m) {
+          throw new Error(`geen marker! ${locatedEntity.type} ${locatedEntity.id}`)
+        }
+        return m
       })
       .filter((marker) => {
+
         return marker && !failureIds.includes(marker.id);
       });
 
-    console.log(this.data.success.length, this.data.failure.length);
   },
   cleanupAfterFilters() {
     this.data.dropouts = [];
@@ -130,7 +134,11 @@ class FilterObject {
   }
 
   get isChecked() {
-    return document.getElementById(this.id).checked === true;
+    const input = document.getElementById(this.id);
+    if (!input) {
+      throw new Error(`no input for ${this.id}`);
+    } 
+    return input.checked === true;
   }
 
   /**
@@ -272,6 +280,7 @@ class FilterObject {
       }
     });
 
+
     return r;
   }
 }
@@ -388,23 +397,19 @@ class EntityFilter {
             const entityCheckboxInput = this.getByName(`is-${entity.type}`);
             return entityCheckboxInput.isChecked && entity.animalsOnSite.length === 0;
           }),
-          radioConfig("&eacute;&eacute;n", "een", (entity) => {
+          radioConfig("&eacute;&eacute;n of meer", "een-of-meer", (entity) => {
             const entityCheckboxInput = this.getByName(`is-${entity.type}`);
-            return entityCheckboxInput.isChecked && entity.animalsOnSite.length === 1;
-          }),
-          radioConfig("meer", "multiple", (entity) => {
-            const entityCheckboxInput = this.getByName(`is-${entity.type}`);
-            return entityCheckboxInput.isChecked && entity.animalsOnSite.length > 1;
+            return entityCheckboxInput.isChecked && entity.animalsOnSite.length > 0;
           }),
         ],
-        entities: [Guest.all, Owner.all, Shelter.all].flat(),
+        entities: [Guest.all, Owner.all, Shelter.all, Location.all].flat(),
         row: 2,
         disables() {
-          if (document.querySelector('input[name="animals-on-site"]:checked').value !== "skip") {
-            return ["is-vet", "is-location"];
-          } else {
-            return [];
-          }
+          // if (document.querySelector('input[name="animals-on-site"]:checked').value !== "skip") {
+          //   return ["is-vet"];
+          // } else {
+          //   return [];
+          // }
         },
       })
     );
@@ -501,7 +506,6 @@ class EntityFilter {
       filterConfig.enforces() &&
         Object.entries(filterConfig.enforces()).forEach(([enforcedOptionId, enforcedOptionValue]) => {
           const thisEnforcedInput = document.getElementById(enforcedOptionId);
-          console.log(thisEnforcedInput);
           if (thisEnforcedInput.tagName === 'SELECT') {
             thisEnforcedInput.value = enforcedOptionValue;
           } else {
