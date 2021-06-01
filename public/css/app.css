@@ -1365,7 +1365,7 @@ styling for both the leaflet popup and the own dialog
   padding: 4px;
   color: white;
   font-size: 0.75em;
-  width: calc(25% - 1.05em);
+  width: 33%;
   flex-shrink: 1;
 }
 
