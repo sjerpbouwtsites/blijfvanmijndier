@@ -8,7 +8,6 @@ const models = {};
  */
 function create(baseData) {
 
-  console.log(baseData)
   const addresses = baseData.addresses;
 
   models.animals = baseData.animals.map((baseAnimal) => {
