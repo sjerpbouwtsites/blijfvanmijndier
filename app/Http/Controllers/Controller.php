@@ -18,21 +18,22 @@ use \Illuminate\View\View;
 use Illuminate\Database\Eloquent\Model;
 use Symfony\Component\HttpFoundation\Request;
 use Illuminate\Support\Collection;
+use App\Tablegroup;
 
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
     // ids of table table
-    public $breedId = 1;
-    public $behaviourId = 2;
-    public $vaccinationId = 3;
-    public $animaltypeId = 4;
-    public $hometypeId = 5;
-    public $gendertypeId = 6;
-    public $employeeId = 7;
-    public $doctypeId = 8;
-    public $endtypeId = 9;
+    // public $breedId = 1;
+    // public $behaviourId = 2;
+    // public $vaccinationId = 3;
+    // public $animaltypeId = 4;
+    // public $hometypeId = 5;
+    // public $gendertypeId = 6;
+    // public $employeeId = 7;
+    // public $doctypeId = 8;
+    // public $endtypeId = 9;
     public $updatetypeId = 10;
     public $updatetypeOwner = 179;
 

@@ -13,6 +13,7 @@ use App\Animal;
 use App\Guest;
 use App\Shelter;
 use DateTime;
+use App\Tablegroup;
 
 class UpdateController extends Controller
 {
@@ -202,7 +203,7 @@ class UpdateController extends Controller
         // KEEP THIS BUT MODERNIZE
         $menuItems = $this->GetMenuItems($object['link_type']);
 
-        $employees = $this->GetTableList($this->employeeId);
+        $employees = $this->GetTableList(Tablegroup::type_to_id('employee'));
         $employees->prepend('Selecteer medewerker', '0');
 
         $updatetypes = $this->GetTableList($this->updatetypeId);

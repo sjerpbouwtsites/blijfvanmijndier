@@ -51,7 +51,7 @@
                 @include('show_checkbox_list', ['title' => 'Vaccinaties', 'list' => $vaccinationListChecked])
             </div>
             <div class="col-md-6">
-                @include('show_checkbox_list', ['title' => 'Wonen', 'list' => $hometypeListChecked])
+                @include('show_checkbox_list', ['title' => 'Wonen', 'list' => $home_typeListChecked])
             </div>
         
         </div>

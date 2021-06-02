@@ -8,6 +8,7 @@ use App\Animal;
 use App\Table;
 use App\Address;
 use Illuminate\Support\Facades\Input;
+use App\Tablegroup;
 
 class GuestController extends AbstractController
 {
@@ -61,9 +62,9 @@ class GuestController extends AbstractController
             'guest' => $guest,
             'animals' => $animals,
             'updates' => UpdateController::getUpdatesByLinkType('guests', $guest->id, 2),
-            'behaviourList' => $guest->tables->where('tablegroup_id', $this->behaviourId),
-            'hometypeList' => $guest->tables->where('tablegroup_id', $this->hometypeId),
-            'animaltypeList' => $guest->tables->where('tablegroup_id', $this->animaltypeId)
+            'behaviourList' => $guest->tables->where('tablegroup_id', Tablegroup::type_to_id('behaviour')),
+            'hometypeList' => $guest->tables->where('tablegroup_id', Tablegroup::type_to_id('home_type')),
+            'animaltypeList' => $guest->tables->where('tablegroup_id', Tablegroup::type_to_id('animal_type'))
         ]);
     }
 
@@ -112,20 +113,19 @@ class GuestController extends AbstractController
     private function guest_meta(Guest $guest, $skip = array()): array
     {
         $to_return = [];
-        foreach (['behaviour', 'animaltype', 'hometype'] as $group) {
+        foreach (['behaviour', 'animal_type', 'home_type', 'own_animal_type'] as $group) {
             if (in_array($group, $skip)) continue;
             $list_name = $group . "List";
-            $id_name = $group . "Id";
 
             // all in this group.
             $all_in_group = Table::All()->where(
                 'tablegroup_id',
-                $this->$id_name
+                Tablegroup::type_to_id($group)
             );
             $to_return[$list_name] = $all_in_group;
 
             // all in this group checked, complete objects
-            $all_checked_ids = $guest->tables->where('tablegroup_id', $this->$id_name)->pluck('id')->toArray();
+            $all_checked_ids = $guest->tables->where('tablegroup_id', Tablegroup::type_to_id($group))->pluck('id')->toArray();
             $complete_and_checked = [];
             foreach ($all_in_group as $one_of_all) {
                 if (in_array($one_of_all['attributes']['id'], $all_checked_ids)) {
@@ -146,14 +146,15 @@ class GuestController extends AbstractController
      */
     private function GetGuestData($guest)
     {
-        $behaviourList = Table::All()->where('tablegroup_id', $this->behaviourId);
+        $behaviourList = Table::All()->where('tablegroup_id', Tablegroup::type_to_id('behaviour'));
 
-        $hometypeList = Table::All()->where('tablegroup_id', $this->hometypeId);
-        $animaltypeList = Table::All()->where('tablegroup_id', $this->animaltypeId);
+        $hometypeList = Table::All()->where('tablegroup_id', Tablegroup::type_to_id('home_type'));
+        $animaltypeList = Table::All()->where('tablegroup_id', Tablegroup::type_to_id('animal_type'));
 
-        $checked_behaviours = $guest->tables()->where('tablegroup_id', $this->behaviourId)->pluck('tables.id')->toArray();
-        $checked_hometypes = $guest->tables()->where('tablegroup_id', $this->hometypeId)->pluck('tables.id')->toArray();
-        $checked_animaltypes = $guest->tables()->where('tablegroup_id', $this->animaltypeId)->pluck('tables.id')->toArray();
+        $checked_behaviours = $guest->tables()->where('tablegroup_id', Tablegroup::type_to_id('behaviour'))->pluck('tables.id')->toArray();
+        $checked_hometypes = $guest->tables()->where('tablegroup_id', Tablegroup::type_to_id('home_type'))->pluck('tables.id')->toArray();
+        $checked_animaltypes = $guest->tables()->where('tablegroup_id', Tablegroup::type_to_id('animal_type'))->pluck('tables.id')->toArray();
+        $checked_own_animals = $guest->tables()->where('tablegroup_id', Tablegroup::type_to_id('own_animal_type'))->pluck('tables.id')->toArray();
 
         $menuItems = $this->GetMenuItems('guests');
 
@@ -165,7 +166,8 @@ class GuestController extends AbstractController
             'hometypeList' => $hometypeList,
             'checked_hometypes' => $checked_hometypes,
             'animaltypeList' => $animaltypeList,
-            'checked_animaltypes' => $checked_animaltypes
+            'checked_animaltypes' => $checked_animaltypes,
+            // 'checked_own_animals' => $checked_own_animals,
         );
 
         return $data;
@@ -195,7 +197,10 @@ class GuestController extends AbstractController
         $tables = Input::has('tables')
             ? Input::get('tables')
             : [];
+
         $guest->tables()->sync($tables);
+
+        //dd($guest);
         $guest->save();
         return true;
     }
