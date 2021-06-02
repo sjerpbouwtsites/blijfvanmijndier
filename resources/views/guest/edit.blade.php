@@ -52,34 +52,54 @@
       <a href="{{ URL::to('guests/' . $guest->id) }}" class="btn btn-default">Annuleren</a>
       </div>
       </div>
-      <div class="col-md-6">
-       <div class="col-md-2">
-       </div>
-       <div class="col-md-5">
 
-            @include('form_checkbox_list', 
-             ['title' => 'Gedrag', 
-             'list' => $behaviourList, 
-             'checked' => $checked_behaviours
-            ])
+      <div class="col-md-5 col-md-offset-1 editscherm-checkboxes__buiten">
+        <div class="editscherm-checkboxes__binnen">
+               
+            <div class="row editscherm-checkboxes__rij">
 
-            @include('form_checkbox_list', 
-            ['title' => 'Eigen dieren', 
-            'list' => $own_animal_typeList, 
-            'checked' => $checked_own_animal_types
-            ])            
+                <div class="editscherm-checkboxes__kolom">
+                    <div class="editscherm-checkboxes__sectie">
+                        @include('form_checkbox_list', 
+                        ['title' => 'Gedrag', 
+                        'list' => $behaviourList, 
+                        'checked' => $checked_behaviours
+                        ])
+                    </div>
+                    <div class="editscherm-checkboxes__sectie">
+                        @include('form_checkbox_list', 
+                            ['title' => 'Eigen dieren', 
+                            'list' => $own_animal_typeList, 
+                            'checked' => $checked_own_animal_types
+                            ])
+                    </div>            
+                </div>
 
+               <div class="editscherm-checkboxes__kolom">
+                    <div class="editscherm-checkboxes__sectie">
+                        @include('form_checkbox_list', ['title' => 'Wonen', 'list' => $home_typeList, 'checked' => $checked_home_types])
+                    </div>
+                    <div class="editscherm-checkboxes__sectie">
+                        @include('form_checkbox_list', ['title' => 'Diervoorkeur', 'list' => $animal_typeList, 'checked' => $checked_animal_types])
+                    </div>
+                </div>
 
-       </div>
-       <div class="col-md-5">
-            @include('form_checkbox_list', ['title' => 'Wonen', 'list' => $home_typeList, 'checked' => $checked_home_types])
-            
-                    @include('form_checkbox_list', ['title' => 'Diervoorkeur', 'list' => $animal_typeList, 'checked' => $checked_animal_types])
+            </div>
 
-       </div>
-      </div>
+        </div>
+    </div>
 
       {{ Form::close() }}	
 
      </div>    	
+
+     <script>
+
+         Array.from(document.querySelectorAll('.editscherm-checkboxes__binnen .checkbox')).forEach(checkboxWrap => {
+             const input = checkboxWrap.querySelector('input')
+             const label = checkboxWrap.querySelector('label')
+             input.id = label.getAttribute('for');
+             console.log(input.id)
+         })
+     </script>
 @stop
