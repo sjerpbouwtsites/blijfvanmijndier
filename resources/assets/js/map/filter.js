@@ -212,10 +212,23 @@ class FilterObject {
    * @returns {object} width success.array of markers & failure.array of markers.
    */
   evaluateSelect(evaluateWith, metaName) {
+
+    
+    if (!metaName) {
+      console.error(evaluteWith)
+      throw new Error(`evaluateSelect zonder metaName`)
+    } 
+
     let success = [];
     let failure = [];
     this.entities.forEach((entity, index) => {
-      const foundWithMeta = entity.meta[metaName].filter((entityMetaValue) => {
+
+      const metaEntry = entity.meta[metaName];
+      if (!Array.isArray(entity.meta[metaName])) {
+        console.error(entity.meta)
+        throw new Error(`evaluateSelect entity meta metaName lookup faalt. ${metaName} ${entity.type} ${entity.id}`)
+      }
+      const foundWithMeta = metaEntry.filter((entityMetaValue) => {
         return evaluateWith.includes(entityMetaValue);
       });
       if (evaluateWith.includes("NONE") || !evaluateWith.length) {
@@ -303,6 +316,8 @@ class EntityFilter {
     this.setRow3(meta);
     this.setRow4(meta);
     this.setRow5(meta);
+    this.setRow6(meta);
+    this.setRow7(meta);
     fakeStaticBecauseCodeBaseToOld._self = this;
   }
 
@@ -474,6 +489,51 @@ class EntityFilter {
       })
     );
   }
+  setRow6(meta) {
+    this.configurations.push(
+      new FilterObject({
+        entityFilter: this,
+        name: `own_animals`,
+        label: "Huisdier soorten",
+        type: "select",
+        entities: Guest.all,
+        row: 6,
+        selectData: Array.isArray(meta.own_animals) ? 
+          meta.own_animals.map((animal_type) => {
+            return [animal_type, animal_type.toLowerCase().replace(/\s/g, "-")];
+          })
+          : [['nee', 'nee']],
+        // disables() {
+        //   return {
+        //     "filter-input-is-guest": true,
+        //   };
+        // },        
+      })
+    );
+  }  
+  setRow7(meta) {
+    this.configurations.push(
+      new FilterObject({
+        entityFilter: this,
+        name: `own_animals_absent`,
+        label: "Huisdiersoort afwezig",
+        type: "select",
+        entities: Guest.all,
+        row: 7,
+        selectData: Array.isArray(meta.own_animals_absent) 
+          ? meta.own_animals_absent.map((animal_type) => {
+            console.log(animal_type)
+            return [animal_type, animal_type.toLowerCase().replace(/\s/g, "-")];
+          })
+          : [['nee', 'nee']],
+        // disables() {
+        //   return {
+        //     //"filter-input-is-guest": true,
+        //   };
+        // },        
+      })
+    );
+  }    
   /**
    * @param {string} name
    * @returns {FilterConfig} filterConfig from this.configurations.
@@ -602,6 +662,12 @@ function wrappedRadioInput(filterConfig) {
  * @returns {string} HTML of a wrapper radio input.
  */
 function wrappedSelectInput(filterConfig) {
+
+  if (!filterConfig.selectData || !Array.isArray(filterConfig.selectData)) {
+    console.error(filterConfig);
+    throw new Error (`filterConfig.selectData is geen array.`)
+  }
+
   return `
     <span class='map__filter-select-outer'>
     
@@ -655,8 +721,8 @@ function populateFilterHTML(entityFilter) {
     </div>
   </div>`;
 
-  const selectNamen = [null, null, null, "Dier voorkeur", "Gedrag", "Woonstijl"];
-  const inputRow345 = [3, 4, 5]
+  const selectNamen = [null, null, null, "Dier voorkeur", "Gedrag", "Woonstijl", 'Heeft type dier', 'Type dier afwezig'];
+  const inputRow34567 = [3, 4, 5,6,7]
     .map((rowNumber) => {
       return `
     <div class='map__filter-row-outer'>
@@ -673,7 +739,7 @@ function populateFilterHTML(entityFilter) {
   document.getElementById("body-filter").innerHTML = `<form action='#' method='GET' id='map-filters'>
     ${inputRow1}
     ${inputRow2}
-    ${inputRow345}
+    ${inputRow34567}
     `;
   // skipping reset button for now.
   // <input type='reset' id='filter-form-reset' class='map-aside__input--reset' value='leeg'></form>`

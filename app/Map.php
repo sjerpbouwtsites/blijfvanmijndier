@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use App\Tablegroup;
 
 class Map extends Model
 {
@@ -25,10 +26,25 @@ class Map extends Model
     foreach ($tables_to_get as $table) {
       $all_tables[$table] = DB::table($table)->limit(1000)->get();
     }
+    
+    $tg_id_map = [
+      'animal_type' => Tablegroup::type_to_id('animal_type'),
+      'behaviour' => Tablegroup::type_to_id('behaviour'),
+      'home_type' => Tablegroup::type_to_id('home_type'),
+      'own_animal_type' => Tablegroup::type_to_id('own_animal_type'),
+    ];
 
-    $diervoorkeur = DB::table('tables')->where('tablegroup_id', '4')->limit(1000)->get()->all();
-    $gedrag = DB::table('tables')->where('tablegroup_id', '2')->limit(1000)->get()->all();
-    $wonen = DB::table('tables')->where('tablegroup_id', '5')->limit(1000)->get()->all();
+    $all_animal_types = [];
+
+    $eigen_dier = DB::table('tables')->where('tablegroup_id', $tg_id_map['own_animal_type'])->limit(1000)->get()->all();
+
+    foreach ($eigen_dier as $animal_type_info) {
+      $all_animal_types[] = $animal_type_info->description;
+    };
+
+    $diervoorkeur = DB::table('tables')->where('tablegroup_id', $tg_id_map['animal_type'])->limit(1000)->get()->all();
+    $gedrag = DB::table('tables')->where('tablegroup_id', $tg_id_map['behaviour'])->limit(1000)->get()->all();
+    $wonen = DB::table('tables')->where('tablegroup_id', $tg_id_map['home_type'])->limit(1000)->get()->all();
 
     $guests = DB::select("SELECT g.id as id,
     g.name as name,
@@ -56,7 +72,11 @@ foreach($gedrag as $meta) {
 $wonen_descriptions = [];
 foreach($wonen as $meta) {
     $wonen_descriptions[$meta->id] = $meta->description;
-}        
+}
+$eigen_dier_descriptions = [];
+foreach($eigen_dier as $meta) {
+  $eigen_dier_descriptions[$meta->id] = $meta->description;
+}          
 
 foreach($guests as $guest) {
     $guest->table_ids . "<br>";
@@ -75,6 +95,9 @@ foreach($guests as $guest) {
         if (array_key_exists($table_id, $wonen_descriptions)) {
             $guest->residence[] = $wonen_descriptions[$table_id];
         }    
+        if (array_key_exists($table_id, $eigen_dier_descriptions)) {
+          $guest->own_animals[] = $eigen_dier_descriptions[$table_id];
+      } 
 
     }
 
@@ -85,7 +108,9 @@ foreach($guests as $guest) {
     $all_tables['meta'] = [
       'animal_preference' => array_values($tabel_descriptions),
       'behaviour' => array_values($gedrag_descriptions),
-      'residence' => array_values($wonen_descriptions)
+      'residence' => array_values($wonen_descriptions),
+      'own_animals' => $eigen_dier_descriptions,
+      'own_animals_absent' => $eigen_dier_descriptions
     ];
 
     $all_tables['animals'] = DB::select("SELECT an.id as id,

@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Model;
 use Symfony\Component\HttpFoundation\Request;
 use Illuminate\Support\Collection;
 use App\Tablegroup;
+use App\Map;
 
 class Controller extends BaseController
 {
@@ -48,6 +49,7 @@ class Controller extends BaseController
     {
         $this->init_model_name($model_name);
         $this->init_menu_items($model_name, $menu_items_source);
+
     }
 
     private function init_model_name($model_name)
