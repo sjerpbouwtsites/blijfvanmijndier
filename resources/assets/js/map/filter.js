@@ -121,8 +121,11 @@ const evaluator = {
  * @class FilterObject
  */
 class FilterObject {
+
+  
   constructor(config) {
     this.type = "checkbox";
+    this.inverted = false;
     for (let k in config) {
       this[k] = config[k];
     }
@@ -180,10 +183,26 @@ class FilterObject {
     return this.type === "checkbox" ? this.evaluateCheckbox(evaluateWith) : this.evaluateRadio(evaluateWith);
   }
 
+  /**
+   * 
+   * @returns list of name attributes of inputs to be disabled.
+   */
   disables() {
     return null;
   }
 
+  /**
+   * 
+   * @returns list of options to be cancelled
+   */
+  disablesSelectOptions(){
+    return null
+  }
+
+  /**
+   * 
+   * @returns list of name attributes of inputs to be enforced, in form {name: bool, naam: bool}
+   */
   enforces() {
     return null;
   }
@@ -229,7 +248,7 @@ class FilterObject {
         throw new Error(`evaluateSelect entity meta metaName lookup faalt. ${metaName} ${entity.type} ${entity.id}`)
       }
       const foundWithMeta = metaEntry.filter((entityMetaValue) => {
-        return evaluateWith.includes(entityMetaValue);
+        return evaluateWith.includes(entityMetaValue.toLowerCase());
       });
       if (evaluateWith.includes("NONE") || !evaluateWith.length) {
         foundWithMeta.push('not filtering')
@@ -241,6 +260,16 @@ class FilterObject {
         failure.push(entity.marker);
       }
     });
+
+    if (evaluateWith.inverted) {
+      // damn old codebase :(
+        return {
+          success: failure,
+          failure: success
+        }
+    }
+
+
 
     return {
       success,
@@ -490,6 +519,10 @@ class EntityFilter {
     );
   }
   setRow6(meta) {
+    
+    // ja is een vieze cheat omdat ik door al dat ongetypte
+    // programmeren objecten en arrays door elkaar haal
+    const eigenDieren = Object.values(meta.own_animals);
     this.configurations.push(
       new FilterObject({
         entityFilter: this,
@@ -498,39 +531,57 @@ class EntityFilter {
         type: "select",
         entities: Guest.all,
         row: 6,
-        selectData: Array.isArray(meta.own_animals) ? 
-          meta.own_animals.map((animal_type) => {
+        selectData:  
+        eigenDieren.map((animal_type) => {
             return [animal_type, animal_type.toLowerCase().replace(/\s/g, "-")];
-          })
-          : [['nee', 'nee']],
-        // disables() {
-        //   return {
-        //     "filter-input-is-guest": true,
-        //   };
-        // },        
+          }),
+        enforces: ()=>{
+          return {
+            "filter-input-is-guest": true,
+          };
+        },
+        disablesSelectOptions: () =>{
+          // zet de opties uit de concurrent, de inverse, uit.
+          const vereisteDieren = Array.from(document.querySelectorAll("[name='filter-input-own_animals]"))
+            .map(optie => optie.value);
+          const disableOptionElements = Array.from(document.querySelectorAll("[name='filter-input-own_animals_absent]"))
+            .filter(absenteOptie => {
+              return vereisteDieren.includes(absenteOptie);
+            })
+            return disableOptionElements;
+        }
+              
       })
     );
   }  
   setRow7(meta) {
+    const eigenDierenNiet = Object.values(meta.own_animals_absent)
     this.configurations.push(
       new FilterObject({
         entityFilter: this,
         name: `own_animals_absent`,
         label: "Huisdiersoort afwezig",
         type: "select",
+        inverted: true,
         entities: Guest.all,
         row: 7,
-        selectData: Array.isArray(meta.own_animals_absent) 
-          ? meta.own_animals_absent.map((animal_type) => {
-            console.log(animal_type)
+        selectData: eigenDierenNiet.map((animal_type) => {
             return [animal_type, animal_type.toLowerCase().replace(/\s/g, "-")];
-          })
-          : [['nee', 'nee']],
-        // disables() {
-        //   return {
-        //     //"filter-input-is-guest": true,
-        //   };
-        // },        
+          }),        enforces: ()=>{
+            return {
+              "filter-input-is-guest": true,
+            };
+          },
+          disablesSelectOptions: () =>{
+            // zet de opties uit de concurrent, de inverse, uit.
+            const vereisteAfwezigeDieren = Array.from(document.querySelectorAll("[name='filter-input-own_animals_absent]"))
+              .map(optie => optie.value);
+            const disableOptionElements = Array.from(document.querySelectorAll("[name='filter-input-own_animals]"))
+              .filter(aanwezigeOptie => {
+                return vereisteAfwezigeDieren.includes(aanwezigeOptie);
+              })
+              return disableOptionElements;
+          }     
       })
     );
   }    
@@ -572,6 +623,22 @@ class EntityFilter {
             thisDisabledInput.dispatchEvent(changeEvent);
           }
         });
+
+        const disablesSelectOptionsRes = filterConfig.disablesSelectOptions();
+        if ( disablesSelectOptionsRes ) {
+           disablesSelectOptionsRes.forEach(option =>{
+          option.selected = false;
+        })
+        // kan nog zijn dat geen een optie meer aan staat. 
+        Array.from(document.querySelectorAll('select[multiple]'))
+          .forEach(multiSelect => {
+            console.log(multiSelect.selectedOptions)
+            if (multiSelect.selectedOptions.length === 0) {
+              console.log('multi select fix!')
+              multiSelect.querySelector('option').selected = true;
+            }
+          })
+      }
 
       filterConfig.enforces() &&
         Object.entries(filterConfig.enforces()).forEach(([enforcedOptionId, enforcedOptionValue]) => {

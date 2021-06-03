@@ -187,21 +187,17 @@ class Guest extends LocatedEntity {
   constructor(config, locations, meta) {
     super("guest", config, locations);
 
-    const own_animals_absent = Object.values(meta.own_animals_absent);
-    console.log(own_animals_absent)
-debugger;
-    // this.meta = {
-    //   animal_preference: config.animal_preference.map(a => a.toLowerCase().replace(/\s/,'-')),
-    //   behaviour: config.behaviour.map(a => a.toLowerCase().replace(/\s/,'-')),
-    //   residence: config.residence.map(a => a.toLowerCase().replace(/\s/,'-')),
-    //   own_animals: Array.isArray(config.own_animals) ? config.own_animals : [],
-    //   own_animals_absent: 
-    //     Array.isArray(own_animals_absent) 
-    //     ? meta.own_animals_absent.filter(mogelijkAfwezigDier => {
-    //        return !config.own_animals.includes(mogelijkAfwezigDier)
-    //      }) 
-    //     : []
-    // }
+    const own_animals_absent_total_list = Object.values(meta.own_animals_absent);
+    this.meta = {
+      animal_preference: config.animal_preference.map(a => a.toLowerCase().replace(/\s/,'-')),
+      behaviour: config.behaviour.map(a => a.toLowerCase().replace(/\s/,'-')),
+      residence: config.residence.map(a => a.toLowerCase().replace(/\s/,'-')),
+      own_animals: Array.isArray(config.own_animals) ? config.own_animals : [],
+      own_animals_absent: own_animals_absent_total_list.filter(mogelijkAfwezigDier =>{
+        return !config.own_animals.includes(mogelijkAfwezigDier)
+      })
+
+    }
     this.verwijderOudeMeta();
   }
   verwijderOudeMeta(){

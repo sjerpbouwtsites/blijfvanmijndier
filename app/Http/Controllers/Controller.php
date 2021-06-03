@@ -50,6 +50,8 @@ class Controller extends BaseController
         $this->init_model_name($model_name);
         $this->init_menu_items($model_name, $menu_items_source);
 
+       // dd(Map::map_data());
+
     }
 
     private function init_model_name($model_name)

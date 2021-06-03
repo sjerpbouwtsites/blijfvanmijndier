@@ -83,6 +83,7 @@ foreach($guests as $guest) {
     $guest->animal_preference = [];
     $guest->behaviour = [];
     $guest->residence = [];
+    $guest->own_animals = [];
     if (empty($guest->table_ids)) continue;
     foreach(explode(',', $guest->table_ids) as $table_id) {
 
