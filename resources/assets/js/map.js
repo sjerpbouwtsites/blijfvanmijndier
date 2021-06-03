@@ -100,7 +100,7 @@ function initMap() {
       });
   
       addInteractive();
-      postLeafletFixes();
+      postLeafletFixes(locatedEntities);
       sidebar.init(meta);
       resolve({dataModels, locatedEntities})
     }).then(({dataModels, locatedEntities}) =>{

@@ -18,21 +18,23 @@ use \Illuminate\View\View;
 use Illuminate\Database\Eloquent\Model;
 use Symfony\Component\HttpFoundation\Request;
 use Illuminate\Support\Collection;
+use App\Tablegroup;
+use App\Map;
 
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
     // ids of table table
-    public $breedId = 1;
-    public $behaviourId = 2;
-    public $vaccinationId = 3;
-    public $animaltypeId = 4;
-    public $hometypeId = 5;
-    public $gendertypeId = 6;
-    public $employeeId = 7;
-    public $doctypeId = 8;
-    public $endtypeId = 9;
+    // public $breedId = 1;
+    // public $behaviourId = 2;
+    // public $vaccinationId = 3;
+    // public $animaltypeId = 4;
+    // public $hometypeId = 5;
+    // public $gendertypeId = 6;
+    // public $employeeId = 7;
+    // public $doctypeId = 8;
+    // public $endtypeId = 9;
     public $updatetypeId = 10;
     public $updatetypeOwner = 179;
 
@@ -47,6 +49,9 @@ class Controller extends BaseController
     {
         $this->init_model_name($model_name);
         $this->init_menu_items($model_name, $menu_items_source);
+
+       // dd(Map::map_data());
+
     }
 
     private function init_model_name($model_name)

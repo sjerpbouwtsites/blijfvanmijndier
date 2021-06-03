@@ -68,15 +68,19 @@ const evaluator = {
     this.data.failure = Array.from(new Set(this.data.dropouts));
     const failureIds = this.data.failure.map((failureMarker) => failureMarker.id);
 
-    this.data.success = [...Guest.all, ...Vet.all, ...Location.all, Shelter.all, ...Owner.all]
+    this.data.success = [...Guest.all, ...Vet.all, ...Location.all, ...Shelter.all, ...Owner.all]
       .map((locatedEntity) => {
-        return locatedEntity.marker;
+        const m = locatedEntity.marker;
+        if (!m) {
+          throw new Error(`geen marker! ${locatedEntity.type} ${locatedEntity.id}`)
+        }
+        return m
       })
       .filter((marker) => {
+
         return marker && !failureIds.includes(marker.id);
       });
 
-    console.log(this.data.success.length, this.data.failure.length);
   },
   cleanupAfterFilters() {
     this.data.dropouts = [];
@@ -117,8 +121,11 @@ const evaluator = {
  * @class FilterObject
  */
 class FilterObject {
+
+  
   constructor(config) {
     this.type = "checkbox";
+    this.inverted = false;
     for (let k in config) {
       this[k] = config[k];
     }
@@ -130,7 +137,11 @@ class FilterObject {
   }
 
   get isChecked() {
-    return document.getElementById(this.id).checked === true;
+    const input = document.getElementById(this.id);
+    if (!input) {
+      throw new Error(`no input for ${this.id}`);
+    } 
+    return input.checked === true;
   }
 
   /**
@@ -172,10 +183,26 @@ class FilterObject {
     return this.type === "checkbox" ? this.evaluateCheckbox(evaluateWith) : this.evaluateRadio(evaluateWith);
   }
 
+  /**
+   * 
+   * @returns list of name attributes of inputs to be disabled.
+   */
   disables() {
     return null;
   }
 
+  /**
+   * 
+   * @returns list of options to be cancelled
+   */
+  disablesSelectOptions(){
+    return null
+  }
+
+  /**
+   * 
+   * @returns list of name attributes of inputs to be enforced, in form {name: bool, naam: bool}
+   */
   enforces() {
     return null;
   }
@@ -204,11 +231,24 @@ class FilterObject {
    * @returns {object} width success.array of markers & failure.array of markers.
    */
   evaluateSelect(evaluateWith, metaName) {
+
+    
+    if (!metaName) {
+      console.error(evaluteWith)
+      throw new Error(`evaluateSelect zonder metaName`)
+    } 
+
     let success = [];
     let failure = [];
     this.entities.forEach((entity, index) => {
-      const foundWithMeta = entity.meta[metaName].filter((entityMetaValue) => {
-        return evaluateWith.includes(entityMetaValue);
+
+      const metaEntry = entity.meta[metaName];
+      if (!Array.isArray(entity.meta[metaName])) {
+        console.error(entity.meta)
+        throw new Error(`evaluateSelect entity meta metaName lookup faalt. ${metaName} ${entity.type} ${entity.id}`)
+      }
+      const foundWithMeta = metaEntry.filter((entityMetaValue) => {
+        return evaluateWith.includes(entityMetaValue.toLowerCase());
       });
       if (evaluateWith.includes("NONE") || !evaluateWith.length) {
         foundWithMeta.push('not filtering')
@@ -220,6 +260,16 @@ class FilterObject {
         failure.push(entity.marker);
       }
     });
+
+    if (evaluateWith.inverted) {
+      // damn old codebase :(
+        return {
+          success: failure,
+          failure: success
+        }
+    }
+
+
 
     return {
       success,
@@ -272,6 +322,7 @@ class FilterObject {
       }
     });
 
+
     return r;
   }
 }
@@ -294,6 +345,8 @@ class EntityFilter {
     this.setRow3(meta);
     this.setRow4(meta);
     this.setRow5(meta);
+    this.setRow6(meta);
+    this.setRow7(meta);
     fakeStaticBecauseCodeBaseToOld._self = this;
   }
 
@@ -379,7 +432,7 @@ class EntityFilter {
         entityFilter: this,
         name: `animals-on-site`,
         type: `radio`,
-        label: "Aantal opgevangen",
+        label: "Aantal opgevangen dieren",
         radioData: [
           radioConfig("negeer", "skip", () => {
             return true;
@@ -388,23 +441,19 @@ class EntityFilter {
             const entityCheckboxInput = this.getByName(`is-${entity.type}`);
             return entityCheckboxInput.isChecked && entity.animalsOnSite.length === 0;
           }),
-          radioConfig("&eacute;&eacute;n", "een", (entity) => {
+          radioConfig("&eacute;&eacute;n of meer", "een-of-meer", (entity) => {
             const entityCheckboxInput = this.getByName(`is-${entity.type}`);
-            return entityCheckboxInput.isChecked && entity.animalsOnSite.length === 1;
-          }),
-          radioConfig("meer", "multiple", (entity) => {
-            const entityCheckboxInput = this.getByName(`is-${entity.type}`);
-            return entityCheckboxInput.isChecked && entity.animalsOnSite.length > 1;
+            return entityCheckboxInput.isChecked && entity.animalsOnSite.length > 0;
           }),
         ],
-        entities: [Guest.all, Owner.all, Shelter.all].flat(),
+        entities: [Guest.all, Owner.all, Shelter.all, Location.all].flat(),
         row: 2,
         disables() {
-          if (document.querySelector('input[name="animals-on-site"]:checked').value !== "skip") {
-            return ["is-vet", "is-location"];
-          } else {
-            return [];
-          }
+          // if (document.querySelector('input[name="animals-on-site"]:checked').value !== "skip") {
+          //   return ["is-vet"];
+          // } else {
+          //   return [];
+          // }
         },
       })
     );
@@ -441,6 +490,11 @@ class EntityFilter {
         selectData: meta.behaviour.map((behaviour) => {
           return [behaviour, behaviour.toLowerCase().replace(/\s/g, "-")];
         }),
+        enforces() {
+          return {
+            "filter-input-is-guest": true,
+          };
+        },        
       })
     );
   }
@@ -456,9 +510,81 @@ class EntityFilter {
         selectData: meta.residence.map((residential) => {
           return [residential, residential.toLowerCase().replace(/\s/g, "-")];
         }),
+        enforces() {
+          return {
+            "filter-input-is-guest": true,
+          };
+        },        
       })
     );
   }
+  setRow6(meta) {
+    
+    // ja is een vieze cheat omdat ik door al dat ongetypte
+    // programmeren objecten en arrays door elkaar haal
+    const eigenDieren = Object.values(meta.own_animals);
+    this.configurations.push(
+      new FilterObject({
+        entityFilter: this,
+        name: `own_animals`,
+        label: "Huisdier soorten",
+        type: "select",
+        entities: Guest.all,
+        row: 6,
+        selectData:  
+        eigenDieren.map((animal_type) => {
+            return [animal_type, animal_type.toLowerCase().replace(/\s/g, "-")];
+          }),
+        enforces: ()=>{
+          return {
+            "filter-input-is-guest": true,
+          };
+        },
+        disablesSelectOptions: () =>{
+          // zet de opties uit de concurrent, de inverse, uit.
+          const vereisteDieren = Array.from(document.querySelectorAll("[name='filter-input-own_animals]"))
+            .map(optie => optie.value);
+          const disableOptionElements = Array.from(document.querySelectorAll("[name='filter-input-own_animals_absent]"))
+            .filter(absenteOptie => {
+              return vereisteDieren.includes(absenteOptie);
+            })
+            return disableOptionElements;
+        }
+              
+      })
+    );
+  }  
+  setRow7(meta) {
+    const eigenDierenNiet = Object.values(meta.own_animals_absent)
+    this.configurations.push(
+      new FilterObject({
+        entityFilter: this,
+        name: `own_animals_absent`,
+        label: "Huisdiersoort afwezig",
+        type: "select",
+        inverted: true,
+        entities: Guest.all,
+        row: 7,
+        selectData: eigenDierenNiet.map((animal_type) => {
+            return [animal_type, animal_type.toLowerCase().replace(/\s/g, "-")];
+          }),        enforces: ()=>{
+            return {
+              "filter-input-is-guest": true,
+            };
+          },
+          disablesSelectOptions: () =>{
+            // zet de opties uit de concurrent, de inverse, uit.
+            const vereisteAfwezigeDieren = Array.from(document.querySelectorAll("[name='filter-input-own_animals_absent]"))
+              .map(optie => optie.value);
+            const disableOptionElements = Array.from(document.querySelectorAll("[name='filter-input-own_animals]"))
+              .filter(aanwezigeOptie => {
+                return vereisteAfwezigeDieren.includes(aanwezigeOptie);
+              })
+              return disableOptionElements;
+          }     
+      })
+    );
+  }    
   /**
    * @param {string} name
    * @returns {FilterConfig} filterConfig from this.configurations.
@@ -498,10 +624,25 @@ class EntityFilter {
           }
         });
 
+        const disablesSelectOptionsRes = filterConfig.disablesSelectOptions();
+        if ( disablesSelectOptionsRes ) {
+           disablesSelectOptionsRes.forEach(option =>{
+          option.selected = false;
+        })
+        // kan nog zijn dat geen een optie meer aan staat. 
+        Array.from(document.querySelectorAll('select[multiple]'))
+          .forEach(multiSelect => {
+            console.log(multiSelect.selectedOptions)
+            if (multiSelect.selectedOptions.length === 0) {
+              console.log('multi select fix!')
+              multiSelect.querySelector('option').selected = true;
+            }
+          })
+      }
+
       filterConfig.enforces() &&
         Object.entries(filterConfig.enforces()).forEach(([enforcedOptionId, enforcedOptionValue]) => {
           const thisEnforcedInput = document.getElementById(enforcedOptionId);
-          console.log(thisEnforcedInput);
           if (thisEnforcedInput.tagName === 'SELECT') {
             thisEnforcedInput.value = enforcedOptionValue;
           } else {
@@ -588,6 +729,12 @@ function wrappedRadioInput(filterConfig) {
  * @returns {string} HTML of a wrapper radio input.
  */
 function wrappedSelectInput(filterConfig) {
+
+  if (!filterConfig.selectData || !Array.isArray(filterConfig.selectData)) {
+    console.error(filterConfig);
+    throw new Error (`filterConfig.selectData is geen array.`)
+  }
+
   return `
     <span class='map__filter-select-outer'>
     
@@ -633,7 +780,7 @@ function populateFilterHTML(entityFilter) {
   </div>`;
   const inputRow2 = `
   <div class='map__filter-row-outer'>
-  <span class='map__filter-row-title'>Aantal opgevangen</span>
+  <span class='map__filter-row-title'>Aantal opgevangen dieren</span>
     <div class='map__filter-row'>
       ${entityFilter.getRow(2).reduce((prev, filterConfig) => {
         return prev + wrappedRadioInput(filterConfig);
@@ -641,8 +788,8 @@ function populateFilterHTML(entityFilter) {
     </div>
   </div>`;
 
-  const selectNamen = [null, null, null, "Dier voorkeur", "Gedrag", "Woonstijl"];
-  const inputRow345 = [3, 4, 5]
+  const selectNamen = [null, null, null, "Dier voorkeur", "Gedrag", "Woonstijl", 'Heeft type dier', 'Type dier afwezig'];
+  const inputRow34567 = [3, 4, 5,6,7]
     .map((rowNumber) => {
       return `
     <div class='map__filter-row-outer'>
@@ -659,7 +806,7 @@ function populateFilterHTML(entityFilter) {
   document.getElementById("body-filter").innerHTML = `<form action='#' method='GET' id='map-filters'>
     ${inputRow1}
     ${inputRow2}
-    ${inputRow345}
+    ${inputRow34567}
     `;
   // skipping reset button for now.
   // <input type='reset' id='filter-form-reset' class='map-aside__input--reset' value='leeg'></form>`

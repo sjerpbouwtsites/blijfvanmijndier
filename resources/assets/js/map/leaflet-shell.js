@@ -114,7 +114,6 @@ function locationMapper(locatedEntity, globalLeafletMap) {
 }
 
 function checkAndFixMarkersToClose(locatedEntities) {
-  console.log("check and fix markers");
   const markers = locatedEntities.map((locatedEntity) => {
     return locatedEntity.marker;
   });

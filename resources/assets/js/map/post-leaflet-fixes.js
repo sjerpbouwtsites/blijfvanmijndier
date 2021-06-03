@@ -1,5 +1,3 @@
-const { ownerBtn } = require("./popups");
-
 const markerSrcConfig = {
   guest: {
     "animals-on-site": "guest/marker-groen.png",
@@ -35,7 +33,10 @@ const markerSrcConfig = {
  *
  *
  */
-function postLeafletWork() {
+function postLeafletWork(locatedEntities) {
+
+  
+
   const markerImages = Array.from(
     document.querySelectorAll(".leaflet-marker-pane img")
   );
@@ -73,14 +74,7 @@ function postLeafletWork() {
       "data-marker-id",
       `marker-${markerTempType}-${markerId}`
     );
-    const markerTempName = markerAltData
-      .find((altPiece) => {
-        return altPiece.includes("name-");
-      }).replace('name-','')
-      marker.setAttribute(
-        "data-name",
-        markerTempName
-      );    
+ 
     //    marker.setAttribute("alt", markerAltData.join(" "));
     
     // CUT INLINE STYLES TO STYLESHEET
@@ -124,7 +118,7 @@ function postLeafletWork() {
       return altPiece.includes("is-");
     });
     marker.setAttribute("data-type", type.replace("is-", ""));
-    marker.setAttribute('title', type.replace("is-", "") + ` ${markerTempName}`);
+
     //    marker.setAttribute("alt", marker.alt.replace(type, ""));
     
     // MOVE ANIMAL QUANTITY TO DATA ATTR
@@ -162,6 +156,7 @@ function postLeafletWork() {
   styleEl.innerHTML = stylesheetHTMLArray.join("");
   document.head.appendChild(styleEl);
 
+  writeTitleToMarkers(locatedEntities)
   focusOpMarkerIndienNodig();
 }
 /**
@@ -185,6 +180,17 @@ const markerId = `marker-${searchObj['focus-type']}-id-${searchObj['focus-id']}`
     throw new Error(`tracht te focussen op niet bestaande marker ${markerId}`)
   }
   marker.click();
+}
+
+/**
+ * loops over markers via models and sets appropriate title.
+ *
+ */
+function writeTitleToMarkers(locatedEntities){
+  locatedEntities.forEach((entity, index) => {
+    entity.marker.setAttribute('title', `${entity.type} ${entity.contact.name}`)
+    
+  })
 }
 
 

@@ -140,7 +140,6 @@ const buttonHandlers = {
         return;
       }
       event.preventDefault();
-      console.log(actionBtn);
       this.callbacks[toCamelCase(actionBtn.getAttribute("data-action"))](
         actionBtn
       );
@@ -263,6 +262,7 @@ function popupFooter(entity, rijen = []) {
         })
       : "";
 
+
   return `<footer class="bvmd-popup__footer">
   ${popupDataList(
     [
@@ -350,7 +350,6 @@ function populateDialogWithAnimal(animal) {
 
 function populateDialogWithText(textId) {
   const textCollection = texts[textId];
-  console.log(textCollection);
   document.getElementById(
     "dialog-print-target"
   ).innerHTML = `<div class='bvmd-popup'>
@@ -461,6 +460,7 @@ const markerHTML = {
     const bodyFuncName = `${locatedEntity._type}Body`;
     return this[bodyFuncName](locatedEntity);
   },
+
   ownerBody(locatedEntity) {
     return ``;
   },
@@ -506,11 +506,22 @@ const markerHTML = {
   },
 
   guestBody(locatedEntity) {
+   
+    const huisdierenDataRows = 
+    locatedEntity.meta.own_animals.map((ownAnimal) => {
+      // links for all animals to maya.
+      return popupDataRow(
+        `Huisdier`,
+        `${ownAnimal}`
+        );
+      })
+
+
     return popupDataList(
       this.guestBodyData.map(({ key, nl }) => {
         if (!locatedEntity[key]) return "";
         return popupDataRow(nl, locatedEntity[key]);
-      }),
+      }).concat(huisdierenDataRows),
       "Aantekingen",
       "guest-info"
     );

@@ -1,0 +1,59 @@
+
+.editscherm-checkboxes__buiten {
+  background-color: #f5f5f5;
+  padding: 20px;
+ 
+    }
+    .editscherm-checkboxes__rij {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+    }  
+    .editscherm-checkboxes__kolom{
+      width: calc(50% - 15px)
+    }    
+  
+    .editscherm-checkboxes__binnen {
+       float: none;
+       display: block;
+    }
+    .editscherm-checkboxes__binnen > * {
+       float: none !important;
+    }
+    .editscherm-checkboxes__sectie + .editscherm-checkboxes__sectie{
+      margin-top: 30px;
+    }
+
+    .editscherm-checkboxes__sectie .list_h4 {
+       margin-top: 0;
+       font-weight: bold;
+       text-transform: uppercase;
+    }
+
+    .editscherm-checkboxes__binnen .checkbox label {
+      position: relative;
+      top: -1px;
+      padding-left: 5px;
+      min-height: 0;
+    }
+
+    .editscherm-checkboxes__binnen .form-group {
+       margin: 0 !important;
+       font-size: .75em;
+    }
+    .editscherm-checkboxes__binnen .checkbox {
+       min-height: 20px;
+       padding-top: 0;
+    }
+    .editscherm-checkboxes__binnen .checkbox input[type="checkbox"] {
+       position: static;
+       left: auto;
+       margin-left: 0;
+    }
+    .editscherm-checkboxes__binnen::after,
+    .editscherm-checkboxes__buiten::after {
+       display: block;
+       clear: both;
+       float: none;
+       content: '';
+    }

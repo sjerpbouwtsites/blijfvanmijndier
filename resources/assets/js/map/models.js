@@ -8,7 +8,6 @@ const models = {};
  */
 function create(baseData) {
 
-  console.log(baseData)
   const addresses = baseData.addresses;
 
   models.animals = baseData.animals.map((baseAnimal) => {
@@ -16,7 +15,7 @@ function create(baseData) {
   });
 
   models.guests = baseData.guests.map((baseGuest) => {
-    return new Guest(baseGuest, addresses);
+    return new Guest(baseGuest, addresses, baseData.meta);
   });
   models.shelters = baseData.shelters.map((baseshelter) => {
     return new Shelter(baseshelter, addresses);
@@ -116,6 +115,10 @@ class LocatedEntity extends MayaModel {
       "contact_person",
     ];
 
+    this.meta = {
+      own_animals: [] // TODO dit is omdat de filters niet onderscheid maken
+    }
+
     this.name = config.name;
     this.contact = {};
     Object.keys(config).forEach((key) => {
@@ -181,12 +184,19 @@ class LocatedEntity extends MayaModel {
 }
 
 class Guest extends LocatedEntity {
-  constructor(config, locations) {
+  constructor(config, locations, meta) {
     super("guest", config, locations);
+
+    const own_animals_absent_total_list = Object.values(meta.own_animals_absent);
     this.meta = {
       animal_preference: config.animal_preference.map(a => a.toLowerCase().replace(/\s/,'-')),
       behaviour: config.behaviour.map(a => a.toLowerCase().replace(/\s/,'-')),
-      residence: config.residence.map(a => a.toLowerCase().replace(/\s/,'-'))
+      residence: config.residence.map(a => a.toLowerCase().replace(/\s/,'-')),
+      own_animals: Array.isArray(config.own_animals) ? config.own_animals : [],
+      own_animals_absent: own_animals_absent_total_list.filter(mogelijkAfwezigDier =>{
+        return !config.own_animals.includes(mogelijkAfwezigDier)
+      })
+
     }
     this.verwijderOudeMeta();
   }
@@ -194,6 +204,13 @@ class Guest extends LocatedEntity {
     delete this.animal_preference;
     delete this.behaviour;
     delete this.residence;
+    delete this.own_animals;
+    delete this.own_animals_absent;
+  }
+
+  heeftEigenDier(dier) {
+    if (!dier) {throw new Error('params gemist Guest.heeftEigenDier')}
+    return this.meta.includes(dier);
   }
 
   get animalsOnSite() {

@@ -76,7 +76,7 @@
                 @include('form_checkbox_list', ['title' => 'Vaccinaties', 'list' => $vaccinationList, 'checked' => $checked_vaccinations])
 			</div>
 			<div class="col-md-5">
-                @include('form_checkbox_list', ['title' => 'Wonen', 'list' => $hometypeList, 'checked' => $checked_hometypes])
+                @include('form_checkbox_list', ['title' => 'Wonen', 'list' => $home_typeList, 'checked' => $checked_home_types])
 			</div>
 		</div>
 
