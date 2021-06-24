@@ -45,9 +45,78 @@ class AnimalController extends Controller
 
     }
 
+    private function create_tabs(){
+
+        $current_url = \url()->current();
+
+        $all_animals_url = \url('/animals/');
+        $animals_requiring_update_url = \url("/animals/todo");
+        $new_animal_url =  \url("/animals/create");
+        $out_of_project_url =  \url("/animals/old");
+
+        $tabs_data = [
+            'all'   => [
+                'url'=> $all_animals_url,
+                'text'  => 'Alle dieren',
+                'active' => $all_animals_url === $current_url
+            ],
+            'todo'   => [
+                'url'=> $animals_requiring_update_url,
+                'text'=> 'Dieren todo',
+                'active' => $animals_requiring_update_url === $current_url
+            ],
+            'create'   => [
+                'url'=> $new_animal_url,
+                'text'=> 'Nieuw dier',
+                'active' => $new_animal_url === $current_url
+            ],
+            'old'   => [
+                'url'=> $out_of_project_url,
+                'text'=> 'Alumni',
+                'active' => $out_of_project_url === $current_url
+            ]                        
+        ];        
+
+        return $this->get_view("animal.tabs", [
+            'tabs_data' => $tabs_data
+        ]);
+
+    }
+
     // START GENERAL VIEWS
-    public function index()
+    /**
+     * @param todo of dit de volle lijst of de todo lijst is
+     */
+    public function index($todo = false)
     {
+        // TODO BETERE QUERY SCHRIJVEN
+        $animals = Animal::all()->where('end_date', null)->sortBy('name');
+        $update_map = $this->get_update_ids_descriptions();
+        $animals_to_grid = [];
+
+        foreach ($animals as $animal) {
+            $animal = $this->index_show_hydrate_animal($animal,$update_map);
+            if (!$todo) {
+                $animals_to_grid[]=$animal;
+            } 
+            if ($animal['updates_checked']['in_todo_list']) {
+                $animals_to_grid[]=$animal;
+            }
+        }
+
+        $tabs = $this->create_tabs();
+
+        $animal_grid = $this->get_view('animal.tabbed-grid', [
+            'animals' => $animals_to_grid
+        ]);
+
+        return $this->get_view("animal.tabbed", [
+            'tabs'      => $tabs,
+            'animal_grid'   => $animal_grid 
+        ]);
+    }
+
+    public function old(){
         $animals = Animal::all();
         $update_map = $this->get_update_ids_descriptions();
 
@@ -57,21 +126,25 @@ class AnimalController extends Controller
         $animals = $animals->sortBy('name');
         // animals old apparaently from 'project'?
         $animalsOld = array();
-        $animalsNew = array();
         foreach ($animals as $animal) {
             if ($animal->end_date != null) {
                 $animalsOld[] = $animal;
-            } else {
-                $animalsNew[] = $animal;
             }
         }
-        $animals_old_view = count($animalsOld) > 0
+        $tabs = $this->create_tabs();
+            
+        $animal_grid = count($animalsOld) > 0
             ? $this->get_view('animal.old', ['old_animals' => $animalsOld])
             : '';
-        return $this->get_view("animal.index", [
-            'animals' => $animalsNew,
-            'animalsOldView' => $animals_old_view,
-        ]);
+                
+            return $this->get_view("animal.tabbed", [
+                'tabs'      => $tabs,
+                'animal_grid' => $animal_grid
+            ]);    
+    }
+
+    public function todo(){
+        return $this->index(true);
     }
 
     /**
@@ -106,6 +179,7 @@ class AnimalController extends Controller
         
         
         $animal->updates_checked = Animal::update_check($animal, $update_table_id); 
+        
         
         //$animal->needUpdate = $this->animalNeedUpdate($animal->id);
         $animal->setAnimalImage();

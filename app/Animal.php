@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Table;
 use Illuminate\Support\Facades\DB;
 
+
 class Animal extends Model
 {
 	private $animalStatusDesc;
@@ -52,9 +53,9 @@ class Animal extends Model
 		$image = 'img/' . 'animal_' . $this->id . '.jpg';
 
 		if (file_exists($image)) {
-			$this->animalImage = $image;
+			$this->animalImage = \url($image);
 		} else {
-			$this->animalImage = 'img/placeholder.jpg';
+			$this->animalImage = \url('img/placeholder.jpg');
 		}
 	}
 
@@ -69,13 +70,13 @@ class Animal extends Model
 	 * 		has_updates 
 	 * 		needs_owner_update 
 	 * 		has_owner_update
-	 * 		owner_update_in_range
+	 * 		owner_update_out_of_range
 	 * 		needs_caregiver_update // eg longer then 2 months in program
 	 *      has_caregiver_update
-	 *      caregiver_update_in_range
+	 *      caregiver_update_out_of_range
 	 * 		needs_jaarevaluatie_update // eg longer then 10 months in program
 	 *      has_jaarevaluatie_update
-	 *      jaarevaluatie_in_range
+	 *      jaarevaluatie_out_of_range
 	 * ]
      */
     public static function update_check(Animal $animal, $update_type_map)
@@ -86,59 +87,64 @@ class Animal extends Model
 		$animal_id = $animal->id;
 		$animal_registered_date = $animal->registration_date;
 
-		$updates_checked = [
-			'needs_updates'	=> false,
+		$uc = [
+			'in_todo_list' => false,
+			'needs_updates'	=> false, // time in system means there should be updates
 			'has_updates' => false,
-			'needs_owner_update' => false,
+			'needs_owner_update' => false, 
 			'has_owner_update' => false,
-			'owner_update_in_range' => false,
+			'owner_update_out_of_range' => false,
 			'needs_caregiver_update' => false,
 			'has_caregiver_update'=> false,
-			'caregiver_update_in_range' => false,
+			'caregiver_update_out_of_range' => false,
 			'needs_jaarevaluatie_update' => false,
 			'has_jaarevaluatie_update' => false,
-			'jaarevaluatie_in_range' => false,
+			'jaarevaluatie_out_of_range' => false,
 			'update_prompts' => '',
 			'has_prompts'	=> false,
+			'days_behind_to_max' => [0], // push en dan max
+			'days_behind'	=> 0,
 		];
 
 		// IF NEEDS UPDATES
 		if ((new \DateTime($animal_registered_date))->modify('+2 week') < $now_time) {
-			$updates_checked['needs_updates'] = true;
-			$updates_checked['needs_owner_update'] = true;
+			$uc['needs_updates'] = true;
+			$uc['needs_owner_update'] = true;
 		}
 		if ((new \DateTime($animal_registered_date))->modify('+2 month') < $now_time) {
-			$updates_checked['needs_caregiver_update'] = true;
+			$uc['needs_caregiver_update'] = true;
 		}
 		if ((new \DateTime($animal_registered_date))->modify('+10 month') < $now_time) {
-			$updates_checked['needs_jaarevaluatie_update'] = true;
+			$uc['needs_jaarevaluatie_update'] = true;
 		}
 
 		$updates = DB::select("SELECT * FROM updates WHERE link_type = 'animals' AND link_id = $animal_id");
 
 		if (count($updates) > 0) {
-			$updates_checked['has_updates'] = true;
+			$uc['has_updates'] = true;
 		}
 
 		// OWNER UPDATE CHECK
-		if ($updates_checked['needs_owner_update']) {
+		if ($uc['needs_owner_update']) {
 			$owner_update_id = $update_type_map['descriptions']['Update eigenaar'];
 			foreach($updates as $update) {
 				if ($update->updatetype_id !== $owner_update_id) {
 					continue;
 				}
-				$updates_checked['has_owner_update'] = true;
+				$uc['has_owner_update'] = true;
 				$update_time = new \DateTime($update->updated_at);
 				$update_time_plus_two_weeks = $update_time->modify("+2 week");
 
 				if ($update_time_plus_two_weeks > $now_time) {
-					$updates_checked['owner_update_in_range'] = true; 
+					$uc['owner_update_out_of_range'] = true; 
+					
+					$uc['days_behind_to_max'][] = $update_time_plus_two_weeks->diff($now_time)->days; 
 				}
 			}
 		}
 		
 		// CAREGIVER UPDATE CHECK
-		if ($updates_checked['needs_caregiver_update']) {
+		if ($uc['needs_caregiver_update']) {
 			$caregiver_update_id = $update_type_map['descriptions']['Contact hulpverlening'];
 			
 			foreach($updates as $update) {
@@ -147,19 +153,20 @@ class Animal extends Model
 					continue;
 				}
 
-				$updates_checked['has_caregiver_update'] = true;
+				$uc['has_caregiver_update'] = true;
 				$update_time = new \DateTime($update->updated_at);
 				$update_time_plus_two_months = $update_time->modify("+2 month");
 
 				if ($update_time_plus_two_months > $now_time) {
-					$updates_checked['caregiver_update_in_range'] = true; 
+					$uc['caregiver_update_out_of_range'] = true; 
+					$uc['days_behind_to_max'][] = $update_time_plus_two_months->diff($now_time)->days; 
 				}
 			}
 		}
 
 		
 		// jaarevaluatie UPDATE CHECK
-		if ($updates_checked['needs_jaarevaluatie_update']) {
+		if ($uc['needs_jaarevaluatie_update']) {
 			$jaarevaluatie_update_id = $update_type_map['descriptions']['jaarevaluatie'];
 			
 			foreach($updates as $update) {
@@ -168,59 +175,69 @@ class Animal extends Model
 					continue;
 				}
 
-				$updates_checked['has_jaarevaluatie_update'] = true;
+				$uc['has_jaarevaluatie_update'] = true;
 				$update_time = new \DateTime($update->updated_at);
 				$update_time_plus_two_months = $update_time->modify("+2 month");
 
 				if ($update_time_plus_two_months > $now_time) {
-					$updates_checked['jaarevaluatie_update_in_range'] = true; 
+					$uc['jaarevaluatie_update_in_range'] = true; 
+					$uc['days_behind_to_max'][] = $update_time_plus_two_months->diff($now_time)->days;
 				}
 			}
 		}
 
 		$prompts = [];
 		$icons = [];
-		if ($updates_checked['needs_updates'] && !$updates_checked['has_updates']) {
+		if ($uc['needs_updates'] && !$uc['has_updates']) {
 			$icons[] = "heart";
 			$prompts[] = "Eerste update nodig.";
+			$uc['in_todo_list'] = true;
 		} 
 
-		if ($updates_checked['needs_owner_update']) {
-			if (!$updates_checked['has_owner_update']) {
+		if ($uc['needs_owner_update']) {
+			if (!$uc['has_owner_update']) {
 				$prompts[] = "Eigenaar eerste contact.";
 				$icons[] = "female";
-			} else if(!$updates_checked['owner_update_in_range']) {
+				$uc['in_todo_list'] = true;
+			} else if(!$uc['owner_update_out_of_range']) {
 				$prompts[] = "Eigenaar vervolg contact.";
 				$icons[] = "female";				
+				$uc['in_todo_list'] = true;
 			}
 		}
 
-		if ($updates_checked['needs_caregiver_update']) {
-			if (!$updates_checked['has_caregiver_update']) {
+		if ($uc['needs_caregiver_update']) {
+			if (!$uc['has_caregiver_update']) {
 				$prompts[] = "Hulpverlening eerste contact.";
 				$icons[] = "users";
-			} else if(!$updates_checked['caregiver_update_in_range']) {
+				$uc['in_todo_list'] = true;
+			} else if(!$uc['caregiver_update_out_of_range']) {
 				$prompts[] = "Hulpverlening vervolg contact.";		
 				$icons[] = "users";		
+				$uc['in_todo_list'] = true;
 			}
 		}
 		
-		if ($updates_checked['needs_jaarevaluatie_update']) {
-			if (!$updates_checked['has_jaarevaluatie_update']) {
+		if ($uc['needs_jaarevaluatie_update']) {
+			if (!$uc['has_jaarevaluatie_update']) {
 				$prompts[] = "Jaarevaluatie nodig.";
-				$icons[] = "signout";
-			} else if(!$updates_checked['caregiver_update_in_range']) {
-				$icons[] = "signout";
-				$prompts[] = "Jaarevaluatie te laat.";				
+				$icons[] = "sign-out";
+				$uc['in_todo_list'] = true;
+			} else if(!$uc['caregiver_update_out_of_range']) {
+				$icons[] = "sign-out";
+				$prompts[] = "Jaarevaluatie te laat.";		
+				$uc['in_todo_list'] = true;		
 			}
 		}
-		$updates_checked['update_prompts'] = $prompts;
-		$updates_checked['has_prompts'] = count($prompts) > 0;
+		$uc['update_prompts'] = $prompts;
+		$uc['has_prompts'] = count($prompts) > 0;
 
-		$updates_checked['icons'] = $icons;
-		$updates_checked['has_icons'] = count($icons) > 0;		
+		$uc['icons'] = $icons;
+		$uc['has_icons'] = count($icons) > 0;		
 
-		return $updates_checked;
+		$uc['days_behind'] = \max($uc['days_behind_to_max']);
+
+		return $uc;
     }
 
 }
