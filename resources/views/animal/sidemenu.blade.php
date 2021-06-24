@@ -47,3 +47,24 @@
 		@include('update.lastupdates', ['updates' => $updates])
 
 	</div>
+<style>
+	
+ /* single show animal */
+ .has-update-icons {
+    border-left: 10px solid  #ce1d1d;
+ }
+ .has-update-icons *{
+    color: #ce1d1d;
+ }
+ .sidemenu-update-icons {
+    display: inline-flex;
+    margin: 0;
+    margin-left: .5em;
+    padding: 0;
+    list-style-type: none;
+ 
+ }
+ .sidemenu-update-icons__item + .sidemenu-update-icons__item{
+ margin-left: .5em;
+ }
+</style>
