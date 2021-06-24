@@ -36,6 +36,8 @@ Route::get('animals/{id}/matchshelter/{shelter_id}', 'AnimalController@matchshel
 Route::get('animals/{id}/matchguest/{guest_id}', 'AnimalController@matchguest');
 Route::get('animals/{id}/shelter', 'AnimalController@shelter');
 Route::get('animals/{id}/owner', 'AnimalController@owner');
+Route::get('animals/old', 'AnimalController@old');
+Route::get('animals/todo', 'AnimalController@todo');
 Route::get('owners/{id}/match', 'OwnerController@match');
 Route::get('shelters/{id}/match', 'ShelterController@match');
 

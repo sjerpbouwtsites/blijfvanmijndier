@@ -1,4 +1,4 @@
-<nav class='col-md-12 bvmd-tabbladen'>
+<nav id='tabbladen' class='col-md-12 bvmd-tabbladen'>
     <ul class="bvmd-tabbladen__lijst">
         @foreach ($tabs_data as $tab)
             <li class="bvmd-tabbladen__lijst-item">
@@ -8,7 +8,7 @@
                         </span>
                     </span>
                 @else
-                    <a class='bvmd-tabbladen__link bvmd-tabbladen__link--inactief' href="<?=$tab['url']?>">
+                    <a class='bvmd-tabbladen__link bvmd-tabbladen__link--inactief' href="<?=$tab['url']?>#tabbladen">
                         <span class='bvmd-tabbladen__link-binnen bvmd-tabbladen__link-binnen--inactief'>
                             <?=$tab['text']?>
                         </span>
