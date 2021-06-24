@@ -2,17 +2,9 @@
 
 @section('content')
 
-<div class="col-md-12">
+<?=$tabs?>
 
-    <h3>Overzicht dieren
-        <a class='btn btn-large btn-primary btn-lg' style='float: right' href="{{ URL::to('animals/create') }}">
-            Nieuw dier toevoegen
-        </a>
-    </h3>
-
-</div>
-
-<div class="col-md-12" style='margin-top: 1.5em'>
+<div class="col-md-12" >
 
     @include('session_messages')
 

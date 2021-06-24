@@ -45,6 +45,44 @@ class AnimalController extends Controller
 
     }
 
+    private function create_tabs(){
+
+        $current_url = \url()->current();
+
+        $all_animals_url = \url('/animals/');
+        $animals_requiring_update_url = \url("/animals/todo");
+        $new_animal_url =  \url("/animals/create");
+        $out_of_project_url =  \url("/animals/old");
+
+        $tabs_data = [
+            'all'   => [
+                'url'=> $all_animals_url,
+                'text'  => 'Alle dieren',
+                'active' => $all_animals_url === $current_url
+            ],
+            'todo'   => [
+                'url'=> $animals_requiring_update_url,
+                'text'=> 'Dieren todo',
+                'active' => $animals_requiring_update_url === $current_url
+            ],
+            'create'   => [
+                'url'=> $new_animal_url,
+                'text'=> 'Nieuw dier',
+                'active' => $new_animal_url === $current_url
+            ],
+            'old'   => [
+                'url'=> $out_of_project_url,
+                'text'=> 'Alumni',
+                'active' => $out_of_project_url === $current_url
+            ]                        
+        ];        
+
+        return $this->get_view("animal.tabs", [
+            'tabs_data' => $tabs_data
+        ]);
+
+    }
+
     // START GENERAL VIEWS
     public function index()
     {
@@ -68,7 +106,12 @@ class AnimalController extends Controller
         $animals_old_view = count($animalsOld) > 0
             ? $this->get_view('animal.old', ['old_animals' => $animalsOld])
             : '';
+
+        $tabs = $this->create_tabs();
+
+
         return $this->get_view("animal.index", [
+            'tabs'      => $tabs,
             'animals' => $animalsNew,
             'animalsOldView' => $animals_old_view,
         ]);
