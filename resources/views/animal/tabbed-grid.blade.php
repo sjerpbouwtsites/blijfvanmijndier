@@ -30,6 +30,10 @@
                 @endforeach
                 </ol>
             @endif
+
+            {{-- @if ($animal->updates_checked['in_todo_list']) 
+                <span class='animal-grid__days-to-late'>dagen te laat:{{$animal->updates_checked['days_behind']}}</span>
+            @endif --}}
         </div>
         
     </a>
