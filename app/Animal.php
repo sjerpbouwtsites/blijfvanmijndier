@@ -84,7 +84,7 @@ class Animal extends Model
 		$now_time = new \DateTime();
 
 		$animal_id = $animal->id;
-		$animal_registered_date = $animal->created_at;
+		$animal_registered_date = $animal->registration_date;
 
 		$updates_checked = [
 			'needs_updates'	=> false,
