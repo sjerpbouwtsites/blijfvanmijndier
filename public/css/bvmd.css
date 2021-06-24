@@ -15,11 +15,12 @@ body {
    background-color: purple;
    color: white;
    text-align: center;
-   font-size: 3em;
+   font-size: 1em;
    font-weight: 900;
    font-variant: small-caps;
-   height: 65px;
+   height: 30px;
    width: 100%;
+   line-height: 30px;
  }
 a {
    color: #4a4f5e;

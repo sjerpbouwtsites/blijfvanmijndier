@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use App\Animal;
 use App\Table;
+use Illuminate\Support\Facades\DB;
 use App\Tablegroup;
 
 /**
@@ -25,12 +26,33 @@ class AnimalController extends Controller
         parent::__construct('animals');
     }
 
+    /**
+     * Helper die je een map maakt van welke update_type nu waar bij hoort.
+     */
+    private function get_update_ids_descriptions(){
+        $update_type_id = Tablegroup::type_to_id('update_type');
+        $update_res = array_values(DB::select("SELECT id, description FROM tables WHERE tablegroup_id = $update_type_id"));
+        
+        $update_map = [
+            'ids' => [],
+            'descriptions' => []
+        ];
+        foreach($update_res as $res) {
+            $update_map['ids'][$res->id] = $res->description;
+            $update_map['descriptions'][$res->description] = $res->id;
+        }
+        return $update_map;
+
+    }
+
     // START GENERAL VIEWS
     public function index()
     {
         $animals = Animal::all();
+        $update_map = $this->get_update_ids_descriptions();
+
         foreach ($animals as $animal) {
-            $animal = $this->index_show_hydrate_animal($animal);
+            $animal = $this->index_show_hydrate_animal($animal,$update_map);
         }
         $animals = $animals->sortBy('name');
         // animals old apparaently from 'project'?
@@ -57,7 +79,8 @@ class AnimalController extends Controller
      */
     public function show($id)
     {
-        $animal = $this->index_show_hydrate_animal(Animal::find($id));
+        $update_map = $this->get_update_ids_descriptions();
+        $animal = $this->index_show_hydrate_animal(Animal::find($id), $update_map);
 
         $updates = UpdateController::getUpdatesByLinkType('animals', $animal->id, 2);
 
@@ -72,13 +95,19 @@ class AnimalController extends Controller
     /**
      * helper to show / index views. 
      */
-    private function index_show_hydrate_animal(Animal $animal): Animal
+    private function index_show_hydrate_animal(Animal $animal, $update_table_id): Animal
     {
+
+
         $animal->breedDesc = $this->getDescription($animal->breed_id);
         $animal->animaltypeDesc = $this->getDescription($animal->animaltype_id);
         $animal->gendertypeDesc = $this->getDescription($animal->gendertype_id);
         $animal->endtypeDesc = $this->getDescription($animal->endtype_id);
-        $animal->needUpdate = $this->animalNeedUpdate($animal->id);
+        
+        
+        $animal->updates_checked = Animal::update_check($animal, $update_table_id); 
+        
+        //$animal->needUpdate = $this->animalNeedUpdate($animal->id);
         $animal->setAnimalImage();
         return $animal;
     }

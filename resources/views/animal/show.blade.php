@@ -57,6 +57,6 @@
         </div>
 	</div>    	
 
-	@include('animal.sidemenu', ['animal_id' => $animal->id, 'update' => $animal->needUpdate, 'owner_id' => $animal->owner_id, 'guest_id' => $animal->guest_id, 'shelter_id' => $animal->shelter_id, 'updates' => $updates])
+	@include('animal.sidemenu', ['animal_id' => $animal->id, 'updates_checked' => $animal->updates_checked, 'owner_id' => $animal->owner_id, 'guest_id' => $animal->guest_id, 'shelter_id' => $animal->shelter_id, 'updates' => $updates])
 
 @stop
