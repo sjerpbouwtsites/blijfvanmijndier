@@ -23,7 +23,6 @@
 				<tr>
 					<th>Groep</th>
 					<th>Omschrijving</th>
-					<th>Omschrijving 2</th>
 					<!-- <th>Acties</th> -->
 				</tr>
 			</thead>
