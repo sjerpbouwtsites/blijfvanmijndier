@@ -33,7 +33,7 @@
 				<tr onclick="window.document.location='{{ URL::to('tables/' . $table->id . '/edit') }}';">
 					<td>{{ $table->tableGroupDesc }}</td>
 					<td>{{ $table->description }}</td>
-					<td>{{ $table->description2 }}</td>
+
 					<!-- <td class="col-actions">
 						<a href="{{ URL::to('tables/' . $table->id . '/edit') }}">Wijzigen</a> | 
 						<a href="{{ URL::to('tables/' . $table->id) }}">Verwijderen</a>

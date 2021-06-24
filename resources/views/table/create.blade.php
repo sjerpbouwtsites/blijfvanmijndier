@@ -26,13 +26,6 @@
 		    </div>
 
 		    <div class="form-group">
-		        {{ Form::label('description2', 'Omschrijving 2', array('class' => 'control-label col-md-4')) }}
-		        <div class="col-sm-8">
-		        	{{ Form::text('description2', Input::old('description2'), array('class' => 'form-control')) }}
-		        </div>
-		    </div>
-
-		    <div class="form-group">
 		    	{{ Form::submit('Opslaan', array('class' => 'btn btn-primary')) }}
 		    	<a href="{{ URL::to('tables') }}" class="btn btn-default">Annuleren</a>
 		    </div>

@@ -137,7 +137,6 @@ class TableController extends Controller
 
         $table->tablegroup_id = $request->tablegroup_id;
         $table->description = $request->description;
-        $table->description2 = $request->description2;
         $table->save();
     }
 

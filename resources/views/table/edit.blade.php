@@ -14,7 +14,6 @@
            
             @include('form_select', ['field' => 'tablegroup_id', 'label' => 'Groep', 'id' => 'tablegroup_id', 'types' => $types])
             @include('form_text', ['field' => 'description', 'label' => 'Omschrijving'])
-            @include('form_text', ['field' => 'description2', 'label' => 'Omschrijving 2'])
 
 		    <div class="form-group form_buttons">
 		    	{{ Form::submit('Opslaan', array('class' => 'btn btn-primary')) }}
