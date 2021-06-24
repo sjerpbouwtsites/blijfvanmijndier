@@ -108,6 +108,10 @@ class Controller extends BaseController
         return $date->format('Y-m-d H:i:s');
     }
 
+    /**
+     * waarom staat dit op de algemene controller... is animal model
+     * TODO
+     */
     public function animalNeedUpdate($id)
     {
         $animal = Animal::find($id);

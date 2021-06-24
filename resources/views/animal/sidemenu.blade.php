@@ -16,12 +16,23 @@
 		  	
      	  	<li class="list-group-item"><a href="{{ URL::to('animals/' . $animal->id . '/owner') }}"><i class="fa fa-female fa-fw"></i>&nbsp; Eigenaar</a></li>
 
-     	  	@if($update == 1)
-			<li class="list-group-item update_back"><a href="{{ URL::to('animals/' . $animal->id . '/updates') }}"><i class="fa fa-pencil fa-fw"></i>&nbsp; Updates</a>
-		  @else
-		  	<li class="list-group-item"><a href="{{ URL::to('animals/' . $animal->id . '/updates') }}"><i class="fa fa-pencil fa-fw"></i>&nbsp; Updates</a>
-		  @endif
+
+
+			<li class="list-group-item {{$updates_checked['has_icons'] ? 'has-update-icons' : ''}}">
+				<a href="{{ URL::to('animals/' . $animal->id . '/updates') }}">
+					<i class="fa fa-pencil fa-fw"></i>&nbsp; Updates
+					@if ($updates_checked['has_icons'])
+					<ul class='sidemenu-update-icons'>
+						@foreach ($updates_checked['icons'] as $icon)
+							<li class='sidemenu-update-icons__item'>
+								<i class='fa fa-{{$icon}}'></i>
+							</li>
+						@endforeach
+					</ul>                
+					@endif
+				</a>
 		    </li>
+
 		    <li class="list-group-item"><a href="{{ URL::to('animals/' . $animal->id . '/histories') }}"><i class="fa fa-history fa-fw"></i>&nbsp; Historie</a></li>
     		<li class="list-group-item"><a href="{{ URL::to('animals/' . $animal->id . '/documents') }}"><i class="fa fa-file fa-fw"></i>&nbsp; Documenten</a></li>
     		<li class="list-group-item"><a href="{{ URL::to('animals/' . $animal->id . '/outofproject') }}"><i class="fa fa-sign-out fa-fw"></i>&nbsp; Afmelden</a></li> 	
