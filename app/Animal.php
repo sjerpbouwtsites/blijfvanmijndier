@@ -88,6 +88,8 @@ class Animal extends Model
 		$animal_registered_date = $animal->registration_date;
 
 		$uc = [
+			'areg_date'=> $animal_registered_date,
+
 			'in_todo_list' => false,
 			'needs_updates'	=> false, // time in system means there should be updates
 			'has_updates' => false,
@@ -137,11 +139,14 @@ class Animal extends Model
 
 				if ($update_time_plus_two_weeks > $now_time) {
 					$uc['owner_update_out_of_range'] = true; 
-					
 					$uc['days_behind_to_max'][] = $update_time_plus_two_weeks->diff($now_time)->days; 
 				}
 			}
+			if (!$uc['has_owner_update']) {
+				$uc['days_behind_to_max'][] = (new \DateTime($animal_registered_date))->diff($now_time)->days; 
+			}
 		}
+		
 		
 		// CAREGIVER UPDATE CHECK
 		if ($uc['needs_caregiver_update']) {
@@ -161,6 +166,9 @@ class Animal extends Model
 					$uc['caregiver_update_out_of_range'] = true; 
 					$uc['days_behind_to_max'][] = $update_time_plus_two_months->diff($now_time)->days; 
 				}
+			}
+			if (!$uc['has_caregiver_update']) {
+				$uc['days_behind_to_max'][] = (new \DateTime($animal_registered_date))->diff($now_time)->days; 
 			}
 		}
 
@@ -183,6 +191,9 @@ class Animal extends Model
 					$uc['jaarevaluatie_update_in_range'] = true; 
 					$uc['days_behind_to_max'][] = $update_time_plus_two_months->diff($now_time)->days;
 				}
+			}
+			if (!$uc['has_jaarevaluatie_update']) {
+				$uc['days_behind_to_max'][] = (new \DateTime($animal_registered_date))->diff($now_time)->days; 
 			}
 		}
 

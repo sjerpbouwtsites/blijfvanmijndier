@@ -98,12 +98,16 @@ class AnimalController extends Controller
             $animal = $this->index_show_hydrate_animal($animal,$update_map);
             if (!$todo) {
                 $animals_to_grid[]=$animal;
-            } 
-            if ($animal['updates_checked']['in_todo_list']) {
+            } else if ($animal['updates_checked']['in_todo_list']) {
                 $animals_to_grid[]=$animal;
             }
         }
 
+        if ($todo) {
+            usort($animals_to_grid, function($a, $b) {
+                return $b['updates_checked']['days_behind'] <=> $a['updates_checked']['days_behind'];
+            });
+        }
         $tabs = $this->create_tabs();
 
         $animal_grid = $this->get_view('animal.tabbed-grid', [
