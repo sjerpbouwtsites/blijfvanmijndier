@@ -105,8 +105,15 @@ class AnimalController extends Controller
 
         if ($todo) {
             usort($animals_to_grid, function($a, $b) {
-                return $b['updates_checked']['days_behind'] <=> $a['updates_checked']['days_behind'];
+                return $b['updates_checked']['days_behind'] - $a['updates_checked']['days_behind'];
             });
+            // foreach($animals_to_grid as $a) {
+            //     echo "<pre>";
+            //     var_dump($a->name);
+            //     var_dump($a['updates_checked']['days_behind']);
+            //     echo "</pre>";
+            // }
+
         }
         $tabs = $this->create_tabs();
 
