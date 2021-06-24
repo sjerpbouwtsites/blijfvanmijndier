@@ -57,3 +57,45 @@
        float: none;
        content: '';
     }
+
+.animal-grid{
+   display: flex;
+   flex-direction: row;
+   flex-wrap: wrap;
+   justify-content: space-between;
+   margin-bottom: -1em;
+}
+.animal-grid__block{
+   width: calc(100% / 6 - .5em);
+   flex-grow: 0;
+   flex-shrink: 0;
+   margin-bottom: 1em;
+   display: block;
+   background-color: #fff;
+   box-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+}
+.animal-grid__image{
+   max-width: 100%;
+}
+.animal-grid__text{
+   max-width: 100%;
+   padding: .25em;
+
+}
+.animal-grid__animal-name{
+   font-weight: 900;
+   color: #212121;
+   font-size: 1.5em;
+   display: block;
+   line-height: 1;
+   margin-bottom:.5em;
+}
+.animal-grid__animal-description{
+   display: block;
+   color: #555;
+   font-size: .75em;
+   line-height:1;
+}
+.animal-grid__block-footer{
+   padding:  .25em;
+}

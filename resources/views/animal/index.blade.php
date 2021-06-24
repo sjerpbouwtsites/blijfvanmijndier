@@ -1,43 +1,42 @@
 @extends('layout')
 
 @section('content')
-	<div class="col-md-12">
-		<div class="col-md-4"><h3>Overzicht dieren</h3></div>
-	</div>
-	<div class="col-md-12">
 
-		@include('session_messages')
+<div class="col-md-12">
 
-		<div class="card-deck">
+    <h3>Overzicht dieren
+        <a class='btn btn-large btn-primary btn-lg' style='float: right' href="{{ URL::to('animals/create') }}">
+            Nieuw dier toevoegen
+        </a>
+    </h3>
 
-			<a href="{{ URL::to('animals/create') }}">
-			<div class="card new_animal panel">
-			  <img class="card-img-top" src="img/placeholder.jpg" alt="Nieuw dier toevoegen" width="150" height="150">
-			  <div class="card-block">
-			    <h4 class="card-title">Toevoegen</h4>
-			    <p class="card-text">Nieuw dier toevoegen</p>
-			  </div>
-			</div>
-			</a>
+</div>
 
-			@foreach ($animals as $animal)
-			<a href="{{ URL::to('animals/' . $animal->id) }}">
-				@if($animal->needUpdate == 1)
-					<div class="card panel update_back update_border">
-				@else
-					<div class="card panel">	
-				@endif	
-			  <img class="card-img-top" src="{{ $animal->animalImage }}" alt="{{ $animal->name }}" width="150" height="150">
-			  <div class="card-block">
-			    <h4 class="card-title">{{ $animal->name }}</h4>
-			    <p class="card-text">{{ $animal->breedDesc }}</p>
-			  </div>
-			</div>
-			</a>
-			@endforeach	
-		</div>	
-	</div>  	
+<div class="col-md-12" style='margin-top: 1.5em'>
 
-	<?php echo $animalsOldView; ?>
+    @include('session_messages')
+
+    <div class="animal-grid">
+        @foreach ($animals as $animal)
+        <a class='animal-grid__block' href="{{ URL::to('animals/' . $animal->id) }}">
+            
+            <img class="animal-grid__image" src="{{ $animal->animalImage }}" alt="{{ $animal->name }}" width="180" height="180">
+            <div class="animal-grid__text">
+                <span class="animal-grid__animal-name">{{ $animal->name }}</span>
+                <span class="animal-grid__animal-description">{{ $animal->breedDesc }}</span>
+            </div>
+            <p class='animal-grid__block-footer'>
+                @if ($animal->needUpdate == 1)
+                heeft update nodig
+                @endif
+            </p>
+            
+        </a>
+        @endforeach
+    </div>
+</div>
+
+<?php echo $animalsOldView; ?>
 
 @stop
+
