@@ -21,15 +21,9 @@
 			<li class="list-group-item {{$updates_checked['has_icons'] ? 'has-update-icons' : ''}}">
 				<a href="{{ URL::to('animals/' . $animal->id . '/updates') }}">
 					<i class="fa fa-pencil fa-fw"></i>&nbsp; Updates
-					@if ($updates_checked['has_icons'])
-					<ul class='sidemenu-update-icons'>
-						@foreach ($updates_checked['icons'] as $icon)
-							<li class='sidemenu-update-icons__item'>
-								<i class='fa fa-{{$icon}}'></i>
-							</li>
-						@endforeach
-					</ul>                
-					@endif
+					
+					@include('animal.updates-icons', ['updates_checked' => $updates_checked])
+
 				</a>
 		    </li>
 
@@ -56,7 +50,7 @@
  .has-update-icons *{
     color: #ce1d1d;
  }
- .sidemenu-update-icons {
+ .has-update-icons .animal-grid__icons {
     display: inline-flex;
     margin: 0;
     margin-left: .5em;
@@ -64,7 +58,9 @@
     list-style-type: none;
  
  }
- .sidemenu-update-icons__item + .sidemenu-update-icons__item{
+ .has-update-icons .animal-grid__icon-item {
+ }
+ .has-update-icons .animal-grid__icon-item + .animal-grid__icon-item{
  margin-left: .5em;
  }
 </style>

@@ -5,15 +5,8 @@
         <div class='animal-grid__image-outer'>
             <img loading='lazy' class="animal-grid__image" src="{{ $animal->animalImage }}" alt="{{ $animal->name }}" width="180" height="180">
             
-            @if ($animal->updates_checked['has_icons'])
-            <ul class='animal-grid__icons'>
-                @foreach ($animal->updates_checked['icons'] as $icon)
-                    <li class='animal-grid__icon-item'>
-                        <i class='fa fa-{{$icon}}'></i>
-                    </li>
-                @endforeach
-            </ul>                
-            @endif
+          
+            @include('animal.updates-icons', ['updates_checked' => $animal->updates_checked])
 
         </div>
         <div class="animal-grid__text">

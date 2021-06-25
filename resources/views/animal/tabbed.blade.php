@@ -80,18 +80,28 @@
  
  }
  .animal-grid__icons {
-    position: absolute;
-    margin: 0;
-    padding: 0;
-    top: .5em;
-    right: .5em;
-    list-style-type: none;
-    text-align: center;
-    font-size: 1.2em;
-    color: #ce1d1d;
- 
+   position: absolute;
+margin: 0;
+padding: 0;
+top: .5em;
+right: .5em;
+list-style-type: none;
+text-align: center;
+font-size: 1.2em;
+color: #ce1d1d;
+display: flex;
+flex-direction: column;
+justify-content: flex-end;
+align-items: end;
  }
- 
+ .animal-grid__icon-item:hover {
+    cursor:help
+ } 
+.animal-grid__icon-item .fa {
+   display: inline-block;
+   min-width: 18px;
+   text-align: center;
+}
 </style>
 @stop
 

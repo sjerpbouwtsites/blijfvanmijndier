@@ -18,9 +18,11 @@
                 
                 @if ($animal->updates_checked['has_icons'])
                 <ul class='animal-grid__icons'>
-                    @foreach ($animal->updates_checked['icons'] as $icon)
-                        <li class='animal-grid__icon-item'>
-                            <i class='fa fa-{{$icon}}'></i>
+                    @foreach ($animal->updates_checked['icons'] as $icon_row)
+                        <li title='{{$icon_row['title_attr']}}' class='animal-grid__icon-item'>
+                            @foreach ($icon_row['fa_classes'] as $icon_class)
+                                <i class='fa fa-{{$icon_class}}'></i>
+                            @endforeach;
                         </li>
                     @endforeach
                 </ul>                
