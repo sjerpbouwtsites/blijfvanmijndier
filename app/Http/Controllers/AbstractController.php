@@ -50,7 +50,7 @@ abstract class AbstractController extends Controller
  */
   public function wrap_in_show_link($id, $to_wrap){
     $wrapped = '';
-    $wrapped .= "<td>";
+    $wrapped .= "<td class='bootstrap-ga-weg-ajb'>";
     $wrapped .= "<a href='/".$this->plural."/".$id." '>";
     $wrapped .= $to_wrap;
     $wrapped .= "</a>";

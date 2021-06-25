@@ -346,7 +346,7 @@ class EntityFilter {
     this.setRow4(meta);
     this.setRow5(meta);
     this.setRow6(meta);
-    this.setRow7(meta);
+    // this.setRow7(meta);
     fakeStaticBecauseCodeBaseToOld._self = this;
   }
 
@@ -397,7 +397,7 @@ class EntityFilter {
       }),
       new FilterObject({
         entityFilter: this,
-        name: `is-owner`,
+        name: `is-owner`, 
         label: "Eigen aar",
         entities: Owner.all,
         row: 1,
@@ -540,51 +540,60 @@ class EntityFilter {
             "filter-input-is-guest": true,
           };
         },
-        disablesSelectOptions: () =>{
-          // zet de opties uit de concurrent, de inverse, uit.
-          const vereisteDieren = Array.from(document.querySelectorAll("[name='filter-input-own_animals]"))
-            .map(optie => optie.value);
-          const disableOptionElements = Array.from(document.querySelectorAll("[name='filter-input-own_animals_absent]"))
-            .filter(absenteOptie => {
-              return vereisteDieren.includes(absenteOptie);
-            })
-            return disableOptionElements;
-        }
+        // verwees naar rij 7
+      //   disablesSelectOptions: () =>{
+      //     // zet de opties uit de concurrent, de inverse, uit.
+      //     const vereisteDieren = Array.from(document.querySelectorAll("[name='filter-input-own_animals]"))
+      //       .map(optie => optie.value);
+      //     const disableOptionElements = Array.from(document.querySelectorAll("[name='filter-input-own_animals_absent]"))
+      //       .filter(absenteOptie => {
+      //         return vereisteDieren.includes(absenteOptie);
+      //       })
+      //       return disableOptionElements;
+      //   }
               
-      })
+       })
     );
   }  
-  setRow7(meta) {
-    const eigenDierenNiet = Object.values(meta.own_animals_absent)
-    this.configurations.push(
-      new FilterObject({
-        entityFilter: this,
-        name: `own_animals_absent`,
-        label: "Huisdiersoort afwezig",
-        type: "select",
-        inverted: true,
-        entities: Guest.all,
-        row: 7,
-        selectData: eigenDierenNiet.map((animal_type) => {
-            return [animal_type, animal_type.toLowerCase().replace(/\s/g, "-")];
-          }),        enforces: ()=>{
-            return {
-              "filter-input-is-guest": true,
-            };
-          },
-          disablesSelectOptions: () =>{
-            // zet de opties uit de concurrent, de inverse, uit.
-            const vereisteAfwezigeDieren = Array.from(document.querySelectorAll("[name='filter-input-own_animals_absent]"))
-              .map(optie => optie.value);
-            const disableOptionElements = Array.from(document.querySelectorAll("[name='filter-input-own_animals]"))
-              .filter(aanwezigeOptie => {
-                return vereisteAfwezigeDieren.includes(aanwezigeOptie);
-              })
-              return disableOptionElements;
-          }     
-      })
-    );
-  }    
+
+  // voor mij was het logisch om ook te filteren op welke dieren er niet bij mochten zijn.
+  // dus je kan positief filteren (een dier is er wel)
+  // en je kan negatief filteren (enfin)
+  // maar ik voel zo aan me water dat weten waar er géén husky's zijn ooit toch echt wel
+  // belangrijk wordt bij het plaatsen van katten. Dus gelieve te laten staan ^^
+
+
+  // setRow7(meta) {
+  //   const eigenDierenNiet = Object.values(meta.own_animals_absent)
+  //   this.configurations.push(
+  //     new FilterObject({
+  //       entityFilter: this,
+  //       name: `own_animals_absent`,
+  //       label: "Huisdiersoort afwezig",
+  //       type: "select",
+  //       inverted: true,
+  //       entities: Guest.all,
+  //       row: 7,
+  //       selectData: eigenDierenNiet.map((animal_type) => {
+  //           return [animal_type, animal_type.toLowerCase().replace(/\s/g, "-")];
+  //         }),        enforces: ()=>{
+  //           return {
+  //             "filter-input-is-guest": true,
+  //           };
+  //         },
+  //         disablesSelectOptions: () =>{
+  //           // zet de opties uit de concurrent, de inverse, uit.
+  //           const vereisteAfwezigeDieren = Array.from(document.querySelectorAll("[name='filter-input-own_animals_absent]"))
+  //             .map(optie => optie.value);
+  //           const disableOptionElements = Array.from(document.querySelectorAll("[name='filter-input-own_animals]"))
+  //             .filter(aanwezigeOptie => {
+  //               return vereisteAfwezigeDieren.includes(aanwezigeOptie);
+  //             })
+  //             return disableOptionElements;
+  //         }     
+  //     })
+  //   );
+  // }    
   /**
    * @param {string} name
    * @returns {FilterConfig} filterConfig from this.configurations.
@@ -788,8 +797,8 @@ function populateFilterHTML(entityFilter) {
     </div>
   </div>`;
 
-  const selectNamen = [null, null, null, "Dier voorkeur", "Gedrag", "Woonstijl", 'Heeft type dier', 'Type dier afwezig'];
-  const inputRow34567 = [3, 4, 5,6,7]
+  const selectNamen = [null, null, null, "Dier voorkeur", "Gedrag", "Woonstijl", 'Heeft type dier'];
+  const inputRow3456 = [3, 4, 5,6]
     .map((rowNumber) => {
       return `
     <div class='map__filter-row-outer'>
@@ -806,7 +815,7 @@ function populateFilterHTML(entityFilter) {
   document.getElementById("body-filter").innerHTML = `<form action='#' method='GET' id='map-filters'>
     ${inputRow1}
     ${inputRow2}
-    ${inputRow34567}
+    ${inputRow3456}
     `;
   // skipping reset button for now.
   // <input type='reset' id='filter-form-reset' class='map-aside__input--reset' value='leeg'></form>`

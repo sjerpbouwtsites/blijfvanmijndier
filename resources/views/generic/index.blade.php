@@ -7,7 +7,7 @@
 
 			 @include('session_messages')
 
-		<table class="table table-hover">
+		<table class="table">
 			<thead>
 				<tr>
           @foreach ($index_columns as $column_names)
@@ -26,3 +26,13 @@
 		</table>
 	</div>  	
 @stop
+
+<style>
+	td.bootstrap-ga-weg-ajb {
+		padding: 0 !important;
+	}
+	.bootstrap-ga-weg-ajb a {
+		padding: 8px;
+		display: block;
+	}
+</style>
