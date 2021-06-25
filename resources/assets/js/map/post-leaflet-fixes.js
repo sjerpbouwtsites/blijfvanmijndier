@@ -201,7 +201,9 @@ const markerId = `marker-${searchObj['focus-type']}-id-${searchObj['focus-id']}`
  */
 function writeTitleToMarkers(locatedEntities){
   locatedEntities.forEach((entity, index) => {
-    entity.marker.setAttribute('title', `${entity.type} ${entity.contact.name}`)
+    const prefix = !!entity.contact.prefix ? " "+entity.contact.prefix : '';
+    const surname = !!entity.contact.surname ? " "+entity.contact.surname : '';
+    entity.marker.setAttribute('title', `${entity.type} ${entity.contact.name}${prefix}${surname}`)
     
   })
 }
