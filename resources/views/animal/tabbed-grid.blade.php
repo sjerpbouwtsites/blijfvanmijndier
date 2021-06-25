@@ -3,8 +3,9 @@
     <a class='animal-grid__block' href="{{ URL::to('animals/' . $animal->id) }}">
         
         <div class='animal-grid__image-outer'>
-            <img loading='lazy' class="animal-grid__image" src="{{ $animal->animalImage }}" alt="{{ $animal->name }}" width="180" height="180">
-            
+            <div class='animal-grid__image-weetikveelhoedatinhetengelsheetpotvolkoffie' data-sigh='jeez' data-lang-pref='FRL'>
+                <img loading='lazy' class="animal-grid__image" src="{{ $animal->animalImage }}" alt="{{ $animal->name }}" width="180" height="180">
+            </div>
           
             @include('animal.updates-icons', ['updates_checked' => $animal->updates_checked])
 

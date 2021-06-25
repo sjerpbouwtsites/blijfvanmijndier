@@ -1,5 +1,5 @@
 @extends('layout')
-
+ <?php // LEGACY bestand ?>
 @section('content')
 
 <?=$tabs?>

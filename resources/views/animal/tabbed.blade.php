@@ -22,7 +22,7 @@
     margin-bottom: -1em;
  }
  .animal-grid__block {
-    width: calc(100% / 6 - 1em);
+    width: calc(100% / 4 - 1em);
     flex-grow: 0;
     flex-shrink: 0;
     margin-right: 1em;
@@ -34,9 +34,80 @@
  }
  .animal-grid__image-outer {
     position: relative;
+    display: flex;
  }
+ .animal-grid__image-weetikveelhoedatinhetengelsheetpotvolkoffie {
+    width: 150px;
+    height:150px;
+
+ }
+ /*
+ WORDT OOK DEELS GEBRUIKT OP SINGLE PAGINA's IN ZIJMENU. MET CASCADE FIKSEN
+ */
+ .animal-grid__icons {
+   margin: 0;
+   padding: 0;
+   width: calc(100% - 150px);
+   list-style-type: none;
+   text-align: center;
+   font-size: 1.2em;
+   color: #ce1d1d;
+   display: flex;
+   flex-direction: column;
+   justify-content: flex-start;
+ }
+ .animal-grid__icon-item {
+    flex-basis: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+ }
+ /* de user update */
+ .animal-grid__icon-item--female {
+    background-color: #a618a4;
+    color: #f5f5f5; 
+ }
+ /* hulpverlening update*/
+ .animal-grid__icon-item--users {
+    background-color: #ce1d1d;
+    color: #f5f5f5; 
+ }
+ /* nog geen updates*/
+ .animal-grid__icon-item--heart {
+    background-color: #f5f5f5;
+    color: #ce1d1d; 
+ }
+ /* jaarevaluatie update nodig*/
+ .animal-grid__icon-item--sign-out {
+    background-color: #353535;
+    color: #f5f5f5; 
+ }
+ /* alle updates vereist zijn op tijd */
+ .animal-grid__icon-item--all-good {
+   background-color: #f5f5f5;
+   color: gold;
+ }
+ .animal-grid__icon-item--all-good > .fa {
+    font-size: 2.5em;
+ }
+
+ .animal-grid__icon-item:hover {
+    cursor:help
+ } 
+.animal-grid__icon-item .fa {
+   display: inline-block;
+   min-width: 18px;
+   text-align: center;
+}
+
  .animal-grid__image{
-    max-width: 100%;
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    object-position: center;
+ }
+ .animal-grid__image[src*='placeholder'] {
+    filter: brightness(70%);
  }
  .animal-grid__text{
     max-width: 100%;
@@ -79,29 +150,7 @@
  .animal-grid__prompt-item {
  
  }
- .animal-grid__icons {
-   position: absolute;
-margin: 0;
-padding: 0;
-top: .5em;
-right: .5em;
-list-style-type: none;
-text-align: center;
-font-size: 1.2em;
-color: #ce1d1d;
-display: flex;
-flex-direction: column;
-justify-content: flex-end;
-align-items: end;
- }
- .animal-grid__icon-item:hover {
-    cursor:help
- } 
-.animal-grid__icon-item .fa {
-   display: inline-block;
-   min-width: 18px;
-   text-align: center;
-}
+
 </style>
 @stop
 
