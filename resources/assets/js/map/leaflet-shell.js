@@ -266,14 +266,6 @@ observer.observe(targetNode, config);
 //observer.disconnect();
 }
 
-function runMarkerRotateFixes(locatedEntities, event = null) {
-
-  if (event) {
-    console.log("afkomstig van event", event);
-  }
-
-  checkAndFixMarkersToClose(locatedEntities);
-}
 
 module.exports = {
   maakAlt,
