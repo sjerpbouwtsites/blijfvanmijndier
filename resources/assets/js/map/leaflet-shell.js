@@ -114,7 +114,9 @@ function locationMapper(locatedEntity, globalLeafletMap) {
 }
 
 function checkAndFixMarkersToClose(locatedEntities) {
-  const markers = locatedEntities.map((locatedEntity) => {
+  const markers = locatedEntities.filter((locatedEntity)=>{
+    return locatedEntity.shown;
+  }).map((locatedEntity) => {
     return locatedEntity.marker;
   });
 

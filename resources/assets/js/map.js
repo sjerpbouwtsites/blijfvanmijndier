@@ -101,7 +101,7 @@ function initMap() {
   
       addInteractive();
       postLeafletFixes(locatedEntities);
-      sidebar.init(meta);
+      sidebar.init(meta, locatedEntities);
       resolve({dataModels, locatedEntities})
     }).then(({dataModels, locatedEntities}) =>{
       //leafletShell.setLeafletEventListeners(globalLeafletMap, dataModels);
@@ -118,7 +118,7 @@ function initMap() {
             leafletShell.checkAndFixMarkersToClose(locatedEntities);
           })
 
-        }, 50)
+        }, 50)  
       
     }).catch(err => {
       console.error('error aan einde initMap', err);

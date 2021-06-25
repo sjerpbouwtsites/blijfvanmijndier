@@ -9,6 +9,7 @@ const Guest = modelsModule.Guest;
 const Shelter = modelsModule.Shelter;
 const Owner = modelsModule.Owner;
 const Location = modelsModule.Location;
+const checkAndFixMarkersToClose = require("./leaflet-shell.js").checkAndFixMarkersToClose
 
 /**
  * document.getElementById('map-filter')
@@ -829,10 +830,27 @@ function setFilterEventHandlers(entityFilter) {
   entityFilter.setEventHandlers();
 }
 
-function init(meta) {
+/**
+ * gethrotteld de markers opnieuw berekenen als het filter gebruikt is
+ * @param locatedEntities 
+ */
+let markerRotationFixTimeout = null;
+function setFilterEventTriggerMarkerRotationReset(locatedEntities){
+  filterForm().addEventListener("change", (event) => {
+    if (markerRotationFixTimeout) {
+      clearTimeout(markerRotationFixTimeout)
+    }
+    markerRotationFixTimeout = setTimeout(()=>{
+      checkAndFixMarkersToClose(locatedEntities);
+    }, 1000)
+  });   
+}
+
+function init(meta, locatedEntities) {
   const entityFilter = new EntityFilter(meta);
   populateFilterHTML(entityFilter);
   setFilterEventHandlers(entityFilter);
+  setFilterEventTriggerMarkerRotationReset(locatedEntities);
   activateResetButton();
 }
 
