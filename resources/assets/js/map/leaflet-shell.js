@@ -1,5 +1,3 @@
-const { readyException } = require("jquery");
-const { LocatedEntity } = require("./models");
 const popups = require("./popups");
 
 /**
@@ -59,6 +57,13 @@ function maakAlt(locatedEntity) {
           return animals.length > 1;
         },
         res: "multiple-animals",
+      },
+      {
+        key: "located",
+        check: (located) => {
+          return located;
+        },
+        res: "on-the-map",
       },
       {
         key: "animalsOnSite",

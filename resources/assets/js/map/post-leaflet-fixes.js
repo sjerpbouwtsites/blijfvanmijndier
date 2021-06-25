@@ -112,7 +112,20 @@ function postLeafletWork(locatedEntities) {
     if (markerColor) {
       marker.classList.add(markerColor);
     }
-    
+
+    // markers not on the map are in the north sea
+    const onTheMap = markerAltData.find((altPiece) => {
+      return altPiece.includes("on-the-map");
+    });
+    if (!onTheMap) {
+      marker.classList.add('blurred');
+      marker.setAttribute("data-on-the-map", 'in the north sea');
+    } else {
+      marker.setAttribute("data-on-the-map", 'damn right');
+    }  
+    // then hide the shadow markers
+    document.getElementById(marker.getAttribute('data-shadow-id')).classList.add('blurred')
+
     // MOVE TYPE ALT ENTRY TO DATA-TYPE
     const type = markerAltData.find((altPiece) => {
       return altPiece.includes("is-");
