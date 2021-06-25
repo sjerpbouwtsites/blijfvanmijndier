@@ -18,88 +18,90 @@
         @else
             {{ Form::open(['url' => 'guests', 'class' => 'form-horizontal']) }}
         @endif
-
+        @include('generic.address-edit', [
+        'model' => $guest,
+        'model_name' => 'guest'
+        ])
         <div class="col-md-6">
             <h4>Details</h4>
+            @include('form_text', ['field' => 'name', 'label' => 'Naam'])
 
-            <input type='hidden' name='address_id' value="<?= $guest['address_id'] ?>" >
-                @include('form_text', ['field' => 'name', 'label' => 'Naam'])
-                @include('form_group_address', [
-           'lattitude' => $guest['lattitude'],
-           'longitude' => $guest['longitude']
-          ])
-                @include('form_text', ['field' => 'phone_number', 'label' => 'Telefoonnummer'])
-          @include('form_text', ['field' => 'email_address', 'label' => 'Emailadres'])
-          
-          <!-- dirty in de turbo 👹-->
-          <div class="form-group">
-           <label for="max_hours_alone" class="control-label col-md-4">max uren alleen</label>
-           <div class="col-md-8">
-            <input min="0" class="form-control" required name="max_hours_alone" type="number" value="<?= $guest['max_hours_alone'] ?>" id="max_hours_alone">
-           </div>
-         </div>
+            @include('form_text', ['field' => 'phone_number', 'label' => 'Telefoonnummer'])
+            @include('form_text', ['field' => 'email_address', 'label' => 'Emailadres'])
+
+            <!-- dirty in de turbo 👹-->
+            <div class="form-group">
+                <label for="max_hours_alone" class="control-label col-md-4">max uren alleen</label>
+                <div class="col-md-8">
+                    <input min="0" class="form-control" required name="max_hours_alone" type="number" value="<?= $guest['max_hours_alone'] ?>" id="max_hours_alone">
+                               </div>
+                             </div>
 
 
-      <div class="form-group">
-        {{ Form::label('text', 'Opmerking', ['class' => 'control-label col-md-4']) }}
-        <div class="col-md-8">
-         {{ Form::textarea('text', Input::old('text'), ['size' => '80x5', 'class' => 'form-control']) }}
-        </div>
-       </div>
-
-      <div class="form-group form_buttons">
-      {{ Form::submit('Opslaan', ['class' => 'btn btn-primary']) }}
-      <a href="{{ URL::to('guests/' . $guest->id) }}" class="btn btn-default">Annuleren</a>
-      </div>
-      </div>
-
-      <div class="col-md-5 col-md-offset-1 editscherm-checkboxes__buiten">
-        <div class="editscherm-checkboxes__binnen">
-               
-            <div class="row editscherm-checkboxes__rij">
-
-                <div class="editscherm-checkboxes__kolom">
-                    <div class="editscherm-checkboxes__sectie">
-                        @include('form_checkbox_list', 
-                        ['title' => 'Gedrag', 
-                        'list' => $behaviourList, 
-                        'checked' => $checked_behaviours
-                        ])
-                    </div>
-                    <div class="editscherm-checkboxes__sectie">
-                        @include('form_checkbox_list', 
-                            ['title' => 'Eigen dieren', 
-                            'list' => $own_animal_typeList, 
-                            'checked' => $checked_own_animal_types
-                            ])
-                    </div>            
+                <div class="form-group">
+                {{ Form::label('text', 'Opmerking', ['class' => 'control-label col-md-4']) }}
+                <div class="col-md-8">
+                {{ Form::textarea('text', Input::old('text'), ['size' => '80x5', 'class' => 'form-control']) }}
+                </div>
                 </div>
 
-               <div class="editscherm-checkboxes__kolom">
-                    <div class="editscherm-checkboxes__sectie">
-                        @include('form_checkbox_list', ['title' => 'Wonen', 'list' => $home_typeList, 'checked' => $checked_home_types])
-                    </div>
-                    <div class="editscherm-checkboxes__sectie">
-                        @include('form_checkbox_list', ['title' => 'Diervoorkeur', 'list' => $animal_typeList, 'checked' => $checked_animal_types])
-                    </div>
-                </div>
+                           
 
-            </div>
 
-        </div>
-    </div>
+                          </div>
 
-      {{ Form::close() }}	
+                          <div class="col-md-5 col-md-offset-1 editscherm-checkboxes__buiten">
+                            <div class="editscherm-checkboxes__binnen">
+                                   
+                                <div class="row editscherm-checkboxes__rij">
 
-     </div>    	
+                                    <div class="editscherm-checkboxes__kolom">
+                                        <div class="editscherm-checkboxes__sectie">
+                                            @include('form_checkbox_list', 
+                                            ['title' => 'Gedrag', 
+                                            'list' => $behaviourList, 
+                                            'checked' => $checked_behaviours
+                                            ])
+                                        </div>
+                                        <div class="editscherm-checkboxes__sectie">
+                                            @include('form_checkbox_list', 
+                                                ['title' => 'Eigen dieren', 
+                                                'list' => $own_animal_typeList, 
+                                                'checked' => $checked_own_animal_types
+                                                ])
+                                        </div>            
+                                    </div>
 
-     <script>
+                                   <div class="editscherm-checkboxes__kolom">
+                                        <div class="editscherm-checkboxes__sectie">
+                                            @include('form_checkbox_list', ['title' => 'Wonen', 'list' => $home_typeList, 'checked' => $checked_home_types])
+                                        </div>
+                                        <div class="editscherm-checkboxes__sectie">
+                                            @include('form_checkbox_list', ['title' => 'Diervoorkeur', 'list' => $animal_typeList, 'checked' => $checked_animal_types])
+                                        </div>
+                                    </div>
 
-         Array.from(document.querySelectorAll('.editscherm-checkboxes__binnen .checkbox')).forEach(checkboxWrap => {
-             const input = checkboxWrap.querySelector('input')
-             const label = checkboxWrap.querySelector('label')
-             input.id = label.getAttribute('for');
-             console.log(input.id)
-         })
-     </script>
+                                </div>
+
+                            </div>
+                            <div class="form-group form_buttons">
+                                {{ Form::submit('Opslaan', ['class' => 'btn btn-primary']) }}
+                                <a href="{{ URL::to('guests/' . $guest->id) }}" class="btn btn-default">Annuleren</a>
+                                </div>
+                        </div>
+
+
+
+                          {{ Form::close() }}	
+
+                         </div>    	
+
+                         <script>
+                             Array.from(document.querySelectorAll('.editscherm-checkboxes__binnen .checkbox')).forEach(checkboxWrap => {
+                                 const input = checkboxWrap.querySelector('input')
+                                 const label = checkboxWrap.querySelector('label')
+                                 input.id = label.getAttribute('for');
+                                 console.log(input.id)
+                             })
+                         </script>
 @stop

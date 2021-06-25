@@ -16,16 +16,17 @@
 		@else
 			{{ Form::open(array('url' => 'shelters', 'class'=>'form-horizontal')) }}
 		@endif
-	
+		@include('generic.address-edit', [
+			'model' => $owner,
+			'model_name' => 'owner'
+			])
 		<div class="col-md-6">
 			<h4>Details</h4>
 
-			<input type='hidden' name='address_id' value="<?=$shelter['address_id']?>" >
+			
             @include('form_text', ['field' => 'name', 'label' => 'Naam'])
 						
-						@include('form_group_address' ,							['lattitude' => $shelter['lattitude'],
-						'longitude' => $shelter['longitude']
-						])
+					
             @include('form_text', ['field' => 'phone_number', 'label' => 'Telefoonnummer'])
             @include('form_text', ['field' => 'email_address', 'label' => 'Emailadres'])
             @include('form_text', ['field' => 'website', 'label' => 'Website'])

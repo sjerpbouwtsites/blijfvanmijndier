@@ -1,0 +1,1 @@
+ ALTER TABLE addresses ADD faulty_address TINYINT DEFAULT 0;
