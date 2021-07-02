@@ -84,8 +84,8 @@
  }
  /* alle updates vereist zijn op tijd */
  .animal-grid__icon-item--all-good {
-   background-color: #f5f5f5;
-   color: gold;
+   background-color: #gold;
+   color: #f5f5f5;
  }
  .animal-grid__icon-item--all-good > .fa {
     font-size: 2.5em;
