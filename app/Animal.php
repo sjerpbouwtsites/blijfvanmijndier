@@ -87,6 +87,12 @@ class Animal extends Model
 		$animal_id = $animal->id;
 		$animal_registered_date = $animal->registration_date;
 
+		// gastgezin
+		// hulpverlening
+		// pension
+		// eigenaar
+		// jaarevaluatie
+
 		$uc = [
 			
 			'in_todo_list' => false,
@@ -98,6 +104,11 @@ class Animal extends Model
 			'needs_caregiver_update' => false,
 			'has_caregiver_update'=> false,
 			'caregiver_update_on_time' => false,
+
+			'needs_pension_guest_update' => false,
+			'has_pension_guest_update'=> false,
+			'pension_guest_update_on_time' => false,			
+
 			'needs_jaarevaluatie_update' => false,
 			'has_jaarevaluatie_update' => false,
 			'jaarevaluatie_on_time' => false,
@@ -120,6 +131,9 @@ class Animal extends Model
 		if ((new \DateTime($animal_registered_date))->modify('+2 month') < $now_time) {
 			$uc['needs_caregiver_update'] = true;
 		}
+		if ((new \DateTime($animal_registered_date))->modify('+2 month') < $now_time) {
+			$uc['needs_pension_guest_update'] = true;
+		}		
 		if ((new \DateTime($animal_registered_date))->modify('+10 month') < $now_time) {
 			$uc['needs_jaarevaluatie_update'] = true;
 		}
@@ -179,6 +193,31 @@ class Animal extends Model
 			}
 		endif; // needs caregiver update
 
+		// PENSION GUEST UPDATE CHECK
+		if ($uc['needs_pension_guest_update']) :
+			$pension_update_id = $update_type_map['descriptions']['Contact pension'];
+			$guest_update_id = $update_type_map['descriptions']['Contact gastgezin'];
+			
+			foreach($updates as $update) {
+
+				if ($update->updatetype_id !== $pension_update_id && $update->updatetype_id !== $guest_update_id) {
+					continue;
+				}
+
+				$uc['has_pension_guest_update'] = true;
+				$update_time = new \DateTime($update->start_date);
+				$update_time_plus_two_months = $update_time->modify("+2 month");
+
+				if ($update_time_plus_two_months > $now_time) {
+					$uc['pension_guest_update_on_time'] = true;
+					break; 
+				}
+				$uc['days_behind_to_max'][] = $update_time_plus_two_months->diff($now_time)->days; 
+			}
+			if (!$uc['has_pension_guest_update']) {
+				$uc['days_behind_to_max'][] = (new \DateTime($animal_registered_date))->diff($now_time)->days; 
+			}
+		endif; // needs pension guest update		
 		
 		// jaarevaluatie UPDATE CHECK
 		if ($uc['needs_jaarevaluatie_update']) :
@@ -207,11 +246,12 @@ class Animal extends Model
 
 		$prompts = [];
 		$icons = [];
-		if ($uc['needs_updates'] && !$uc['has_updates']) {
-			$icons[] = Animal::make_icon_row(["heart"], 'GEEN UPDATES. Dit dier is langer dan twee weken in het project, maar er zijn nog geen updates') ;
-			$prompts[] = "Updates missen &uuml;berhaupt.";
-			$uc['in_todo_list'] = true;
-		} 
+
+		// if ($uc['needs_updates'] && !$uc['has_updates']) {
+		// 	$icons[] = Animal::make_icon_row(["heart"], 'GEEN UPDATES. Dit dier is langer dan twee weken in het project, maar er zijn nog geen updates') ;
+		// 	$prompts[] = "Updates missen &uuml;berhaupt.";
+		// 	$uc['in_todo_list'] = true;
+		// } 
 
 		if ($uc['needs_owner_update']) :
 
@@ -223,7 +263,7 @@ class Animal extends Model
 				 $icons[] = Animal::make_icon_row(["female"], 'EIGENAAR UPDATE. Dit dier is langer dan twee weken in het project, maar er is geen eigenaar update.');
 				$prompts[] =  "Eigenaar eerste contact.";
 			} else if(!$uc['owner_update_on_time']) {
-				$icons[] = Animal::make_icon_row(['clock-o',"female"], 'EIGENAAR UPDATE VERVOLG. Er was eerder contact met de eigenaar, maar dat is langer dan twee weken geleden.');
+				$icons[] = Animal::make_icon_row(['repeat',"female"], 'EIGENAAR UPDATE VERVOLG. Er was eerder contact met de eigenaar, maar dat is langer dan twee weken geleden.');
 				$prompts[] = "Eigenaar vervolg contact.";
 			}
 		endif; // needs owner update
@@ -236,11 +276,24 @@ class Animal extends Model
 				$icons[] = Animal::make_icon_row(["users"], 'HULPVERLENER UPDATE. Dit dier is langer dan twee maanden in het project, maar de hulpverlening is nog niet gesproken.');
 				$prompts[] = "Hulpverlening eerste contact.";
 			} else if(!$uc['caregiver_update_on_time']) {
-				$icons[] = Animal::make_icon_row(['clock-o',"users"], 'HULPVERLENER UPDATE. Er was eerder contact met de hulpverlening, maar dat is langer dan twee maanden geleden.');
+				$icons[] = Animal::make_icon_row(['repeat',"users"], 'HULPVERLENER UPDATE. Er was eerder contact met de hulpverlening, maar dat is langer dan twee maanden geleden.');
 				$prompts[] = "Hulpverlening vervolg contact.";		
 			}
 		endif; // needs caregiver update
 		
+		if ($uc['needs_pension_guest_update']) :
+			if (!$uc['has_pension_guest_update'] || !$uc['pension_guest_update_on_time']){
+				$uc['in_todo_list'] = true;
+			}
+			if (!$uc['has_pension_guest_update']) {
+				$icons[] = Animal::make_icon_row(["home"], 'GASTGEZIN/PENSION UPDATE. Dit dier is langer dan twee maanden in het project, maar het verblijf is nog niet gesproken.');
+				$prompts[] = "Verblijf eerste contact.";
+			} else if(!$uc['pension_guest_update_on_time']) {
+				$icons[] = Animal::make_icon_row(['repeat',"home"], 'GASTGEZIN/PENSION UPDATE. Er was eerder contact met het verblijf, maar dat is langer dan twee maanden geleden.');
+				$prompts[] = "Verblijf vervolg contact.";		
+			}
+		endif; // needs pension guest update
+
 		if ($uc['needs_jaarevaluatie_update']) :
 			if (!$uc['has_jaarevaluatie_update']){
 				$uc['in_todo_list'] = true;
