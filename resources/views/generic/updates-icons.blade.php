@@ -1,6 +1,6 @@
-<ul class='animal-grid__icons'>
-    @if ($updates_checked['has_icons'])    
-    @foreach ($updates_checked['icons'] as $icon_row)
+<ul class='animal-grid__icons '>
+    @if ($icon_data['has_icons'])    
+    @foreach ($icon_data['icons'] as $icon_row)
 
         <?php 
             $item_bem_a = [];

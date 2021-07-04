@@ -7,7 +7,7 @@
                 <img loading='lazy' class="animal-grid__image" src="{{ $animal->animalImage }}" alt="{{ $animal->name }}" width="180" height="180">
             </div>
           
-            @include('animal.updates-icons', ['updates_checked' => $animal->updates_checked])
+            @include('generic.updates-icons', ['icon_data' => $animal->updates_checked])
 
         </div>
         <div class="animal-grid__text">

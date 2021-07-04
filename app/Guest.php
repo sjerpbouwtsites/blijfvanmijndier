@@ -13,6 +13,8 @@ class Guest extends Model
     private $disabled_untill_original = null;
     public $has_prompts = false;
     public $prompts = [];
+    public $icons = [];
+    public $has_icons = false;
     private static $_today_datetime = null; // 'caching'
     private $_days_till_disabled = null;
     private $_days_till_available = null;
@@ -116,7 +118,7 @@ class Guest extends Model
             : new \DateTime($this->disabled_from);
         
         $interval = $disabled_from->diff(Guest::get_today_datetime());
-        $this->_days_till_disabled = $interval->d;
+        $this->_days_till_disabled = $interval->days;
         return $this->_days_till_disabled;
         
     }
@@ -144,7 +146,7 @@ class Guest extends Model
             : new \DateTime($this->disabled_untill);
         
         $interval = $disabled_untill->diff(Guest::get_today_datetime());
-        return $this->_days_till_available = $interval->d;
+        return $this->_days_till_available = $interval->days;
         
     }
 
@@ -202,6 +204,47 @@ class Guest extends Model
         
     }   
 
+    public function create_icons($availability = null){
+        if ($availability === null) {
+            if ($this->today_disabled()) :
+                $dta = $this->days_till_available();
+                if ($dta < 30) {
+                    $this->icons[] = Guest::make_icon_row(['hourglass', 'heart-o' ], "Binnen afzienbare tijd beschikbaar: $dta dagen.");
+                } else {
+                    $this->icons[] = Guest::make_icon_row(['chain-broken'], "Onbeschikbaar.");
+                }
+            elseif ($this->disabled): // als niet vandaag disabled
+                $dtd = $this->days_till_disabled();
+                if ($dtd < 90) {
+                    $this->icons[] = Guest::make_icon_row(['clock-o', 'heart-o' ], "Slechts kort beschikbaar: $dtd dagen.");
+                } else {
+                    $this->icons[] = Guest::make_icon_row(['hourglass', 'sign-out'], "Nog enkele maanden beschikbaar.");
+                }
+            endif;
+        } elseif ($availability === true) {
+            if ($this->disabled && !$this->today_disabled()) {
+                $dtd = $this->days_till_disabled();
+                if ($dtd < 90) {
+                    $this->icons[] = Guest::make_icon_row(['clock-o', 'heart-o' ], "Slechts kort beschikbaar: $dtd dagen.");
+                } else {
+                    $this->icons[] = Guest::make_icon_row(['hourglass', 'sign-out'], "Nog enkele maanden beschikbaar.");
+                }                
+            }
+        } elseif ($availability === false) {
+            if ($this->disabled && $this->today_disabled()) {
+                $dta = $this->days_till_available();
+                if ($dta < 30) {
+                    $this->icons[] = Guest::make_icon_row(['hourglass', 'heart-o' ], "Binnen afzienbare tijd beschikbaar: $dta dagen.");
+                } else {
+                    $this->icons[] = Guest::make_icon_row(['chain-broken'], "Onbeschikbaar.");
+                }              
+            }
+        }
+        if (count($this->icons) > 0) {
+            $this->has_icons = true;
+        }
+    }
+
 
     /**
      * removes the time signature from these timestamps if guest is disabled.
@@ -220,5 +263,17 @@ class Guest extends Model
         $this->disabled_dates_mangled = true;
         return $this;
     }   
+
+	/**
+	 * just an helper for update checker to cut code jungle
+	 * @param string text_in_title_attr goes in to the title attribute of that row of icons.
+	 * @param array font_awesome_47_classes stringarray with fa 4.7 classes
+	 */
+	private static function make_icon_row(array $font_awesome_47_classes, $text_in_title_attr){
+		return [
+			'fa_classes' => $font_awesome_47_classes,
+			'title_attr' => $text_in_title_attr
+		];
+	}
 
 }

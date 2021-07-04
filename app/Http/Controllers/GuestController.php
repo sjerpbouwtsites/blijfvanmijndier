@@ -57,13 +57,22 @@ class GuestController extends AbstractController
          });
          
         } else if ($beschikbaarheid === true) {
-            // SORTEREN OP TIJD NOG BESCHIKBAAR
-        }
+            $guests = $guests->sort(function ($a,$b) {
+                return ($a->days_till_disabled() || 0) <=> ($b->days_till_disabled() || 0);
+        });
+        
+    }else if ($beschikbaarheid === false) {
+        $guests = $guests->sort(function ($a,$b) {
+            return ($a->days_till_available() ||0 ) <=> ($b->days_till_available() || 0);
+    });
+    // straks nog omdraaien.
+}
 
         $guests_to_grid = [];
         foreach ($guests as $guest) {
             
             $guest->create_prompts($beschikbaarheid);
+            $guest->create_icons($beschikbaarheid);
 
             if ($beschikbaarheid === null) {
                 // normale index
@@ -79,6 +88,10 @@ class GuestController extends AbstractController
             } else {
                 throw new \Exception('something weird with the availability param in index');
             }
+        }
+
+        if ($beschikbaarheid === false) {
+            $guests_to_grid = \array_reverse($guests_to_grid);
         }
 
         $guest_grid = $this->get_view('guest.tabbed-grid', [
