@@ -13,6 +13,16 @@ class Guest extends Model
     private $disabled_untill_original = null;
     public $has_prompts = false;
     public $prompts = [];
+    private static $_today_datetime = null; // 'caching'
+    private $_days_till_disabled = null;
+    private $_days_till_available = null;
+
+    private static function get_today_datetime(){
+        if (Guest::$_today_datetime === null) {
+            Guest::$_today_datetime = new \DateTime();
+        }
+        return Guest::$_today_datetime;
+    }
 
     /**
      * Those properties not coming from the address model.
@@ -28,9 +38,13 @@ class Guest extends Model
         'text'
     ];
 
+    public function get_first_name(){
+        return explode(' ', $this->name)[0];
+    }
+
     public function tables()
     {
-        
+        $today_datetime = new \DateTime();
         return $this->belongsToMany(Table::class);
     }
 
@@ -64,7 +78,7 @@ class Guest extends Model
             ? new \DateTime($this->disabled_from_original)
             : new \DateTime($this->disabled_from);        
             
-        return $dt->format('l F Y');
+        return $dt->format('l d F Y');
     }
     public function disabled_untill_friendly(){
         setlocale(LC_ALL, 'nl_NL');
@@ -72,8 +86,121 @@ class Guest extends Model
             ? new \DateTime($this->disabled_untill_original)
             : new \DateTime($this->disabled_untill);        
             
-        return $dt->format('l F Y');
+        return $dt->format('l d F Y');
     }
+
+    /**
+     * return null if not disabled;
+     * return 0 if now disabled
+     * otherwise diff
+     * @return int|null number of days untill disabled
+     */
+    public function days_till_disabled(){
+
+        if ($this->_days_till_disabled !== null) {
+            return $this->_days_till_disabled;
+        }
+
+        if (!$this->disabled) {
+           $this->_days_till_disabled = null;
+           return $this->_days_till_disabled;
+        }
+        
+        if ($this->today_disabled()) {
+            $this->_days_till_disabled = 0;
+            return $this->_days_till_disabled;
+        } 
+
+        $disabled_from = $this->disabled_dates_mangled 
+            ? new \DateTime($this->disabled_from_original)
+            : new \DateTime($this->disabled_from);
+        
+        $interval = $disabled_from->diff(Guest::get_today_datetime());
+        $this->_days_till_disabled = $interval->d;
+        return $this->_days_till_disabled;
+        
+    }
+
+    /**
+     * return 10000 if not disabled;
+     * return 0 if now disabled
+     * otherwise diff
+     * @return int number of days untill disabled
+     */
+    public function days_till_available(){
+        if ($this->_days_till_available) {
+            return $this->_days_till_available;
+        }
+
+        if (!$this->disabled) {
+           return $this->_days_till_available = null;
+        }
+        if (!$this->today_disabled()) {
+            return $this->_days_till_available = 0;
+        } 
+
+        $disabled_untill = $this->disabled_dates_mangled 
+            ? new \DateTime($this->disabled_untill_original)
+            : new \DateTime($this->disabled_untill);
+        
+        $interval = $disabled_untill->diff(Guest::get_today_datetime());
+        return $this->_days_till_available = $interval->d;
+        
+    }
+
+    public function get_animal_preference_string(){
+        $animal_preference = $this->tables->where('tablegroup_id', Tablegroup::type_to_id('animal_type'));
+        if (count($animal_preference) == 0) return '';
+
+            $animal_preference_names = [];
+            foreach($animal_preference as $ap) {
+                $animal_preference_names[] = $ap->description;
+            }
+            return " - ".strtolower(implode(', ', $animal_preference_names)).".";
+        
+    }
+
+    public function create_prompts($availability = null){
+        if ($availability === null || $availability === true) {
+            if ($this->disabled) {
+                if ($this->today_disabled()) {
+                    $this->prompts[] = "<strong>On</strong>beschikbaar";
+                } else {
+
+                    $dtd = $this->days_till_disabled();
+    
+                    if ($dtd < 15) {
+                        $this->prompts[] = "<strong>On</strong>beschikbaar over $dtd dagen, vanaf ".$this->disabled_from_friendly();
+                    } elseif ($dtd < 35) {
+                        $this->prompts[] = "<strong>On</strong>beschikbaar over ".\round($dtd / 7)." weken, tot ".$this->disabled_from_friendly();
+                    } elseif ($dtd < 180) {
+                        $this->prompts[] = "Nog ".\round($dtd / 30.5)." maanden beschikbaar, tot ". $this->disabled_from_friendly();
+                    } elseif ($dtd > 180) {
+                        $this->prompts[] = "Meer dan een half jaar beschikbaar, tot ".$this->disabled_from_friendly();
+                    }  
+                 }
+                }
+        }
+ 
+        if ($availability === false || $availability === null) {
+            if ($this->today_disabled()) {
+                $dta = $this->days_till_available();
+                if ($dta < 15) {
+                    $this->prompts[] = "Snel beschikbaar: over $dta dagen, vanaf ".$this->disabled_untill_friendly();
+                } elseif ($dta < 35) {
+                    $this->prompts[] = "Beschikbaar over ".\round($dta / 7)." weken, vanaf ".$this->disabled_untill_friendly();
+                } elseif ($dta < 180) {
+                    $this->prompts[] = "Pas over ".\round($dta / 30.5)." maanden beschikbaar, vanaf ". $this->disabled_untill_friendly();
+                } elseif ($dta > 180) {
+                    $this->prompts[] = "Lange termijn onbeschikbaar, tot ".$this->disabled_untill_friendly();
+                }  
+            }
+        }        
+
+        $this->has_prompts = count($this->prompts) > 0;
+        return $this->prompts;
+        
+    }   
 
 
     /**

@@ -63,6 +63,8 @@ class GuestController extends AbstractController
         $guests_to_grid = [];
         foreach ($guests as $guest) {
             
+            $guest->create_prompts($beschikbaarheid);
+
             if ($beschikbaarheid === null) {
                 // normale index
                 $guests_to_grid[]=$guest;
@@ -85,7 +87,7 @@ class GuestController extends AbstractController
 
         return $this->get_view('guest.tabbed', [
           'guest_grid' => $guest_grid,
-          'tabs' => $this->tabs
+          'tabs' => $this->tabs,
         ]);
 
     }
@@ -241,7 +243,6 @@ class GuestController extends AbstractController
         }
         $to_return['guest'] = $guest;
         $to_return['tabs'] = $this->tabs;
-        dd($to_return);
         return $to_return;
     }
 
