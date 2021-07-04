@@ -54,6 +54,7 @@ class GuestController extends AbstractController
     public function show($guest_id)
     {
         $guest = $this->get_hydrated($guest_id);
+        $guest->disabled_timestamps_as_dates();
         $animals = Animal::setAnimalArrayImages(
             Animal::where('guest_id', $guest->id)->get()
         );
@@ -74,6 +75,7 @@ class GuestController extends AbstractController
     public function edit($guest_id)
     {
         $guest = $this->get_hydrated($guest_id);
+        $guest->disabled_timestamps_as_dates();
         return $this->get_view(
             'guest.edit',
             $this->guest_meta($guest)
@@ -90,8 +92,11 @@ class GuestController extends AbstractController
         );
     }
 
+
+
     /**
      * finds guest by id and hydrates the guest.
+     * alters the datetime to a date.
      * @return Guest
      * @param string id
      */
@@ -188,6 +193,10 @@ class GuestController extends AbstractController
             $guest->$key = $request->$key;
         }
         $guest->address_id = $address_id;
+        $guest->disabled = Input::get('disabled') === 'on' ? 1 : 0;
+
+        // $guest->disabled_from = Input::get('disabled_from');
+        // $guest->disabled_untill = Input::get('disabled_untill');
 
         // extra save to get id
         if ($request->id === null) {
