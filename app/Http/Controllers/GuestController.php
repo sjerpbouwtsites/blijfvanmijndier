@@ -23,13 +23,71 @@ class GuestController extends AbstractController
         'postal_code'
     ];
 
-    public $uses_generic_index = true;
+    public $uses_generic_index = false;
     public $index_columns = ['Naam', 'Adres', 'Telefoonnummer'];
     
 
     function __construct()
     {
         parent::__construct('guests');
+        $this->tabs = $this->create_tabs();
+    }
+
+    public function available(){
+        return $this->index(true);
+    }
+
+    public function unavailable(){
+        return $this->index(false);
+    }
+
+    /**
+     * @param todo of dit de volle lijst of de todo lijst is
+     */
+    public function index($beschikbaarheid = null)
+    {
+        $guests = \App\Address::allWithAddress("App\\Guest");
+
+        if ($beschikbaarheid === null) {
+            // sorteren op naam
+            $guests = $guests->sort(function ($a,$b) {
+                $name_a = preg_replace('/\s/', '', strtolower($a->name));
+                $name_b = preg_replace('/\s/', '', strtolower($b->name));
+                return $name_a <=> $name_b; 
+         });
+         
+        } else if ($beschikbaarheid === true) {
+            // SORTEREN OP TIJD NOG BESCHIKBAAR
+        }
+
+        $guests_to_grid = [];
+        foreach ($guests as $guest) {
+            
+            if ($beschikbaarheid === null) {
+                // normale index
+                $guests_to_grid[]=$guest;
+            } else if ($beschikbaarheid === true){
+                if (!$guest->today_disabled()) {
+                    $guests_to_grid[]=$guest;
+                }
+            } else if ($beschikbaarheid === false) {
+                if ($guest->today_disabled()) {
+                    $guests_to_grid[]=$guest;
+                }                
+            } else {
+                throw new \Exception('something weird with the availability param in index');
+            }
+        }
+
+        $guest_grid = $this->get_view('guest.tabbed-grid', [
+            'guests' => $guests_to_grid
+        ]);
+
+        return $this->get_view('guest.tabbed', [
+          'guest_grid' => $guest_grid,
+          'tabs' => $this->tabs
+        ]);
+
     }
 
     public function create_index_rows($models){
@@ -60,6 +118,7 @@ class GuestController extends AbstractController
         );
 
         return $this->get_view("guest.show", [
+            'tabs' => $this->tabs,
             'guest' => $guest,
             'animals' => $animals,
             'updates' => UpdateController::getUpdatesByLinkType('guests', $guest->id, 2),
@@ -92,6 +151,44 @@ class GuestController extends AbstractController
         );
     }
 
+    private function create_tabs(){
+
+        $current_url = \url()->current();
+
+        $all_guests_url = \url('/guests/');
+        $available_guests_url = \url("/guests/available");
+        $unavailable_guests_url = \url("/guests/unavailable");
+        $new_guest_url =  \url("/guests/create");
+
+        $tabs_data = [
+            'all'   => [
+                'url'=> $all_guests_url,
+                'text'  => 'Alle GG',
+                'active' => $all_guests_url === $current_url
+            ],
+            'available'   => [
+                'url'=> $available_guests_url,
+                'text'=> 'Beschikbare GG',
+                'active' => $available_guests_url === $current_url
+            ],
+            'unavailable'   => [
+                'url'=> $unavailable_guests_url,
+                'text'=> 'Onbeschikbare GG',
+                'active' => $unavailable_guests_url === $current_url
+            ],
+            'create'   => [
+                'url'=> $new_guest_url,
+                'text'=> 'Nieuwe GG',
+                'active' => $new_guest_url === $current_url
+            ],
+                     
+        ];        
+
+        return $this->get_view("generic.tabs", [
+            'tabs_data' => $tabs_data
+        ]);
+
+    }
 
 
     /**
@@ -143,6 +240,8 @@ class GuestController extends AbstractController
             $to_return['checked_' . $group . 's'] = $all_checked_ids;
         }
         $to_return['guest'] = $guest;
+        $to_return['tabs'] = $this->tabs;
+        dd($to_return);
         return $to_return;
     }
 

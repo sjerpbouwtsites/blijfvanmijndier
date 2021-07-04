@@ -68,15 +68,11 @@
                     }
                 }
             ?>
+        </div>
 
-
-
-                           
-
-
-            </div>
-
-                          <div class="col-md-5 col-md-offset-1 editscherm-checkboxes__buiten">
+      
+<br><br><br>
+                          <div class="col-md-5 py-5 col-md-offset-1 editscherm-checkboxes__buiten">
                             <div class="editscherm-checkboxes__binnen">
                                    
                                 <div class="row editscherm-checkboxes__rij">

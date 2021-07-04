@@ -77,7 +77,7 @@ class AnimalController extends Controller
             ]                        
         ];        
 
-        return $this->get_view("animal.tabs", [
+        return $this->get_view("generic.tabs", [
             'tabs_data' => $tabs_data
         ]);
 

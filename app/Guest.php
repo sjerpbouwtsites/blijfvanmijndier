@@ -11,6 +11,8 @@ class Guest extends Model
     private $disabled_dates_mangled = false;
     private $disabled_from_original = null;
     private $disabled_untill_original = null;
+    public $has_prompts = false;
+    public $prompts = [];
 
     /**
      * Those properties not coming from the address model.
