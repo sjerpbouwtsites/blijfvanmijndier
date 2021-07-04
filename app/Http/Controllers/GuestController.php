@@ -147,7 +147,7 @@ class GuestController extends AbstractController
     {
         return $this->get_view(
             "guest.edit",
-            $this->GetGuestData(new Guest),
+            $this->guest_meta(new Guest),
         );
     }
 
@@ -245,37 +245,7 @@ class GuestController extends AbstractController
         return $to_return;
     }
 
-    /**
-     * Helper van edit en create
-     */
-    private function GetGuestData($guest)
-    {
-        $behaviourList = Table::All()->where('tablegroup_id', Tablegroup::type_to_id('behaviour'));
 
-        $hometypeList = Table::All()->where('tablegroup_id', Tablegroup::type_to_id('home_type'));
-        $animaltypeList = Table::All()->where('tablegroup_id', Tablegroup::type_to_id('animal_type'));
-
-        $checked_behaviours = $guest->tables()->where('tablegroup_id', Tablegroup::type_to_id('behaviour'))->pluck('tables.id')->toArray();
-        $checked_hometypes = $guest->tables()->where('tablegroup_id', Tablegroup::type_to_id('home_type'))->pluck('tables.id')->toArray();
-        $checked_animaltypes = $guest->tables()->where('tablegroup_id', Tablegroup::type_to_id('animal_type'))->pluck('tables.id')->toArray();
-        $checked_own_animals = $guest->tables()->where('tablegroup_id', Tablegroup::type_to_id('own_animal_type'))->pluck('tables.id')->toArray();
-
-        $menuItems = $this->GetMenuItems('guests');
-
-        $data = array(
-            'guest' => $guest,
-            'menuItems' => $menuItems,
-            'behaviourList' => $behaviourList,
-            'checked_behaviours' => $checked_behaviours,
-            'hometypeList' => $hometypeList,
-            'checked_hometypes' => $checked_hometypes,
-            'animaltypeList' => $animaltypeList,
-            'checked_animaltypes' => $checked_animaltypes,
-            // 'checked_own_animals' => $checked_own_animals,
-        );
-
-        return $data;
-    }
 
     /**
      * creates new guest if request does not non-null id prop
