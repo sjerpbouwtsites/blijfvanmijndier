@@ -8,7 +8,7 @@
 
     @include('session_messages')
 
-    <?=$animal_grid?>
+    <?=$guest_grid?>
 
 </div>
 
@@ -28,6 +28,7 @@
     margin-right: 1em;
     margin-bottom: 1em;
     display: block;
+    background-color: #fff;
     box-shadow: 1px 1px 1px rgba(0,0,0,0.2);
     position: relative;
  }

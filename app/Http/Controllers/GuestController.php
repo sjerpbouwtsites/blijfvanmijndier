@@ -9,6 +9,7 @@ use App\Table;
 use App\Address;
 use Illuminate\Support\Facades\Input;
 use App\Tablegroup;
+use App\Checkerboard;
 
 class GuestController extends AbstractController
 {
@@ -23,13 +24,91 @@ class GuestController extends AbstractController
         'postal_code'
     ];
 
-    public $uses_generic_index = true;
+
+    public $uses_generic_index = false;
     public $index_columns = ['Naam', 'Adres', 'Telefoonnummer'];
     
 
     function __construct()
     {
         parent::__construct('guests');
+        $this->tabs = $this->create_tabs();
+    }
+
+    public function available(){
+        return $this->index(true);
+    }
+
+    public function unavailable(){
+        return $this->index(false);
+    }
+    /**
+     * @param beschikbaarheid. Mogelijk als null (index), true (beschikbare gg) en false (onbeschikbaren)
+     */
+    public function index($beschikbaarheid = null)
+    {
+        $guests = \App\Address::allWithAddress("App\\Guest");
+
+        if ($beschikbaarheid === null) {
+            // sorteren op naam
+            $guests = $guests->sort(function ($a,$b) {
+                $name_a = preg_replace('/\s/', '', strtolower($a->name));
+                $name_b = preg_replace('/\s/', '', strtolower($b->name));
+                return $name_a <=> $name_b; 
+         });
+         
+        } else if ($beschikbaarheid === true) {
+            $guests = $guests->sort(function ($a,$b) {
+                return ($a->days_till_disabled() || 0) <=> ($b->days_till_disabled() || 0);
+        });
+        
+    }else if ($beschikbaarheid === false) {
+        $guests = $guests->sort(function ($a,$b) {
+            return ($a->days_till_available() ||0 ) <=> ($b->days_till_available() || 0);
+    });
+    // straks nog omdraaien.
+}
+
+        $guests_to_grid = [];
+        foreach ($guests as $guest) {
+            
+            $guest->create_prompts($beschikbaarheid);
+            $guest->create_icons($beschikbaarheid);
+
+            if ($beschikbaarheid === null) {
+                // normale index
+                $guests_to_grid[]=$guest;
+            } else if ($beschikbaarheid === true){
+                if (!$guest->today_disabled()) {
+                    $guests_to_grid[]=$guest;
+                }
+            } else if ($beschikbaarheid === false) {
+                if ($guest->today_disabled()) {
+                    $guests_to_grid[]=$guest;
+                }                
+            } else {
+                throw new \Exception('something weird with the availability param in index');
+            }
+        }
+
+        if ($beschikbaarheid === false) {
+            $guests_to_grid = \array_reverse($guests_to_grid);
+        }
+        
+        $guests_to_grid = Checkerboard::set_checkerboard($guests_to_grid);
+
+        $guest_grid = $this->get_view('guest.tabbed-grid', [
+            'guests' => $guests_to_grid
+        ]);
+
+        // function op main controller
+        $this->add_app_body_css('tabbed-grid');
+
+        return $this->get_view('guest.tabbed', [
+          'guest_grid' => $guest_grid,
+          'tabs' => $this->tabs,
+        ]);
+
     }
 
     public function create_index_rows($models){
@@ -54,11 +133,13 @@ class GuestController extends AbstractController
     public function show($guest_id)
     {
         $guest = $this->get_hydrated($guest_id);
+        $guest->disabled_timestamps_as_dates();
         $animals = Animal::setAnimalArrayImages(
             Animal::where('guest_id', $guest->id)->get()
         );
 
         return $this->get_view("guest.show", [
+            'tabs' => $this->tabs,
             'guest' => $guest,
             'animals' => $animals,
             'updates' => UpdateController::getUpdatesByLinkType('guests', $guest->id, 2),
@@ -74,6 +155,7 @@ class GuestController extends AbstractController
     public function edit($guest_id)
     {
         $guest = $this->get_hydrated($guest_id);
+        $guest->disabled_timestamps_as_dates();
         return $this->get_view(
             'guest.edit',
             $this->guest_meta($guest)
@@ -90,8 +172,49 @@ class GuestController extends AbstractController
         );
     }
 
+    private function create_tabs(){
+
+        $current_url = \url()->current();
+
+        $all_guests_url = \url('/guests/');
+        $available_guests_url = \url("/guests/available");
+        $unavailable_guests_url = \url("/guests/unavailable");
+        $new_guest_url =  \url("/guests/create");
+
+        $tabs_data = [
+            'all'   => [
+                'url'=> $all_guests_url,
+                'text'  => 'Alle GG',
+                'active' => $all_guests_url === $current_url
+            ],
+            'available'   => [
+                'url'=> $available_guests_url,
+                'text'=> 'Beschikbare GG',
+                'active' => $available_guests_url === $current_url
+            ],
+            'unavailable'   => [
+                'url'=> $unavailable_guests_url,
+                'text'=> 'Onbeschikbare GG',
+                'active' => $unavailable_guests_url === $current_url
+            ],
+            'create'   => [
+                'url'=> $new_guest_url,
+                'text'=> 'Nieuwe GG',
+                'active' => $new_guest_url === $current_url
+            ],
+                     
+        ];        
+
+        return $this->get_view("generic.tabs", [
+            'tabs_data' => $tabs_data
+        ]);
+
+    }
+
+
     /**
      * finds guest by id and hydrates the guest.
+     * alters the datetime to a date.
      * @return Guest
      * @param string id
      */
@@ -138,6 +261,7 @@ class GuestController extends AbstractController
             $to_return['checked_' . $group . 's'] = $all_checked_ids;
         }
         $to_return['guest'] = $guest;
+        $to_return['tabs'] = $this->tabs;
         return $to_return;
     }
 
@@ -158,6 +282,10 @@ class GuestController extends AbstractController
             $guest->$key = $request->$key;
         }
         $guest->address_id = $address_id;
+        $guest->disabled = Input::get('disabled') === 'on' ? 1 : 0;
+
+        // $guest->disabled_from = Input::get('disabled_from');
+        // $guest->disabled_untill = Input::get('disabled_untill');
 
         // extra save to get id
         if ($request->id === null) {

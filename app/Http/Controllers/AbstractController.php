@@ -28,6 +28,7 @@ abstract class AbstractController extends Controller
   public $geolocation_failure = false;
   public $uses_generic_index = false;
 
+
   // please override.
   public $required = [];
 
@@ -44,6 +45,9 @@ abstract class AbstractController extends Controller
     $this->singular = $this->view_prefix;
     $this->model_name = ucfirst($this->singular);
   }
+
+
+
 
 /**
  * used to create table rows in index

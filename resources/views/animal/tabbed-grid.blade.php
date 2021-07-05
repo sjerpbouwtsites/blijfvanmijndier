@@ -1,13 +1,13 @@
 <div class="animal-grid">
     @foreach ($animals as $animal)
-    <a class='animal-grid__block' href="{{ URL::to('animals/' . $animal->id) }}">
+    <a class='animal-grid__block <?=isset($animal->checkerboard_css) ? $animal->checkerboard_css : ''?>' href="{{ URL::to('animals/' . $animal->id) }}">
         
         <div class='animal-grid__image-outer'>
             <div class='animal-grid__image-weetikveelhoedatinhetengelsheetpotvolkoffie' data-sigh='jeez' data-lang-pref='FRL'>
                 <img loading='lazy' class="animal-grid__image" src="{{ $animal->animalImage }}" alt="{{ $animal->name }}" width="180" height="180">
             </div>
           
-            @include('animal.updates-icons', ['updates_checked' => $animal->updates_checked])
+            @include('generic.updates-icons', ['icon_data' => $animal->updates_checked])
 
         </div>
         <div class="animal-grid__text">
