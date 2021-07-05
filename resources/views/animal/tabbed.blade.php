@@ -123,9 +123,7 @@
     text-transform: uppercase;
     width: 100%;
  }
- .animal-grid__block:hover .animal-grid__animal-name{
-    background-color: rgba(255, 255, 255, 0.75);
- }
+
  .animal-grid__animal-description{
     display: block;
     color: #777;
