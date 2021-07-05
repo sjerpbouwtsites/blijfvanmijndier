@@ -22,7 +22,6 @@ Route::resource('guests.histories', 'HistoryController');
 Route::resource('shelters.updates', 'UpdateController');
 Route::resource('shelters.histories', 'HistoryController');
 Route::resource('owners.histories', 'HistoryController');
-Route::resource('owners.updates', 'UpdateController');
 
 Route::get('animals/{id}/histories', 'HistoryController@indexanimals');
 
