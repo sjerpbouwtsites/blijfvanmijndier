@@ -41,6 +41,8 @@ class Controller extends BaseController
     public $model_name;
     public $menuItems = null;
 
+    private $_app_body_css;
+
     /**
      * @param string model_name. Naam van de model.... wordt gebruikt om de menu items te zetten.
      * @param string menu_items_source_override. Bv. in history zijn de menu items animals.
@@ -52,6 +54,10 @@ class Controller extends BaseController
 
        // dd(Map::map_data());
 
+    }
+
+    public function add_app_body_css($string = ''){
+        $this->_app_body_css .= " $string";
     }
 
     private function init_model_name($model_name)
@@ -82,7 +88,8 @@ class Controller extends BaseController
             throw new \Exception('menu items leeg', E_NOTICE);
         }
         return view($view_name)->with(array_merge($data, [
-            'menuItems' => $this->menuItems
+            'menuItems' => $this->menuItems,
+            'app_body_css' => $this->_app_body_css,
         ]));
     }
 

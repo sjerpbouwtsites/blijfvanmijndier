@@ -23,6 +23,12 @@
     #app-body {
         overflow-x: hidden;
     }
+    #app-body.tabbed-grid {
+        background-color: #f2f2f2;
+    }
+    #app-body.tabbed-grid .header {
+        background-color: #fff;
+    }
     .bvmd-tabbladen {
         font-size: 1rem;
         height: 12em;

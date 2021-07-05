@@ -158,7 +158,7 @@ class Guest extends Model
             foreach($animal_preference as $ap) {
                 $animal_preference_names[] = $ap->description;
             }
-            return " - ".strtolower(implode(', ', $animal_preference_names)).".";
+            return strtolower(implode(', ', $animal_preference_names)).".";
         
     }
 
@@ -166,19 +166,19 @@ class Guest extends Model
         if ($availability === null || $availability === true) {
             if ($this->disabled) {
                 if ($this->today_disabled()) {
-                    $this->prompts[] = "<strong>On</strong>beschikbaar";
+                    $this->prompts[] = "Nu onbeschikbaar";
                 } else {
 
                     $dtd = $this->days_till_disabled();
     
                     if ($dtd < 15) {
-                        $this->prompts[] = "<strong>On</strong>beschikbaar over $dtd dagen, vanaf ".$this->disabled_from_friendly();
+                        $this->prompts[] = "Beschikbaarheid eindigt<br>$dtd dagen van nu<br>op ".$this->disabled_from_friendly();
                     } elseif ($dtd < 35) {
-                        $this->prompts[] = "<strong>On</strong>beschikbaar over ".\round($dtd / 7)." weken, tot ".$this->disabled_from_friendly();
+                        $this->prompts[] = "Beschikbaarheid eindigt<br>".\round($dtd / 7)." weken van nu<br>vanaf ".$this->disabled_from_friendly();
                     } elseif ($dtd < 180) {
-                        $this->prompts[] = "Nog ".\round($dtd / 30.5)." maanden beschikbaar, tot ". $this->disabled_from_friendly();
+                        $this->prompts[] = "Nog ".\round($dtd / 30.5)." maanden<br>beschikbaar<br>tot ". $this->disabled_from_friendly();
                     } elseif ($dtd > 180) {
-                        $this->prompts[] = "Meer dan een half jaar beschikbaar, tot ".$this->disabled_from_friendly();
+                        $this->prompts[] = "Beschikbaarheid eindigt<br>lange tijd van nu<br>op ".$this->disabled_from_friendly();
                     }  
                  }
                 }
