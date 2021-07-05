@@ -12,6 +12,7 @@ use App\Update;
 use App\Animal;
 use App\Guest;
 use App\Shelter;
+use App\Owner;
 use DateTime;
 use App\Tablegroup;
 
@@ -256,6 +257,13 @@ class UpdateController extends Controller
                 $shelter = Shelter::find($link_id);
                 $name_label = 'Pension';
                 $name = $shelter->name;
+                $link_type = $link_type;
+                $link_id = $link_id;
+                break;
+            case 'owners':
+                $owner = Owner::find($link_id);
+                $name_label = 'Eigenaar';
+                $name = $owner->name;
                 $link_type = $link_type;
                 $link_id = $link_id;
                 break;
