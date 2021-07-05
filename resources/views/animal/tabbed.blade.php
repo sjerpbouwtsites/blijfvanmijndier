@@ -120,7 +120,6 @@
     bottom: 0;
     left: 0;
     display: block;
-    background-color: rgba(255, 255, 255, 0.3);
     text-transform: uppercase;
     width: 100%;
  }
