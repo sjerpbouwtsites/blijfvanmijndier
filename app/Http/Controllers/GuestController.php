@@ -9,6 +9,7 @@ use App\Table;
 use App\Address;
 use Illuminate\Support\Facades\Input;
 use App\Tablegroup;
+use App\Checkerboard;
 
 class GuestController extends AbstractController
 {
@@ -23,8 +24,6 @@ class GuestController extends AbstractController
         'postal_code'
     ];
 
-    public $checkerboard_sequence_1 = ['checkerboard-grey', 'checkerboard-white', 'checkerboard-grey', 'checkerboard-white'];
-    public $checkerboard_sequence_2 = ['checkerboard-white', 'checkerboard-grey', 'checkerboard-white', 'checkerboard-grey'];
 
     public $uses_generic_index = false;
     public $index_columns = ['Naam', 'Adres', 'Telefoonnummer'];
@@ -43,35 +42,6 @@ class GuestController extends AbstractController
     public function unavailable(){
         return $this->index(false);
     }
-/**
- * making the design like a checkerboard, 4 broad. blackwhiteblackwhitewhiteblackwhiteblack
- * when modulus 4 and 8 are equal, first sequence.
- */
-    public function checkersboard_index($index = 0){
-        $modulus4 = $index % 4;
-        $modulus8 = $index % 8;
-
-        if ($modulus4 === $modulus8) {
-            return $this->checkerboard_sequence_1[$modulus4];
-        } else {
-            return $this->checkerboard_sequence_2[$modulus4];
-        }
-    }
-
-    /**
-     * Heeft iemand al eens gezegd dat PHPs array map functie shit in elkaar zit?
-     * bij deze
-     */
-    public function set_checkerboard($models_array) {
-        $new = [];
-        for ($i = 0; $i < count($models_array); $i++) {
-            $model = $models_array[$i];
-            $model->checkerboard_css = $this->checkersboard_index($i);
-            $new[] = $model;
-        }        
-        return $new;
-    }
-
     /**
      * @param beschikbaarheid. Mogelijk als null (index), true (beschikbare gg) en false (onbeschikbaren)
      */
@@ -125,7 +95,7 @@ class GuestController extends AbstractController
             $guests_to_grid = \array_reverse($guests_to_grid);
         }
         
-        $guests_to_grid = $this->set_checkerboard($guests_to_grid);
+        $guests_to_grid = Checkerboard::set_checkerboard($guests_to_grid);
 
         $guest_grid = $this->get_view('guest.tabbed-grid', [
             'guests' => $guests_to_grid

@@ -72,12 +72,7 @@ display: flex;
 flex-direction: column;
 min-height: 180px;
 }
-.animal-grid__block.checkerboard-white {
-    background-image: linear-gradient(to bottom right, #ffffff, #32292909);
-}
-.animal-grid__block.checkerboard-grey {
-    background-image: linear-gradient(to bottom right, #fdfdfd, #32292912);
-}
+
 .animal-grid__block-footer.animal-grid__block-footer--animal-fix {
         display: flex;
         flex-direction: row;

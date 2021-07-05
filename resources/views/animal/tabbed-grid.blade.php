@@ -1,6 +1,6 @@
 <div class="animal-grid">
     @foreach ($animals as $animal)
-    <a class='animal-grid__block' href="{{ URL::to('animals/' . $animal->id) }}">
+    <a class='animal-grid__block <?=isset($animal->checkerboard_css) ? $animal->checkerboard_css : ''?>' href="{{ URL::to('animals/' . $animal->id) }}">
         
         <div class='animal-grid__image-outer'>
             <div class='animal-grid__image-weetikveelhoedatinhetengelsheetpotvolkoffie' data-sigh='jeez' data-lang-pref='FRL'>

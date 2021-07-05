@@ -22,7 +22,7 @@
 				<a href="{{ URL::to('animals/' . $animal->id . '/updates') }}">
 					<i class="fa fa-pencil fa-fw"></i>&nbsp; Updates
 					
-					@include('animal.updates-icons', ['updates_checked' => $updates_checked])
+					@include('generic.updates-icons', ['icon_data' => $updates_checked])
 
 				</a>
 		    </li>

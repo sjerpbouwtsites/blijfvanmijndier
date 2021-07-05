@@ -11,6 +11,7 @@ use App\Animal;
 use App\Table;
 use Illuminate\Support\Facades\DB;
 use App\Tablegroup;
+use App\Checkerboard;
 
 /**
  * Watch out this controller is an animal! 
@@ -115,6 +116,11 @@ class AnimalController extends Controller
             // }
 
         }
+        $animals_to_grid = Checkerboard::set_checkerboard($animals_to_grid);
+
+        // function op main controller
+        $this->add_app_body_css('tabbed-grid');
+
         $tabs = $this->create_tabs();
 
         $animal_grid = $this->get_view('animal.tabbed-grid', [
