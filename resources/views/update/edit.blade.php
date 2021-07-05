@@ -17,6 +17,8 @@
 			{{ Form::open(['route'=>[$link_type . '.updates.store', $link_id], 'class'=>'form-horizontal']) }}
 			{{ Form::hidden('link_type', $link_type) }}
 		@endif
+
+		<input id='secret-animal-distribution-id-list' name='secret_animal_distribution_id_list' type='hidden'>
 	
 		<div class="col-md-6">
 			<h4>Details</h4>
@@ -29,9 +31,57 @@
 
             @include('form_select', ['field' => 'updatetype', 'label' => 'Soort update', 'id' => 'updatetype_id', 'types' => $updatetypes])
             @include('form_select', ['field' => 'employee', 'label' => 'Medewerker', 'id' => 'employee_id', 'types' => $employees])
+		<br>
+		@if ($has_animal_multiselects)
+		<div id='multiselect-wrapper' >
+			<h4>Update distribueren</h4>
+			<p>Je kan deze update ook verbinden aan dieren die ofwel via de eigenaar, pension of gastgezin gerelateerd zijn aan dit dier.</p>
+
+			@if ($animal_multiselects['owner']['qualifies_for_multiselect'])
+			<div class="form-group">
+				<label for='multiselect-owner' class="control-label col-md-4">Eigenaar <?=$animal_multiselects['owner']['model']->name?></label>
+				<div class="col-md-8">
+					<select id='multiselect-owner' class="animal-multiselects form-control" name="owners_distribution" multiple>
+						@foreach($animal_multiselects['owner']['animals'] as $animal) 
+							<option value='{{$animal->id}}'>{{$animal->name}}</option> 
+						@endforeach
+					</select>
+				</div>
+			</div>
+			@endif
+
+			@if ($animal_multiselects['guest']['qualifies_for_multiselect'])
+			<div class="form-group">
+				<label for='multiselect-guest' class="control-label col-md-4">Gastgezin <?=$animal_multiselects['guest']['model']->name?></label>
+				<div class="col-md-8">
+					<select id='multiselect-guest' class="form-control animal-multiselects" name="guests_distribution" multiple>
+							@foreach($animal_multiselects['guest']['animals'] as $animal) 
+								<option value='{{$animal->id}}'>{{$animal->name}}</option>
+							@endforeach
+					</select>
+				</div>
+			</div>
+			@endif
+
+			@if ($animal_multiselects['shelter']['qualifies_for_multiselect'])
+			<div class="form-group">
+				<label for='multiselect-shelter' class="control-label col-md-4">Pension <?=$animal_multiselects['shelter']['model']->name?></label>
+				<div class="col-md-8">
+					<select id='multiselect-shelter' class="form-control animal-multiselects" name="shelter_distribution" multiple>
+							@foreach($animal_multiselects['shelter']['animals'] as $animal) 
+								<option value='{{$animal->id}}'>{{$animal->name}}</option>
+							@endforeach
+					</select>
+				</div>
+			</div>
+			@endif
+
+		</div>
+	
+		@endif
 		</div>
 
-		<div class="col-md-6"></div>
+		<div class="col-md-6">
 			<div class="col-md-12">
 				<div class="form-group">
     				{{ Form::label('text', 'Tekst', array('class' => 'control-label col-md-2')) }}
@@ -51,4 +101,14 @@
 		{{ Form::close() }}	
 
 	</div>    	
+	<script>
+		document.getElementById('multiselect-wrapper').addEventListener('change', (e) =>{
+			const selected = Array.from(document.querySelectorAll('.animal-multiselects'))
+				.map(multiSelect =>{
+					return Array.from(multiSelect.selectedOptions)
+						.map(option => option.value)
+				});
+				document.getElementById('secret-animal-distribution-id-list').value = selected.flat().join(',')
+		});
+	</script>
 @stop
