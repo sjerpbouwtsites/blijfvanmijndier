@@ -63,6 +63,7 @@ class Guest extends Model
      * @return Bool 
      */
     public function today_disabled(){
+        if (!$this->disabled) return false;
         $today = new \DateTime();
         $disabled_from = $this->disabled_dates_mangled 
             ? new \DateTime($this->disabled_from_original)
