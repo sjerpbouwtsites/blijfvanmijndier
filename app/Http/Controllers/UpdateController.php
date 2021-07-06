@@ -340,15 +340,6 @@ class UpdateController extends Controller
                 $link_type = $link_type;
                 $link_id = $link_id;
                 break;
-<<<<<<< HEAD
-                case 'owners':
-                    $owner = Owner::find($link_id);
-                    $name_label = 'Owner';
-                    $name = $owner->name;
-                    $link_type = $link_type;
-                    $link_id = $link_id;
-                    break;                
-=======
             case 'owners':
                 $owner = Owner::find($link_id);
                 $name_label = 'Eigenaar';
@@ -356,7 +347,6 @@ class UpdateController extends Controller
                 $link_type = $link_type;
                 $link_id = $link_id;
                 break;
->>>>>>> parent of 28835cc... Revert "updates ook voor eigenaren"
         }
 
         $data = array(
