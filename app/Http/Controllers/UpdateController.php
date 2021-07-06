@@ -374,7 +374,7 @@ class UpdateController extends Controller
             $update = new Update;
         }
 
-        $update->link_id = $link_id;
+        $update->link_id = !empty($link_id) ? $link_id : $request->link_id;
         $update->link_type = $request->link_type;
         $update->start_date = $request->start_date;
         $update->employee_id = $request->employee_id;
@@ -383,7 +383,8 @@ class UpdateController extends Controller
 
         $update->save();
 
-        // distribute! 
+        if (empty($request->secret_animal_distribution_id_list)) return;
+        //distribute! 
         $distribution_animal_id_list = explode(',', $request->secret_animal_distribution_id_list);
         foreach ($distribution_animal_id_list as $animal_id) {
             $update = new Update;
