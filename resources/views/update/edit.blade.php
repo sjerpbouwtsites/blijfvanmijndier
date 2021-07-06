@@ -12,12 +12,13 @@
 
 		@if( $update->id > 0 )
 			{{ Form::model($update, ['method'=> 'PUT', 'route'=>[$link_type . '.updates.update', $link_id, $update->id], 'class'=>'form-horizontal']) }}
-			{{ Form::hidden('link_type', $link_type) }}
-		@else
+			@else
 			{{ Form::open(['route'=>[$link_type . '.updates.store', $link_id], 'class'=>'form-horizontal']) }}
+			@endif
 			{{ Form::hidden('link_type', $link_type) }}
-		@endif
+			{{ Form::hidden('link_id', $link_id) }}
 
+		
 		<input id='secret-animal-distribution-id-list' name='secret_animal_distribution_id_list' type='hidden'>
 	
 		<div class="col-md-6">
