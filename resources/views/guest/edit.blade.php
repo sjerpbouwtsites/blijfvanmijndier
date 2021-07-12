@@ -129,5 +129,12 @@
                                     toggleplease.classList.toggle('hidden')
                                 })
                              })
+                             document.getElementsByTagName('form')[0].addEventListener('submit', e=>{
+
+                                 if (document.querySelector('#disabled:checked') && (!document.querySelector('#disabled_from').value || !document.querySelector('#disabled_untill').value)) {
+                                    e.preventDefault()
+                                    alert('vul de van/tot data in')
+                                 }
+                             })
                          </script>
 @stop
