@@ -5,9 +5,14 @@
 		<h3>Overzicht gastgezin</h3>
 		<h5><a href="{{ URL::to('guests/' . $guest->id . '/edit') }}" class="btn btn-primary">Wijzigen</a> <a href="{{ URL::to('guests') }}" class="btn btn-default">Terug naar overzicht</a></h5> 
 
-        @if ($guest->today_disabled())
-            <div class="alert alert-info">Dit gastgezin is onbeschikbaar van <?=$guest->disabled_from_friendly()?> tot <?=$guest->disabled_untill_friendly()?></div>
-        @endif
+        @if ($guest->disabled)
+            @if ($guest->today_disabled())
+            <div class="alert alert-danger">Dit gastgezin is onbeschikbaar van <?=$guest->disabled_from_friendly()?> tot <?=$guest->disabled_untill_friendly()?></div>
+            @else
+            <div class="alert alert-info">Dit gastgezin is onbeschikbaar van <?=$guest->disabled_from_friendly()?> tot <?=$guest->disabled_untill_friendly()?></div>    
+            @endif
+        @endif        
+            
 
         <div class="col-md-6  form-horizontal">
             <h4>Details</h4>
