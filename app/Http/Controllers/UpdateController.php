@@ -274,7 +274,7 @@ class UpdateController extends Controller
             $multiselect_data['guest']['model'] = $prime_animals_guest;
             $multiselect_data['guest']['exists'] = true;
             $multiselect_data['guest']['animals'] = DB::select("
-            SELECT * FROM animals WHERE owner_id = $prime_animal->guest_id
+            SELECT * FROM animals WHERE guest_id = $prime_animal->guest_id AND id != $prime_animal->id
             ");
             if (count($multiselect_data['guest']['animals']) > 0) {
                 $multiselect_data['guest']['qualifies_for_multiselect'] = true;
@@ -289,7 +289,7 @@ class UpdateController extends Controller
             $multiselect_data['shelter']['model'] = $prime_animals_shelter;
             $multiselect_data['shelter']['exists'] = true;
             $multiselect_data['shelter']['animals'] = DB::select("
-            SELECT * FROM animals WHERE owner_id = $prime_animal->shelter_id AND id != $prime_animal->id
+            SELECT * FROM animals WHERE shelter_id = $prime_animal->shelter_id AND id != $prime_animal->id
             ");
             if (count($multiselect_data['shelter']['animals']) > 0) {
                 $multiselect_data['shelter']['qualifies_for_multiselect'] = true;
