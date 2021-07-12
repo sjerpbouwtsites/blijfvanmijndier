@@ -72,7 +72,7 @@ class Guest extends Model
             ? new \DateTime($this->disabled_untill_original)
             : new \DateTime($this->disabled_untill);
 
-        return $disabled_from->modify('-1 day') < $today && $disabled_untill->modify('+1 day') > $today;
+        return $disabled_from < $today && $disabled_untill->modify('+1 day') > $today;
     }
     
     public function disabled_from_friendly(){
