@@ -51,7 +51,7 @@
    list-style-type: none;
    text-align: center;
    font-size: 1.2em;
-   color: #ce1d1d;
+   color: #f15a40;
    display: flex;
    flex-direction: column;
    justify-content: flex-start;
@@ -69,13 +69,13 @@
  }
  /* hulpverlening update*/
  .animal-grid__icon-item--users {
-    background-color: #ce1d1d;
+    background-color: #f15a40;
     color: #f5f5f5; 
  }
  /* nog geen updates*/
  .animal-grid__icon-item--heart {
     background-color: #f5f5f5;
-    color: #ce1d1d; 
+    color: #f15a40; 
  }
  /* jaarevaluatie update nodig*/
  .animal-grid__icon-item--sign-out {

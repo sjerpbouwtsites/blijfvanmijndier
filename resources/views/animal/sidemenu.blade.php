@@ -45,10 +45,10 @@
 	
  /* single show animal */
  .has-update-icons {
-    border-left: 10px solid  #ce1d1d;
+    border-left: 10px solid  #f15a40;
  }
  .has-update-icons *{
-    color: #ce1d1d;
+    color: #f15a40;
  }
  .has-update-icons .animal-grid__icons {
     display: inline-flex;

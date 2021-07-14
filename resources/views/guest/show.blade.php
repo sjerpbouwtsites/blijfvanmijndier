@@ -7,9 +7,9 @@
 
         @if ($guest->disabled)
             @if ($guest->today_disabled())
-            <div class="alert alert-danger">Dit gastgezin is onbeschikbaar van <?=$guest->disabled_from_friendly()?> tot <?=$guest->disabled_untill_friendly()?></div>
+            <div class="alert alert-danger">Dit gastgezin is niet beschikbaar van <?=$guest->disabled_from_friendly()?> tot <?=$guest->disabled_untill_friendly()?></div>
             @else
-            <div class="alert alert-info">Dit gastgezin is onbeschikbaar van <?=$guest->disabled_from_friendly()?> tot <?=$guest->disabled_untill_friendly()?></div>    
+            <div class="alert alert-info">Dit gastgezin is niet beschikbaar van <?=$guest->disabled_from_friendly()?> tot <?=$guest->disabled_untill_friendly()?></div>    
             @endif
         @endif        
             

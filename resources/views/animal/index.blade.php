@@ -126,7 +126,7 @@
     list-style-type: none;
     text-align: center;
     font-size: 1.2em;
-    color: #ce1d1d;
+    color: #f15a40;
  
  }
  

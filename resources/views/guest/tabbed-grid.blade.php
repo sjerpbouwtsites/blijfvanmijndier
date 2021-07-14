@@ -119,13 +119,13 @@ margin-bottom: 0;
 }
 
 .animal-grid__icon-item.animal-grid__icon-item--hourglass.animal-grid__icon-item--heart-o {
-    background-color: #ce1d1d;
+    background-color: #56234c;
     color: #f5f5f5;
-    filter: hue-rotate(190deg); /* naar blauw */
+    
 
 }
 .animal-grid__icon-item.animal-grid__icon-item--clock-o.animal-grid__icon-item--heart-o {
-    background-color: #ce1d1d77 ;
+    background-color: #f15a40;
     color: #f2f2f2;
 }
 .animal-grid__icon-item.animal-grid__icon-item--chain-broken {
@@ -153,15 +153,17 @@ padding: 0;
 text-decoration: none;
 font-weight: bold;
 font-size: 1.5em;
-margin-right: .5rem;
 vertical-align: bottom;
 
+}
+.fake-anchor:first-child {  
+    margin-right: .5rem;
     }
     a:hover .fake-anchor {
         text-decoration: none;
     }
     .fake-anchor:hover {
-        color: #ce1d1d;
+        color: #f15a40;
         
     }
     .fake-anchor.enable-button-blink {

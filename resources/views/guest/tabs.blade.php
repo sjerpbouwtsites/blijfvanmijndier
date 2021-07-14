@@ -70,7 +70,7 @@
         /* color: #d1dbb; */
     }
     .bvmd-tabbladen__link--actief {
-        /* background-color: #ce1d1d44;
+        /* background-color: #d1d44;
         color: white; */
     }
     .bvmd-tabbladen__link,

@@ -45,26 +45,26 @@
    
         </div><div class="col-md-6">
             <h4>Beschikbaarheid</h4>
-            @include('form_checkbox', ['field' => 'disabled', 'label' => 'Onbeschikbaar'])
+            @include('form_checkbox', ['field' => 'disabled', 'label' => 'Niet beschikbaar'])
             
             @include('form_date', [
                 'value' => $guest['disabled_from'],
                 'field' => 'disabled_from',
-                'label' => 'Onbeschikbaar vanaf', 
+                'label' => 'Niet beschikbaar vanaf', 
                 'class' => $guest['disabled'] == '1' ? 'toggle-on-disabled' : 'toggle-on-disabled hidden'
                 ])
             @include('form_date', [
                 'value' => $guest['disabled_untill'], 
-                'label' => 'Onbeschikbaar t/m',
+                'label' => 'Niet beschikbaar t/m',
                 'field' => 'disabled_untill', 
                 'class' => $guest['disabled'] == '1' ? 'toggle-on-disabled' : 'toggle-on-disabled hidden'
                 ])
             <?php 
                 if ($guest['disabled']) {
                     if ($guest->today_disabled()) {
-                        echo "<p class='col-md-8 offset-4 toggle-on-disabled'>Dit gastgezin is momenteel onbeschikbaar.</p>";
+                        echo "<p class='col-md-8 offset-4 toggle-on-disabled'>Dit gastgezin is momenteel niet beschikbaar.</p>";
                     } else  {
-                        echo "<p class='col-md-8 col-md-offset-4 toggle-on-disabled'Let op. >Dit gastgezin staat op onbeschikbaar, maar vandaag valt niet binnen de gegeven data.</p>";
+                        echo "<p class='col-md-8 col-md-offset-4 toggle-on-disabled'Let op. >Dit gastgezin staat op niet beschikbaar, maar vandaag valt niet binnen de gegeven data.</p>";
                     }
                 }
             ?>
