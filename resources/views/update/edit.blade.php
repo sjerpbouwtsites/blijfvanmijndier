@@ -35,7 +35,7 @@
 		<br>
 		@if ($has_animal_multiselects)
 		<div id='multiselect-wrapper' >
-			<h4>Update distribueren</h4>
+			<h4>Update dupliceren</h4>
 			<p>Je kan deze update ook verbinden aan dieren die ofwel via de eigenaar, pension of gastgezin gerelateerd zijn aan dit dier.</p>
 
 			@if ($animal_multiselects['owner']['qualifies_for_multiselect'])
