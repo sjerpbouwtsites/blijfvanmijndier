@@ -12,6 +12,10 @@
             <div class="alert alert-info">Dit gastgezin is niet beschikbaar van <?=$guest->disabled_from_friendly()?> tot <?=$guest->disabled_untill_friendly()?></div>    
             @endif
         @endif        
+
+        @if (Session::has('message'))
+            <div class="alert alert-info">{{ Session::get('message') }}</div>
+        @endif        
             
 
         <div class="col-md-6  form-horizontal">
