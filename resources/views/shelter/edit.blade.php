@@ -17,8 +17,8 @@
 			{{ Form::open(array('url' => 'shelters', 'class'=>'form-horizontal')) }}
 		@endif
 		@include('generic.address-edit', [
-			'model' => $owner,
-			'model_name' => 'owner'
+			'model' => $shelter,
+			'model_name' => 'shelter'
 			])
 		<div class="col-md-6">
 			<h4>Details</h4>
