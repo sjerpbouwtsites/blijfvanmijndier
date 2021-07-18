@@ -391,6 +391,7 @@ class AnimalController extends Controller
             $checked_behaviours = $animal->tables()->where('tablegroup_id', Tablegroup::type_to_id('behaviour'))->pluck('tables.id')->toArray();
         }
 
+
         foreach ($animal_meta['behaviourList'] as $table) {
             if (in_array($table->id, $checked_behaviours)) {
                 foreach ($table->guests as $guest) {
@@ -399,7 +400,7 @@ class AnimalController extends Controller
             }
         }
 
-        foreach ($animal_meta['hometypeList'] as $table) {
+        foreach ($animal_meta['home_typeList'] as $table) {
             if (in_array($table->id, $checked_hometypes)) {
                 foreach ($table->guests as $guest) {
                     $tmpGuestList[] = $guest;

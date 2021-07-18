@@ -21,7 +21,7 @@
 		    </div>
 			<h4 class="list_h4">Wonen</h4>
 		    <div class="form-group">
-		    	@foreach ($hometypeList as $hometype)
+		    	@foreach ($home_typeList as $hometype)
 		    	<div class="checkbox">
 					{{ Form::checkbox('hometypeList[]', $hometype->id, in_array($hometype->id, $checked_hometypes) ? true : false) }} {{ $hometype->description }}
 					</div>
