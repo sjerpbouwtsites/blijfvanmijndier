@@ -1,4 +1,4 @@
-<div class="animal-grid">
+<div class="animal-grid <?=!empty($animal_grid_modifier)?$animal_grid_modifier:''?>">
     @foreach ($animals as $animal)
     <a class='animal-grid__block <?=isset($animal->checkerboard_css) ? $animal->checkerboard_css : ''?>' href="{{ URL::to('animals/' . $animal->id) }}">
         

@@ -10,7 +10,7 @@ $mendoo_donkerrood: darken($mendoo_rood, 5%);
 $mendoo_donkerzand: darken($mendoo_zand, 5%);
 $mendoo_donkeroranje:darken($mendoo_oranje, 5%);
 $mendoo_donkercyaan:darken($mendoo_cyaan, 5%);
-$mendoo_donkerblauw:darken($mendoo_donkerblauww, 5%);
+$mendoo_donkerblauw:darken($mendoo_blauw, 5%);
 
 $mendoo_lichtpaars: lighten($mendoo_paars, 5%);
 $mendoo_lichtrood: lighten($mendoo_rood, 5%);
@@ -18,6 +18,13 @@ $mendoo_lichtzand: lighten($mendoo_zand, 5%);
 $mendoo_lichtoranje:lighten($mendoo_oranje, 5%);
 $mendoo_lichtcyaan:lighten($mendoo_cyaan, 5%);
 $mendoo_lichtblauw:lighten($mendoo_donkerblauw, 5%);
+
+$mendoo_uiterstdonkerpaars: darken($mendoo_paars, 15%);
+$mendoo_uiterstdonkerrood: darken($mendoo_rood, 15%);
+$mendoo_uiterstdonkerzand: darken($mendoo_zand, 15%);
+$mendoo_uiterstdonkeroranje:darken($mendoo_oranje, 15%);
+$mendoo_uiterstdonkercyaan:darken($mendoo_cyaan, 15%);
+$mendoo_uiterstdonkerblauw:darken($mendoo_blauw, 15%);
 
 
 // path_classes voor svgs

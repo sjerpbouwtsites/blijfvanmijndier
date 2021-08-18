@@ -124,6 +124,7 @@ class AnimalController extends Controller
         $tabs = $this->create_tabs();
 
         $animal_grid = $this->get_view('animal.tabbed-grid', [
+            'animal_grid_modifier' => 'animal-index',
             'animals' => $animals_to_grid
         ]);
 
