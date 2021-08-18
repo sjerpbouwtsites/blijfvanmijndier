@@ -26,7 +26,7 @@ class Vet extends Model
     public function address(): Collection
     {
         $a = $this->hasOne('App\Address', 'uuid', 'address_id')->get();
-        Address::validate_address_collection($a, 'owner');
+        Address::validate_address_collection($a, 'vet');
         return $a;
     }
 }

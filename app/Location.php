@@ -27,7 +27,7 @@ class Location extends Model
     public function address(): Collection
     {
         $a = $this->hasOne('App\Address', 'uuid', 'address_id')->get();
-        Address::validate_address_collection($a, 'owner');
+        Address::validate_address_collection($a, 'location');
         return $a;
     }
 }
