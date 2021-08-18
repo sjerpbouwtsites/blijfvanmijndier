@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use App\Document;
 use App\Animal;
+use App\Tablegroup;
 
 class DocumentController extends Controller
 {
@@ -115,7 +116,7 @@ class DocumentController extends Controller
     {
         $menuItems = $this->GetMenuItems('animals');
         $animal = Animal::find($document->link_id);
-        $doctypes = $this->GetTableList($this->doctypeId);
+        $doctypes = $this->GetTableList(Tablegroup::type_to_id('doctype'));
 
         $doctypes->prepend('Selecteer documentsoort', '0');
 
