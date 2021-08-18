@@ -55,7 +55,9 @@ class Guest extends Model
      */
     public function address()
     {
-        return $this->hasOne('App\Address', 'uuid', 'address_id')->get();
+        $a = $this->hasOne('App\Address', 'uuid', 'address_id')->get();
+        Address::validate_address_collection($a, 'location');
+        return $a;
     }
 
     /**
