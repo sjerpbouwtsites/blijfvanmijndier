@@ -12,11 +12,15 @@
 </head>
 <body id='app-body' class='<?=isset($app_body_css) ? $app_body_css : ''?>'>
 	<div class="header">
-		<div class="container">
-			<div class="col-md-2">
-				<h1><a href="{{ URL::to('/') }}"><img src="{{ URL::asset('/img/bvmd-trans.png') }}" width="150" height="75"></a></h1>
+		<div class="container flexed-header-container">
+			<div class="header-logo-container">
+				<h1 class='header-logo-titel'>
+					<a href="{{ URL::to('/') }}">
+						<img class='header-logo' src="{{ URL::asset('/img/mendoo-logo.svg') }}" width="200" height="57">
+					</a>
+				</h1>
 			</div>
-			<div class="col-md-10">
+			<div class="header-menu-container">
 				@if(isset($menuItems))
 					<ul class="nav navbar-nav">
 						@foreach ($menuItems as $menuItem)

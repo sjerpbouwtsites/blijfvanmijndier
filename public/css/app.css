@@ -1902,4 +1902,45 @@ input:checked ~ .map__filter-fake-box--radio .svg-icon-checked path + path {
   padding-right: .75em;
 }
 
+.flexed-header-container {
+  display: flex;
+  flex-direction: row;
+  -ms-grid-column-align: space-between;
+  justify-items: space-between;
+  padding: 15px 0;
+}
+
+.header-logo-container {
+  margin-right: 10px;
+}
+
+.header-logo-titel {
+  margin: 0;
+}
+
+.header-logo-titel a,
+.header-logo-titel img {
+  display: block;
+}
+
+.header-logo {
+  width: 140px;
+  height: auto;
+}
+
+.header-menu-container {
+  display: flex;
+  align-items: center;
+}
+
+.header-menu-container .nav {
+  float: none;
+  display: flex;
+  align-items: right;
+}
+
+.header-menu-container .nav > li {
+  float: none;
+}
+
 /*# sourceMappingURL=app.css.map */
