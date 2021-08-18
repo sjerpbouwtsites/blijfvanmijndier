@@ -2,7 +2,7 @@
 
 @section('content')
 	<div class="col-md-9">
-		<h3>Wijzigen tabel</h3>
+		<h3 class='titel-letter'>Wijzigen tabel</h3>
 
 		{{ Html::ul($errors->all()) }}
 
@@ -10,7 +10,7 @@
 		{{ Form::hidden('id') }}
 		
 		<div class="col-md-6">
-			<h4>Details</h4>
+			<h4 class='titel-letter'>Details</h4>
            
             @include('form_select', ['field' => 'tablegroup_id', 'label' => 'Groep', 'id' => 'tablegroup_id', 'types' => $types])
             @include('form_text', ['field' => 'description', 'label' => 'Omschrijving'])

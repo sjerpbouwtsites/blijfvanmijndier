@@ -1,37 +1,86 @@
+$mendoo_paars: #5e284a;
+$mendoo_rood: #e94f35;
+$mendoo_zand: #e9e3da;
+$mendoo_oranje: #f7a600;
+$mendoo_cyaan: #88ccc9;
+$mendoo_blauw: #363d47;
 
-// Body
-$body-bg: #f5f8fa;
+$mendoo_donkerpaars: darken($mendoo_paars, 5%);
+$mendoo_donkerrood: darken($mendoo_rood, 5%);
+$mendoo_donkerzand: darken($mendoo_zand, 5%);
+$mendoo_donkeroranje:darken($mendoo_oranje, 5%);
+$mendoo_donkercyaan:darken($mendoo_cyaan, 5%);
+$mendoo_donkerblauw:darken($mendoo_blauw, 5%);
 
-// Borders
-$laravel-border-color: darken($body-bg, 10%);
-$list-group-border: $laravel-border-color;
-$navbar-default-border: $laravel-border-color;
-$panel-default-border: $laravel-border-color;
-$panel-inner-border: $laravel-border-color;
+$mendoo_lichtpaars: lighten($mendoo_paars, 5%);
+$mendoo_lichtrood: lighten($mendoo_rood, 5%);
+$mendoo_lichtzand: lighten($mendoo_zand, 5%);
+$mendoo_lichtoranje:lighten($mendoo_oranje, 5%);
+$mendoo_lichtcyaan:lighten($mendoo_cyaan, 5%);
+$mendoo_lichtblauw:lighten($mendoo_donkerblauw, 5%);
 
-// Brands
-$brand-primary: #3097D1;
-$brand-info: #8eb4cb;
-$brand-success: #2ab27b;
-$brand-warning: #cbb956;
-$brand-danger: #bf5329;
+$mendoo_uiterstdonkerpaars: darken($mendoo_paars, 15%);
+$mendoo_uiterstdonkerrood: darken($mendoo_rood, 15%);
+$mendoo_uiterstdonkerzand: darken($mendoo_zand, 15%);
+$mendoo_uiterstdonkeroranje:darken($mendoo_oranje, 15%);
+$mendoo_uiterstdonkercyaan:darken($mendoo_cyaan, 15%);
+$mendoo_uiterstdonkerblauw:darken($mendoo_blauw, 15%);
 
-// Typography
-$font-family-sans-serif: "Raleway", sans-serif;
-$font-size-base: 14px;
-$line-height-base: 1.6;
-$text-color: #636b6f;
 
-// Navbar
-$navbar-default-bg: #fff;
+// path_classes voor svgs
+.mendoo_paars_path {
+fill: $mendoo_paars !important;
+}
+.mendoo_rood_path {
+fill: $mendoo_rood !important;
+}
+.mendoo_zand_path {
+fill: $mendoo_zand !important;
+}
+.mendoo_oranje_path {
+fill: $mendoo_oranje !important;
+}
+.mendoo_cyaan_path {
+fill: $mendoo_cyaan !important;
+}
+.mendoo_blauw_path {
+fill: $mendoo_blauw !important;
+}
 
-// Buttons
-$btn-default-color: $text-color;
+.mendoo_donkerpaars_path {
+fill: $mendoo_donkerpaars !important;
+}
+.mendoo_donkerrood_path {
+fill: $mendoo_donkerrood !important;
+}
+.mendoo_donkerzand_path {
+fill: $mendoo_donkerzand !important;
+}
+.mendoo_donkeroranje_path {
+fill: $mendoo_donkeroranje !important;
+}
+.mendoo_donkercyaan_path {
+fill: $mendoo_donkercyaan !important;
+}
+.mendoo_donkerblauw_path {
+fill: $mendoo_donkerblauw !important;
+}
 
-// Inputs
-$input-border: lighten($text-color, 40%);
-$input-border-focus: lighten($brand-primary, 25%);
-$input-color-placeholder: lighten($text-color, 30%);
-
-// Panels
-$panel-default-heading-bg: #fff;
+.mendoo_lichtpaars_path {
+fill: $mendoo_lichtpaars !important;
+}
+.mendoo_lichtrood_path {
+fill: $mendoo_lichtrood !important;
+}
+.mendoo_lichtzand_path {
+fill: $mendoo_lichtzand !important;
+}
+.mendoo_lichtoranje_path {
+fill: $mendoo_lichtoranje !important;
+}
+.mendoo_lichtcyaan_path {
+fill: $mendoo_lichtcyaan !important;
+}
+.mendoo_lichtblauw_path {
+fill: $mendoo_lichtblauw !important;
+}

@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,700;0,900;1,400;1,500&display=swap");
+
 @import "map/leaflet";
 @import "map/popup";
 @import "map/buttons";
@@ -14,9 +14,12 @@
   display: flex;
   flex-direction: row;
 }
-[class^="map__"] {
-  font-family: "Montserrat";
-}
+
+
+
+
+
+
 
 // #leaflet-map
 .map__inner {

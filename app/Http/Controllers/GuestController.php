@@ -98,6 +98,7 @@ class GuestController extends AbstractController
         $guests_to_grid = Checkerboard::set_checkerboard($guests_to_grid);
 
         $guest_grid = $this->get_view('guest.tabbed-grid', [
+            'animal_grid_modifier' => 'guest-index',
             'guests' => $guests_to_grid
         ]);
 

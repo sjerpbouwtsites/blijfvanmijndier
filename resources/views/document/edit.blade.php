@@ -3,9 +3,9 @@
 @section('content')
 	<div class="col-md-12">
 		@if( $document->id > 0 )
-			<h3>Wijzigen document van {{ $animal->name }}</h3>
+			<h3 class='titel-letter'>Wijzigen document van {{ $animal->name }}</h3>
 		@else
-			<h3>Nieuw document van {{ $animal->name }}</h3>
+			<h3 class='titel-letter'>Nieuw document van {{ $animal->name }}</h3>
 		@endif
 		
 		{{ Html::ul($errors->all()) }}
@@ -17,7 +17,7 @@
 		@endif
 	
 		<div class="col-md-6">
-			<h4>Details</h4>
+			<h4 class='titel-letter'>Details</h4>
 
 			@if( $document->id > 0 )
 	   	        @include('form_date', ['field' => 'date', 'label' => 'Datum', 'value' => Input::old('date')])

@@ -3,9 +3,9 @@
 @section('content')
 	<div class="col-md-12">
 		@if( $vet->id > 0 )
-			<h3>Wijzigen dierenarts</h3>
+			<h3 class='titel-letter'>Wijzigen dierenarts</h3>
 		@else
-			<h3>Nieuwe dierenarts</h3>
+			<h3 class='titel-letter'>Nieuwe dierenarts</h3>
 		@endif
 		@include('session_messages')
 		{{ Html::ul($errors->all()) }}
@@ -21,7 +21,7 @@
 			'model_name' => 'vet'
 			])
 		<div class="col-md-6">
-			<h4>Details</h4>
+			<h4 class='titel-letter'>Details</h4>
 
             @include('form_text', ['field' => 'name', 'label' => 'Naam'])
             @include('form_text', ['field' => 'phone_number', 'label' => 'Telefoonnummer'])

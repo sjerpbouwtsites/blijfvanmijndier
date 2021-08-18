@@ -290,7 +290,7 @@ class Animal extends Model
 				$prompts[] = "Verblijf eerste contact.";
 			} else if(!$uc['pension_guest_update_on_time']) {
 				$icons[] = Animal::make_icon_row(['repeat',"home"], 'GASTGEZIN/PENSION UPDATE. Er was eerder contact met het verblijf, maar dat is langer dan twee maanden geleden.');
-				$prompts[] = "Verblijf vervolg contact.";		
+				$prompts[] = "verblijf gastgezin/pension vervolg contact.";		
 			}
 		endif; // needs pension guest update
 

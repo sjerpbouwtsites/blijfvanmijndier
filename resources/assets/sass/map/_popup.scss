@@ -43,7 +43,7 @@ styling for both the leaflet popup and the own dialog
 .leaflet-container a.leaflet-popup-close-button {
   background-attachment: scroll;
   background-clip: border-box;
-  background-color: rgb(81, 81, 211);
+  background-color: $mendoo_paars;
   background-image: none;
   background-origin: padding-box;
   background-position: 0% 0%;
@@ -71,7 +71,7 @@ styling for both the leaflet popup and the own dialog
   box-sizing: border-box;
 
   cursor: pointer;
-  font-family: Tahoma, Verdana, sans-serif;
+  font-family: inherit;
   font-feature-settings: normal;
   font-kerning: auto;
   font-language-override: normal;

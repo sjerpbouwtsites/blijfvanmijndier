@@ -2,9 +2,9 @@
 
 @section('content')
 	<div class="col-md-9">
-		<h3>Nieuwe tabelregel</h3>
+		<h3 class='titel-letter'>Nieuwe tabelregel</h3>
 		<hr>
-		<h4>Details</h4>
+		<h4 class='titel-letter'>Details</h4>
 		
 		{{ Html::ul($errors->all()) }}
 

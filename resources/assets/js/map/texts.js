@@ -16,24 +16,24 @@ const texts = {
     subtitle: "Maak een selectie naar wil",
     title: "Filter markers op de kaart",
     body: `
-    <h4 class="bvmd-popup__header-title bvmd-popup__header-title--small">
+    <h4 class="bvmd-popup__header-title titel-letter bvmd-popup__header-title--small">
       <span class="bvmd-popup__header-title-inner bvmd-popup__header-title-inner--small">Type filter: grofste filterwerk.</span>
     </h4>
     <p class='bvmd-popup__paragraph'>Met de type filter kan je verschillende soorte locaties / personen in zijn geheel verstoppen of tonen.</p>
 
-    <h4 class="bvmd-popup__header-title bvmd-popup__header-title--small">
+    <h4 class="bvmd-popup__header-title titel-letter  bvmd-popup__header-title--small">
       <span class="bvmd-popup__header-title-inner bvmd-popup__header-title-inner--small">De filters werken samen.</span>
     </h4>
     <p class='bvmd-popup__paragraph'>
     Indien je alleen w&egrave;l de pensions wilt zien met m&eacute;&eacute;r dan 1 dier, combineer je de 'aantal opgevangen dieren' en 'type' filter. Klikvolgorde maakt niet uit.</p>
 
-    <h4 class="bvmd-popup__header-title bvmd-popup__header-title--small">
+    <h4 class="bvmd-popup__header-title titel-letter bvmd-popup__header-title--small">
       <span class="bvmd-popup__header-title-inner bvmd-popup__header-title-inner--small">De filters be&iuml;nvloeden elkaar.</span>
     </h4>
     <p class='bvmd-popup__paragraph'>    
     Een dierenarts vangt nooit een dier op. Als je de dierenartsen aan zet, springt het 'aantal dieren opgevangen' filter naar 'negeer'. Omgekeerd, als je dierenartsen aan heb staan, maar klikt op 'een of meer dieren' bij 'aantal dieren opgevangen', dan springt dierenartsen als optie uit.</p>
     
-    <h4 class="bvmd-popup__header-title bvmd-popup__header-title--small">
+    <h4 class="bvmd-popup__header-title titel-letter bvmd-popup__header-title--small">
       <span class="bvmd-popup__header-title-inner bvmd-popup__header-title-inner--small">Multifilters voor diervoorkeur, gedrag, woonstijl</span>
     </h4>
     <p class='bvmd-popup__paragraph'>    

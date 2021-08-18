@@ -2,7 +2,7 @@
 
 @section('content')
 	<div class="col-md-9">
-		<h3>Overzicht gastgezin</h3>
+		<h3 class='titel-letter'>Overzicht gastgezin</h3>
 		<h5><a href="{{ URL::to('guests/' . $guest->id . '/edit') }}" class="btn btn-primary">Wijzigen</a> <a href="{{ URL::to('guests') }}" class="btn btn-default">Terug naar overzicht</a></h5> 
 
         @if ($guest->disabled)
@@ -19,7 +19,7 @@
             
 
         <div class="col-md-6  form-horizontal">
-            <h4>Details</h4>
+            <h4 class='titel-letter'>Details</h4>
 
             @include('show_row', ['label' => 'Naam', 'value' => $guest->name])
             @include('show_row', ['label' => 'Status', 'value' => $guest->gueststatusDesc])

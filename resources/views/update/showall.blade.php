@@ -2,7 +2,7 @@
 
 @section('content')
 	<div class="col-md-12">
-		<h3>Overzicht updates</h3>
+		<h3 class='titel-letter'>Overzicht updates</h3>
 
 		<a class="{{ $selection }} btn btn-default" href='{{ URL::to('updates/selection') }}'>Toon laatste 2 weken</a> <a class="{{ $showall }} btn btn-default" href='{{ URL::to('updates/showall') }}'>Toon alles</a>
 

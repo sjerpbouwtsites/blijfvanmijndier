@@ -1,4 +1,4 @@
-<div class="animal-grid">
+<div class="animal-grid <?=!empty($animal_grid_modifier)?$animal_grid_modifier:''?>">
     @foreach ($animals as $animal)
     <a class='animal-grid__block <?=isset($animal->checkerboard_css) ? $animal->checkerboard_css : ''?>' href="{{ URL::to('animals/' . $animal->id) }}">
         
@@ -11,7 +11,7 @@
 
         </div>
         <div class="animal-grid__text">
-            <span class="animal-grid__animal-name">{{ $animal->name }}</span>
+            <span class="animal-grid__animal-name titel-letter">{{ $animal->name }}</span>
             <span class="animal-grid__animal-description">{{ $animal->breedDesc }}</span>
         </div>
         <div class='animal-grid__block-footer'>

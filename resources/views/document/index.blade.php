@@ -2,7 +2,7 @@
 
 @section('content')
 	<div class="col-md-12">
-		<h3>Overzicht documenten van {{ $animal->name }}</h3>
+		<h3 class='titel-letter'>Overzicht documenten van {{ $animal->name }}</h3>
 	   	<h5><a href="{{ URL::to('animals/' . $animal->id . '/documents/create') }}" class="btn btn-primary">Toevoegen</a> <a href='{{ URL::to('animals/' . $animal->id ) }}' class="btn btn-default">Terug naar {{ $animal->name }}</a></h5>
 
 		@if (Session::has('message'))

@@ -1,5 +1,5 @@
 <div class="col-md-6">
-    <h4>Adres</h4>
+    <h4 class='titel-letter'>Adres</h4>
 
     <input type='hidden' name='address_id' value="<?=$model['address_id']?>" >
     <div class="form-group">

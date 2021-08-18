@@ -1,0 +1,42 @@
+ /* single show animal */
+ .has-update-icons {
+    border-left: 10px solid  $mendoo_rood;
+    padding-top: 0;
+    padding-bottom: 0;
+    padding-right: 10px;
+    height: 42px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+ }
+ .has-update-icons *{
+    color: $mendoo_rood;
+ }
+ .has-update-icons .animal-grid__icons {
+    display: inline-flex;
+    margin: 0;
+    margin-left: .5em;
+    padding: 0;
+    list-style-type: none;
+    height: 100%;
+   margin-right: 0;
+   flex-direction:row;
+   width: auto;
+ 
+ }
+ .has-update-icons .animal-grid__icon-item {
+    background: none !important;
+
+ }
+ .has-update-icons .animal-grid__icon-item + .animal-grid__icon-item{
+ //margin-left: .5em;
+ }
+ .has-update-icons .animal-grid__icon-item .fa{
+   display: inline-block;
+   min-width: 18px;
+   text-align: center;
+   font-size: .75em;
+   padding: .33em;    
+   color: $mendoo_rood;
+ }

@@ -21,10 +21,8 @@
 			<li class="list-group-item {{$updates_checked['has_icons'] ? 'has-update-icons' : ''}}">
 				<a href="{{ URL::to('animals/' . $animal->id . '/updates') }}">
 					<i class="fa fa-pencil fa-fw"></i>&nbsp; Updates
-					
-					@include('generic.updates-icons', ['icon_data' => $updates_checked])
-
 				</a>
+				@include('generic.updates-icons', ['icon_data' => $updates_checked])
 		    </li>
 
 		    <li class="list-group-item"><a href="{{ URL::to('animals/' . $animal->id . '/histories') }}"><i class="fa fa-history fa-fw"></i>&nbsp; Historie</a></li>
@@ -41,26 +39,3 @@
 		@include('update.lastupdates', ['updates' => $updates])
 
 	</div>
-<style>
-	
- /* single show animal */
- .has-update-icons {
-    border-left: 10px solid  #f15a40;
- }
- .has-update-icons *{
-    color: #f15a40;
- }
- .has-update-icons .animal-grid__icons {
-    display: inline-flex;
-    margin: 0;
-    margin-left: .5em;
-    padding: 0;
-    list-style-type: none;
- 
- }
- .has-update-icons .animal-grid__icon-item {
- }
- .has-update-icons .animal-grid__icon-item + .animal-grid__icon-item{
- margin-left: .5em;
- }
-</style>
