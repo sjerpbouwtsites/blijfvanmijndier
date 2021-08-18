@@ -162,8 +162,8 @@
  }
  /* alle updates vereist zijn op tijd */
  .animal-grid__icon-item--all-good {
-   background-color: gold;
-   color: #f5f5f5;
+   background-color: $mendoo_zand;
+   color: $mendoo_cyaan;
  }
  .animal-grid__icon-item--all-good > .fa {
     font-size: 2.5em;

@@ -1685,8 +1685,8 @@ input:checked ~ .map__filter-fake-box--radio .svg-icon-checked path + path {
 /* jaarevaluatie update nodig*/
 /* alle updates vereist zijn op tijd */
 .animal-grid__icon-item--all-good {
-  background-color: gold;
-  color: #f5f5f5;
+  background-color: #e9e3da;
+  color: #88ccc9;
 }
 
 .animal-grid__icon-item--all-good > .fa {
