@@ -46,7 +46,7 @@ function buttonBase(buttonData, modifiers, action) {
       data-type='${buttonData._type}'
       class='${buttonCss}'>
       ${buttonData.name}
-      ${svgs.marker("rgb(81, 81, 211)")}
+      ${svgs.marker("", $mendoo_donkerblauw)}
       </a>
     </span>`;
 }
@@ -91,7 +91,7 @@ function textBtn(slug, modifier = "") {
   return `<a 
     class="map__link-style-button map__link-style-button--text-btn ${modifier}" 
     data-action='open-explanation' data-text-id='${slug.toLowerCase()}' href="#">${svgs.info(
-    "#5151d3"
+    "", 'mendoo_paars_path'
   )}</a>`;
 }
 

@@ -1,5 +1,77 @@
 @charset "UTF-8";
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,700;0,900;1,400;1,500&display=swap");
+.mendoo_paars_path {
+  fill: #5e284a !important;
+}
+
+.mendoo_rood_path {
+  fill: #e94f35 !important;
+}
+
+.mendoo_zand_path {
+  fill: #e9e3da !important;
+}
+
+.mendoo_oranje_path {
+  fill: #f7a600 !important;
+}
+
+.mendoo_cyaan_path {
+  fill: #88ccc9 !important;
+}
+
+.mendoo_blauw_path {
+  fill: #363d47 !important;
+}
+
+.mendoo_donkerpaars_path {
+  fill: #4c203c !important;
+}
+
+.mendoo_donkerrood_path {
+  fill: #e63b1e !important;
+}
+
+.mendoo_donkerzand_path {
+  fill: #dfd7ca !important;
+}
+
+.mendoo_donkeroranje_path {
+  fill: #de9500 !important;
+}
+
+.mendoo_donkercyaan_path {
+  fill: #76c4c1 !important;
+}
+
+.mendoo_donkerblauw_path {
+  fill: #2b3139 !important;
+}
+
+.mendoo_lichtpaars_path {
+  fill: #703058 !important;
+}
+
+.mendoo_lichtrood_path {
+  fill: #ec634c !important;
+}
+
+.mendoo_lichtzand_path {
+  fill: #f3efea !important;
+}
+
+.mendoo_lichtoranje_path {
+  fill: #ffb112 !important;
+}
+
+.mendoo_lichtcyaan_path {
+  fill: #9ad4d1 !important;
+}
+
+.mendoo_lichtblauw_path {
+  fill: #363d47 !important;
+}
+
 /**
 aanpassingen: 
 .leaflet-marker-icon -> .lmi
@@ -752,7 +824,7 @@ styling for both the leaflet popup and the own dialog
 .leaflet-container a.leaflet-popup-close-button {
   background-attachment: scroll;
   background-clip: border-box;
-  background-color: #5151d3;
+  background-color: #5e284a;
   background-image: none;
   background-origin: padding-box;
   background-position: 0% 0%;
@@ -1010,7 +1082,7 @@ styling for both the leaflet popup and the own dialog
 }
 
 .map__link-style-button:focus {
-  outline: 2px solid #5151d3;
+  outline: 2px solid #5e284a;
 }
 
 .map__link-style-button::after {
@@ -1027,11 +1099,11 @@ styling for both the leaflet popup and the own dialog
 }
 
 .map__link-style-button--real-anchor {
-  color: #5151d3;
+  color: #5e284a;
 }
 
 .map__link-style-button--real-anchor:hover {
-  color: #51a8d3;
+  color: #363d47;
   cursor: pointer;
 }
 
@@ -1040,7 +1112,7 @@ styling for both the leaflet popup and the own dialog
 }
 
 .map__link-style-button--real-anchor.map__link-style-button--tel {
-  color: #333;
+  color: #2b3139;
 }
 
 .map__link-style-button--real-anchor.map__link-style-button--tel::after {
@@ -1048,7 +1120,7 @@ styling for both the leaflet popup and the own dialog
 }
 
 .map__link-style-button--real-anchor.map__link-style-button--mail {
-  color: #333;
+  color: #2b3139;
 }
 
 .map__link-style-button--real-anchor.map__link-style-button--mail::after {
@@ -1371,7 +1443,7 @@ styling for both the leaflet popup and the own dialog
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: #383893;
+  background-color: #5e284a;
   transition: 0.2s ease-in-out 0.1s;
   box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
   margin: 0 0.33em;
@@ -1383,7 +1455,7 @@ styling for both the leaflet popup and the own dialog
 }
 
 .map__filter-label:hover {
-  background-color: #4848bd;
+  background-color: #703058;
   cursor: pointer;
 }
 

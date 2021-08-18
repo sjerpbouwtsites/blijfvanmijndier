@@ -691,8 +691,8 @@ function wrappedInput(filterConfig) {
     checked 
     >
     <span class='map__filter-fake-box map__filter-fake-box--${filterConfig.type}'>
-      ${svgs.checked("#ededfa")}
-      ${svgs.removed("#ededfa")}    
+      ${svgs.checked("", 'mendoo_lichtzand_path')}
+      ${svgs.removed("", 'mendoo_lichtzand_path')}    
     </span>
     <span class='map__filter-title'>${filterConfig.label}</span>
   </label>`;
@@ -718,8 +718,8 @@ function wrappedRadioInput(filterConfig) {
         ${index === 0 ? `checked='checked'` : ""}
       >
       <span class='map__filter-fake-box map__filter-fake-box--${filterConfig.type}'>
-        ${svgs.checked("#5151d3")}
-        ${svgs.removed("#5151d3")}
+        ${svgs.checked("", 'mendoo_lichtzand_path')}
+        ${svgs.removed("", 'mendoo_lichtzand_path')}
       </span>
       <span class='map__filter-title'>${radioDatum.label}</span>
     </label>  
