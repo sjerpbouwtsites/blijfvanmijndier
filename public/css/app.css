@@ -1693,6 +1693,11 @@ input:checked ~ .map__filter-fake-box--radio .svg-icon-checked path + path {
   font-size: 2.5em;
 }
 
+/* zijbalk */
+.list-group.action-menu .animal-grid__icon-item--all-good {
+  display: none;
+}
+
 .animal-grid__icon-item:hover {
   cursor: help;
 }
