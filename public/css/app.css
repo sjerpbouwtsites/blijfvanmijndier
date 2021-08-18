@@ -1762,6 +1762,143 @@ input:checked ~ .map__filter-fake-box--radio .svg-icon-checked path + path {
   padding: 0;
 }
 
+/*animal grid voor guest aangepast*/
+.animal-grid--guest-index .animal-grid__block-footer {
+  display: flex;
+  flex-direction: row;
+  padding: 0;
+}
+
+.animal-grid--guest-index .animal-grid__block-footer-left {
+  width: 60%;
+  padding: .5em;
+  padding-top: 0;
+}
+
+.animal-grid--guest-index .animal-grid__prompt-item {
+  margin-bottom: .33em;
+}
+
+.animal-grid--guest-index .animal-grid__prompt-item:last-child {
+  margin-bottom: 0;
+}
+
+.animal-grid--guest-index .animal-grid__block {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+}
+
+.animal-grid--guest-index .animal-grid__block-footer-right {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.animal-grid--guest-index .animal-grid__block-footer-right--no-content {
+  visibility: hidden;
+}
+
+.animal-grid--guest-index .animal-grid__block-footer-right .animal-grid__icons {
+  width: initial;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+}
+
+.animal-grid--guest-index .animal-grid__block-footer .animal-grid__icon-item {
+  flex-basis: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+  min-width: 100%;
+}
+
+.animal-grid--guest-index .animal-grid__icon-item {
+  background: transparent;
+}
+
+.animal-grid--guest-index .animal-grid__icon-item.animal-grid__icon-item--clock-o.animal-grid__icon-item--heart-o .fa {
+  color: #f7a600;
+}
+
+.animal-grid--guest-index .animal-grid__icon-item.animal-grid__icon-item--chain-broken {
+  color: #e94f35;
+}
+
+.animal-grid--guest-index .animal-grid__contact-data.animal-grid__prompts {
+  list-style-type: none;
+  margin-bottom: 0;
+  margin-top: 1.25em;
+}
+
+.animal-grid--guest-index .animal-grid__contact-data-item--spaced {
+  margin: .50em 0 .50em -.25em;
+  padding: .25em;
+}
+
+.animal-grid--guest-index .fake-anchor-part {
+  margin-right: 1em;
+}
+
+.animal-grid--guest-index .fake-anchor {
+  background-color: transparent;
+  border: 0;
+  padding: 0;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 1.5em;
+  vertical-align: bottom;
+}
+
+.animal-grid--guest-index .fake-anchor:first-child {
+  margin-right: .5rem;
+}
+
+.animal-grid--guest-index a:hover .fake-anchor {
+  text-decoration: none;
+}
+
+.animal-grid--guest-index .fake-anchor:hover {
+  color: #e94f35;
+}
+
+.animal-grid--guest-index .fake-anchor.enable-button-blink {
+  transition: 0.2s ease-in-out 0.2s;
+  filter: saturate(100%) brightness(100%);
+}
+
+.animal-grid--guest-index .fake-anchor.button-blink {
+  filter: saturate(200%) brightness(200%);
+}
+
+.animal-grid--guest-index .fake-anchor.fake-tel {
+  position: relative;
+  top: 1px;
+}
+
+.animal-grid--guest-index .fake-anchor.clipboard {
+  position: relative;
+}
+
+.animal-grid--guest-index .fake-anchor.clipboard .fa-save {
+  position: absolute;
+  left: 8px;
+  top: -3px;
+  font-size: .75em;
+  color: #8a7575;
+}
+
+.animal-grid--guest-index .fake-anchor.clipboard .fa-save + .fa {
+  font-size: .75em;
+}
+
 /* single show animal */
 .has-update-icons {
   border-left: 10px solid #e94f35;
