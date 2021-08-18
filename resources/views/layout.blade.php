@@ -2,6 +2,10 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&family=Montserrat:wght@400;500&display=swap" rel="stylesheet"> 
 	<link rel="stylesheet" href="{{ URL::asset('/css/bootstrap.min.css') }}">
 	<link rel="stylesheet" href="{{ URL::asset('/css/bvmd.css') }}">
 	<link rel="stylesheet" href="{{ URL::asset('/css/maya.css') }}">

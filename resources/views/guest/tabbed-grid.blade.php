@@ -8,7 +8,7 @@
         </div> --}}
 
         <div class="animal-grid__text ">
-            <span class="animal-grid__animal-name ">{{ $guest->name }}</span>
+            <span class="animal-grid__animal-name titel-letter">{{ $guest->name }}</span>
             <span class="animal-grid__animal-description " title='Woonplaats en diervoorkeuren'>{{$guest->get_animal_preference_string()}}</span>
         </div>
         

@@ -35,13 +35,11 @@
     bottom: 0;
     left: 0;
     display: block;
-    background-color: rgba(255, 255, 255, 0.3);
+    //background-color: rgba(255, 255, 255, 0.3);
     text-transform: uppercase;
     width: 100%;
  }
- .animal-grid__block:hover .animal-grid__animal-name{
-    background-color: rgba(255, 255, 255, 0.75);
- }
+
  .animal-grid__animal-description{
     display: block;
     color: #777;
@@ -220,9 +218,10 @@
  .animal-grid__prompts {
     color: #555;
     font-size: .75em;
-    line-height:1;
+    line-height:1.15;
     margin-left: 1.5em;
     padding: 0;
+    font-weight: 500;
  }
  .animal-grid__prompt-item {
  

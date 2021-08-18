@@ -46,7 +46,7 @@ function buttonBase(buttonData, modifiers, action) {
       data-type='${buttonData._type}'
       class='${buttonCss}'>
       ${buttonData.name}
-      ${svgs.marker("", $mendoo_donkerblauw)}
+      ${svgs.marker("", 'mendoo_donkerblauw_path')}
       </a>
     </span>`;
 }
@@ -294,13 +294,13 @@ function popupHeader(title, subtitle = null) {
   const maxWidthCh = `max-width: calc(${25}ch + 1em);`; // no too long titles.
   const subtitleHTML = !subtitle
     ? ``
-    : `<small class='bvmd-popup__header-subtitle'>${subtitle}</small>`;
+    : `<small class='bvmd-popup__header-subtitle titel-letter'>${subtitle}</small>`;
 
   return `<header 
     class='bvmd-popup__header'
     style='${widthCh}${maxWidthCh}'
   >
-  <h3 class='bvmd-popup__header-title'>
+  <h3 class='bvmd-popup__header-title titel-letter'>
     <span class='bvmd-popup__header-title-inner'>${title}</span>
     ${subtitleHTML}
   </h3>

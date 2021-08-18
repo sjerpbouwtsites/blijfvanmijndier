@@ -11,7 +11,7 @@
 
         </div>
         <div class="animal-grid__text">
-            <span class="animal-grid__animal-name">{{ $animal->name }}</span>
+            <span class="animal-grid__animal-name titel-letter">{{ $animal->name }}</span>
             <span class="animal-grid__animal-description">{{ $animal->breedDesc }}</span>
         </div>
         <div class='animal-grid__block-footer'>

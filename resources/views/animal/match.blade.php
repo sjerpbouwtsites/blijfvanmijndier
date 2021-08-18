@@ -2,7 +2,7 @@
 
 @section('content')
 	<div class="col-md-12">
-		<h3>Mogelijke gastgezinnen</h3>
+		<h3 class='titel-letter'>Mogelijke gastgezinnen</h3>
 
 		@if (Session::has('message'))
 	    	<div class="alert alert-info">{{ Session::get('message') }}</div>

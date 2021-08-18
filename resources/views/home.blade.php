@@ -15,7 +15,7 @@
   	</div>
 
   	<div class='col-md-12'>
-	  	<h3 class="home-h3">Laatste updates</h3>
+	  	<h3 class="home-h3 titel-letter">Laatste updates</h3>
 
 		<table class="table table-hover table-home">
 			<thead>
@@ -46,7 +46,7 @@
 	</div>
 
   	<div class='col-md-12'>
-	  	<h3 class="home-h3">Update nodig</h3>
+	  	<h3 class="home-h3 titel-letter">Update nodig</h3>
 
 		<table class="table table-hover table-home">
 			<thead>
@@ -73,7 +73,7 @@
 	</div>
 
   	<div class='col-md-12'>
-	  	<h3 class="home-h3">Nieuwste dieren</h3>
+	  	<h3 class="home-h3 titel-letter">Nieuwste dieren</h3>
 
 		<table class="table table-hover table-home">
 			<thead>

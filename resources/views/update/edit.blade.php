@@ -3,9 +3,9 @@
 @section('content')
 	<div class="col-md-12">
 		@if( $update->id > 0 )
-			<h3>Wijzigen update van {{ $name }}</h3>
+			<h3 class='titel-letter'>Wijzigen update van {{ $name }}</h3>
 		@else
-			<h3>Nieuwe update van {{ $name }}</h3>
+			<h3 class='titel-letter'>Nieuwe update van {{ $name }}</h3>
 		@endif
 		@include('session_messages')
 		{{ Html::ul($errors->all()) }}
@@ -22,7 +22,7 @@
 		<input id='secret-animal-distribution-id-list' name='secret_animal_distribution_id_list' type='hidden'>
 	
 		<div class="col-md-6">
-			<h4>Details</h4>
+			<h4 class='titel-letter'>Details</h4>
 
 			@if( $update->id > 0 )
 	   	        @include('form_date', ['field' => 'start_date', 'label' => 'Datum', 'value' => Input::old('start_date')])
@@ -35,7 +35,7 @@
 		<br>
 		@if ($has_animal_multiselects)
 		<div id='multiselect-wrapper' >
-			<h4>Update dupliceren</h4>
+			<h4 class='titel-letter'>Update dupliceren</h4>
 			<p>Je kan deze update ook verbinden aan dieren die ofwel via de eigenaar, pension of gastgezin gerelateerd zijn aan dit dier.</p>
 
 			@if ($animal_multiselects['owner']['qualifies_for_multiselect'])

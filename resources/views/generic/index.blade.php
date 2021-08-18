@@ -2,7 +2,7 @@
 
 @section('content')
 	<div class="col-md-12">
-		<h3>Overzicht {{$index_title}}</h3>
+		<h3 class='titel-letter'>Overzicht {{$index_title}}</h3>
 	   	<h5><a href="{{ URL::to($plural_name.'/create') }}" class="btn btn-primary">Toevoegen</a></h5>
 
 			 @include('session_messages')

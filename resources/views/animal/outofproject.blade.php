@@ -2,7 +2,7 @@
 
 @section('content')
 	<div class="col-md-12">
-		<h3>Afmelden {{ $animal->name }}</h3>
+		<h3 class='titel-letter'>Afmelden {{ $animal->name }}</h3>
 		
 		{{ Html::ul($errors->all()) }}
 

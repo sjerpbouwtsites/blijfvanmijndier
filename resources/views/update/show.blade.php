@@ -2,7 +2,7 @@
 
 @section('content')
 	<div class="col-md-9">
-		<h3>Overzicht update van {{$name}}</h3>
+		<h3 class='titel-letter'>Overzicht update van {{$name}}</h3>
 		<h5><a href="{{ URL::to($type . '/' . $link_id . '/updates/' . $update->id . '/edit') }}" class="btn btn-primary">Wijzigen</a> <a href="{{ URL::to($type . '/' . $link_id . '/updates') }}" class="btn btn-default">Terug naar updates {{$name}}</a> <a href="{{ URL::to('updates/selection') }}" class="btn btn-default">Terug naar alle updates</a></h5> 
 
         @include('session_messages')

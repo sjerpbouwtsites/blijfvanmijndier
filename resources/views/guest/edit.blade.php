@@ -3,9 +3,9 @@
 @section('content')
     <div class="col-md-12">
         @if ($guest->id > 0)
-            <h3>Wijzigen gastgezin</h3>
+            <h3 class='titel-letter'>Wijzigen gastgezin</h3>
         @else
-            <h3>Nieuw gastgezin</h3>
+            <h3 class='titel-letter'>Nieuw gastgezin</h3>
         @endif
         @if (Session::has('message'))
             <div class="alert alert-info">{{ Session::get('message') }}</div>
@@ -23,7 +23,7 @@
         'model_name' => 'guest'
         ])
         <div class="col-md-6">
-            <h4>Details</h4>
+            <h4 class='titel-letter'>Details</h4>
             @include('form_text', ['field' => 'name', 'label' => 'Naam'])
             @include('form_text', ['field' => 'phone_number', 'label' => 'Telefoonnummer'])
             @include('form_text', ['field' => 'email_address', 'label' => 'Emailadres'])
@@ -44,7 +44,7 @@
             </div>
    
         </div><div class="col-md-6">
-            <h4>Beschikbaarheid</h4>
+            <h4 class='titel-letter'>Beschikbaarheid</h4>
             @include('form_checkbox', ['field' => 'disabled', 'label' => 'Niet beschikbaar'])
             
             @include('form_date', [

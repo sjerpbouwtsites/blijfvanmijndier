@@ -2,7 +2,7 @@
 
 @section('content')
 	<div class="col-md-12">
-   		<h3>Overzicht eigenaren</h3>
+   		<h3 class='titel-letter'>Overzicht eigenaren</h3>
 	   	<h5><a href="{{ URL::to('owners/create') }}" class="btn btn-primary">Toevoegen</a></h5>
 
 			 @include('session_messages')
