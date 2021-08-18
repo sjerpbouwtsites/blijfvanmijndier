@@ -8,12 +8,7 @@ body {
    height: 65px;
 }
 
-.checkerboard-white {
-   background-image: linear-gradient(to bottom right, #ffffff, #32292909);
-}
-.checkerboard-grey {
-   background-image: linear-gradient(to bottom right, #fdfdfd, #32292912);
-}
+
 
 .staging-marquee {
    position: fixed;

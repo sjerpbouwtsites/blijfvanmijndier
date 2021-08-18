@@ -51,7 +51,7 @@
    list-style-type: none;
    text-align: center;
    font-size: 1.2em;
-   color: #f15a40;
+   color: $mendoo_rood;
    display: flex;
    flex-direction: column;
    justify-content: flex-start;
@@ -69,13 +69,13 @@
  }
  /* hulpverlening update*/
  .animal-grid__icon-item--users {
-    background-color: #f15a40;
+    background-color: $mendoo_rood;
     color: #f5f5f5; 
  }
  /* nog geen updates*/
  .animal-grid__icon-item--heart {
     background-color: #f5f5f5;
-    color: #f15a40; 
+    color: $mendoo_rood; 
  }
  /* jaarevaluatie update nodig*/
  .animal-grid__icon-item--sign-out {

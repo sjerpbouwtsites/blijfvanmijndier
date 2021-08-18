@@ -1620,7 +1620,15 @@ input:checked ~ .map__filter-fake-box--radio .svg-icon-checked path + path {
   list-style-type: none;
   text-align: center;
   font-size: 1.2em;
-  color: #f15a40;
+  color: #e94f35;
+}
+
+.checkerboard-white {
+  background-image: linear-gradient(to bottom right, #ffffff, #f3efea);
+}
+
+.checkerboard-grey {
+  background-image: linear-gradient(to top right, #e9e3da, #fdfdfd);
 }
 
 .animal-grid {
@@ -1662,7 +1670,7 @@ input:checked ~ .map__filter-fake-box--radio .svg-icon-checked path + path {
   list-style-type: none;
   text-align: center;
   font-size: 1.2em;
-  color: #f15a40;
+  color: #bd2d15;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -1673,32 +1681,18 @@ input:checked ~ .map__filter-fake-box--radio .svg-icon-checked path + path {
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: #e9e3da;
+  color: #90897d;
+}
+
+.animal-grid__icon-item:nth-child(2n) {
+  background-color: #e3dcd0;
 }
 
 /* de user update */
-.animal-grid__icon-item--female {
-  background-color: #a618a4;
-  color: #f5f5f5;
-}
-
 /* hulpverlening update*/
-.animal-grid__icon-item--users {
-  background-color: #f15a40;
-  color: #f5f5f5;
-}
-
 /* nog geen updates*/
-.animal-grid__icon-item--heart {
-  background-color: #f5f5f5;
-  color: #f15a40;
-}
-
 /* jaarevaluatie update nodig*/
-.animal-grid__icon-item--sign-out {
-  background-color: #353535;
-  color: #f5f5f5;
-}
-
 /* alle updates vereist zijn op tijd */
 .animal-grid__icon-item--all-good {
   background-color: gold;
@@ -1822,6 +1816,10 @@ input:checked ~ .map__filter-fake-box--radio .svg-icon-checked path + path {
   background-color: #fff;
 }
 
+#app-body.tabbed-grid .header + hr {
+  display: none;
+}
+
 .bvmd-tabbladen {
   font-size: 1rem;
   height: 12em;
@@ -1884,7 +1882,7 @@ input:checked ~ .map__filter-fake-box--radio .svg-icon-checked path + path {
 
 .bvmd-tabbladen__link-binnen--actief,
 .bvmd-tabbladen__link:hover .bvmd-tabbladen__link-binnen {
-  border-bottom-color: #f15a40;
+  border-bottom-color: #e94f35;
 }
 
 .bvmd-tabbladen:hover .bvmd-tabbladen__link-binnen--actief {

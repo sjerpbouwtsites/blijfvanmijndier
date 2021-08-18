@@ -7,6 +7,9 @@
 #app-body.tabbed-grid .header {
     background-color: #fff;
 }
+#app-body.tabbed-grid .header + hr {
+    display: none;
+}
 .bvmd-tabbladen {
     font-size: 1rem;
     height: 12em;
@@ -61,7 +64,7 @@
 }
 .bvmd-tabbladen__link-binnen--actief,
 .bvmd-tabbladen__link:hover .bvmd-tabbladen__link-binnen {
-    border-bottom-color: #f15a40;   
+    border-bottom-color: $mendoo_rood;   
 }
 .bvmd-tabbladen:hover .bvmd-tabbladen__link-binnen--actief {
     border-bottom-color: $mendoo_uiterstdonkerpaars;
@@ -142,7 +145,7 @@
 // }
 // .bvmd-tabbladen__link-binnen--actief,
 // .bvmd-tabbladen__link:hover .bvmd-tabbladen__link-binnen {
-//     border-bottom-color: #f15a40;   
+//     border-bottom-color: $mendoo_rood;   
 // }
 // .bvmd-tabbladen:hover .bvmd-tabbladen__link-binnen--actief {
 //     border-bottom-color: $mendoo_uiterstdonkerpaars;

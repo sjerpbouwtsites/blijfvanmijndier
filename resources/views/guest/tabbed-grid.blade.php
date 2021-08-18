@@ -125,7 +125,7 @@ margin-bottom: 0;
 
 }
 .animal-grid__icon-item.animal-grid__icon-item--clock-o.animal-grid__icon-item--heart-o {
-    background-color: #f15a40;
+    background-color: $mendoo_rood;
     color: #f2f2f2;
 }
 .animal-grid__icon-item.animal-grid__icon-item--chain-broken {
@@ -163,7 +163,7 @@ vertical-align: bottom;
         text-decoration: none;
     }
     .fake-anchor:hover {
-        color: #f15a40;
+        color: $mendoo_rood;
         
     }
     .fake-anchor.enable-button-blink {
