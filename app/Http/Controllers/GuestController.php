@@ -146,7 +146,8 @@ class GuestController extends AbstractController
             'updates' => UpdateController::getUpdatesByLinkType('guests', $guest->id, 2),
             'behaviourList' => $guest->tables->where('tablegroup_id', Tablegroup::type_to_id('behaviour')),
             'hometypeList' => $guest->tables->where('tablegroup_id', Tablegroup::type_to_id('home_type')),
-            'animaltypeList' => $guest->tables->where('tablegroup_id', Tablegroup::type_to_id('animal_type'))
+            'animaltypeList' => $guest->tables->where('tablegroup_id', Tablegroup::type_to_id('animal_type')),
+            'ownAnimaltypeList' => $guest->tables->where('tablegroup_id', Tablegroup::type_to_id('own_animal_type'))
         ]);
     }
 

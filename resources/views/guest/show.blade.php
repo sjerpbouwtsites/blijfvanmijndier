@@ -40,6 +40,7 @@
             </div>
             <div class="col-md-6">
                 @include('show_checkbox_list', ['title' => 'Gedrag', 'list' => $behaviourList])
+                @include('show_checkbox_list', ['title' => 'Eigen dieren', 'list' => $ownAnimaltypeList])
             </div>
             <div class="col-md-12">
                 @include('show_link_list', ['title' => 'Opvangdieren', 'list' => $animals, 'link' => 'unconnectguest'])
