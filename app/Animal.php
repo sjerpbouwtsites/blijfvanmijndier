@@ -64,6 +64,7 @@ class Animal extends Model
 	 * Get all updates of an animal,
 	 * checks if they are in date range
 	 * waarom schrijf ik eigenlijk in het engels
+	 * UPDATES MAKE NO SENSE PLEASE WATCH OUT
 	 * @return array with bools like:
 	 * [
 	 * 		needs_updates // eg is long enough in program
@@ -126,8 +127,17 @@ class Animal extends Model
 		// IF NEEDS UPDATES
 		if ((new \DateTime($animal_registered_date))->modify('+2 week') < $now_time) {
 			$uc['needs_updates'] = true;
+		}
+
+		// WATCH OUT BYZANTINE SPAGHETTI (it wasnt me)
+		// there is a 'updates' property which actually means the animal
+		// is in a vrouwenopvang together with the owner thus there are no 'updates'
+		// required but updates does not mean updates it means owners' updates
+		// so read 'updates' as 'needs owners updates'
+		if ($uc['needs_updates'] && $animal->updates == 1) {
 			$uc['needs_owner_update'] = true;
 		}
+
 		if ((new \DateTime($animal_registered_date))->modify('+2 month') < $now_time) {
 			$uc['needs_caregiver_update'] = true;
 		}
