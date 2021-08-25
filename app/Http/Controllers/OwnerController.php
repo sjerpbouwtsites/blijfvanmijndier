@@ -74,7 +74,7 @@ class OwnerController extends AbstractController
 
         return $this->get_view("owner.show", [
             'owner' => $owner,
-            'updates' => UpdateController::getUpdatesByLinkType('owner', $owner->id, 2),
+            'updates' => UpdateController::getUpdatesByLinkType('owners', $owner->id, 2),
             'animals' => $animals,
         ]);
     }
