@@ -89,6 +89,13 @@ config/app.php > development/productie
 .env 	> APP_KEY
 	> database, db usr, db pass
 
+## 9. Gulp
+Waar het gebeurd is, geen idee, maar je bent CSS kwijt. Die zou toch meer gekopieerd moeten zijn? Nou ja.
+Gulp production is defect en wordt niet gebruikt. Draai gulp watch en ctrl-c
+```bash
+cd ~/ifawnl; gulp watch; 
+```
+
 ## EINDCHECK
 1. controleer of dierenfoto's er nog zijn.
 2. controleer of de document-pdfs nog functioneren.
@@ -99,5 +106,13 @@ config/app.php > development/productie
 cd ~/ifawnl; 
 php artisan key:generate;
 ``` 
-6. Kijk... echte programmeurs... kopieeren gewoon eindeloos foutcodes naar google en doen maar wat. Good luck!
+6. Heb je niet per ongeluk gekopieerd en eigenaar naar ubuntu gezet, evt. her en der? Of rechten veranderd?
+7. Kijk... echte programmeurs... kopieeren gewoon eindeloos foutcodes naar google en doen maar wat. Good luck!
 sjerp: 0616541143 
+
+### Hoe goed is deze lijst nu echt?
+Deze lijst is zo goed, vind ook de schrijver van dit stuk. 
+Hij kijkt momenteel evenwel tegen een productie aan die niet is wat hij verwachtte. Totaal niet.
+De twijfel slaat toe.
+Enige minuten later is het eea. bijgetrokken. 
+Kusje er op en gaan!
