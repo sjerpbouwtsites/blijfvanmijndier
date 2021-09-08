@@ -5,7 +5,7 @@ Mendoo is leuk. Dit staat hier zodat niet het gehele document negatief is. Voila
 Bij acute paniek: Die server kan wel even wachten. Klanten moeten maar even wat anders doen.  
 Mocht je een gigantische en/of onbegrijpelijke migratiemiskleun hebben: bel mij (sjerp) op 0616541143. Vlieg me niet in voor alledaagse miskleuntjes... als je dit leest ben ik weg bij Mendoo. Het mag, maar liever niet. Het ergste hebben wij, je voorgangers, reeds voor je geleden, tijdens de upgrades van php, mariadb, enzoverder. In THEORIE zou dit gewoon nu altijd goed moeten gaan! Tot dat iets veranderd, dan is iets in dit stappenplan achterhaald. Zoals euh, laravel.
 
-Je gaat map voor map productie met staging overschrijven. Dit is het stappenplan. Er is een merge script voor staging, maar vanwege de ooit gekozen en nooit op dit vlak gecorrigeerde architectuur was een productie merge script me te complex en foutgevoelig voor wat het opleverde. Dus... alles met de hand scripten. Doe dit werk als je potentieel urenlang ongestoord door wie dan ook je aandacht er bij kan houden. Ja, dit kan alleen snachts. Niet schrikken als de server omvalt! Dat gebeurd. Je shell wordt halverwege je stress onresponsief. Tijd wachten, mogelijk paar uur, mogelijk dan paniekniveau omhoog bijstellen. Klaar voor? Zin in? Dit wordt leuk! 🤪 
+Je gaat map voor map productie met staging overschrijven. Dit is het stappenplan. Er is een merge script voor staging, maar vanwege de ooit gekozen en nooit op dit vlak gecorrigeerde architectuur was een productie merge script me te complex en foutgevoelig voor wat het opleverde. Dit is ook waarom de *master* tak niet gebruikt wordt. Het idee was dev naar staging en master naar productie. Dit liep stuk op de public folder, zie onder, en hier niet de tijd in willen investeren. Dus... alles met de hand scripten. Doe dit werk als je potentieel urenlang ongestoord door wie dan ook je aandacht er bij kan houden. Ja, dit kan alleen snachts. Niet schrikken als de server omvalt! Dat gebeurd. Je shell wordt halverwege je stress onresponsief. Tijd wachten, mogelijk paar uur, mogelijk dan paniekniveau omhoog bijstellen. Klaar voor? Zin in? Dit wordt leuk! 🤪 
 
 
 ## 0. Maak backups van staging, productie en beide databases in ~/backups. 
@@ -88,14 +88,14 @@ config/app.php > development/productie
 	> database, db usr, db pass
 
 ## EINDCHECK
-a. controleer of dierenfoto's er nog zijn.
-b. controleer of de document-pdfs nog functioneren.
-c. zoek en god en bid er naar.
-d. Zo ben jij blij met die backups no way dat je dat in een keer goed krijgt ✌
-e. Doet ie het nog niet? Shit. Misschien is je app-key naar z'n grootje. 
+1. controleer of dierenfoto's er nog zijn.
+2. controleer of de document-pdfs nog functioneren.
+3. zoek en god en bid er naar.
+4. Zo ben jij blij met die backups no way dat je dat in een keer goed krijgt ✌
+5. Doet ie het nog niet? Shit. Misschien is je app-key naar z'n grootje. 
 ```bash
 cd ~/ifawnl; 
 php artisan key:generate;
 ``` 
-f. Kijk... echte programmeurs... kopieeren gewoon eindeloos foutcodes naar google en doen maar wat. Good luck!
+6. Kijk... echte programmeurs... kopieeren gewoon eindeloos foutcodes naar google en doen maar wat. Good luck!
 sjerp: 0616541143 
