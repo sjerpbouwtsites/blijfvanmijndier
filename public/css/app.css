@@ -1,20 +1,4 @@
 @charset "UTF-8";
-.animal-grid__icon-item--home .fa {
-  color: #5e284a !important;
-}
-
-.animal-grid__icon-item--users .fa {
-  color: #e94f35 !important;
-}
-
-.animal-grid__icon-item--sign-out .fa {
-  color: #f7a600 !important;
-}
-
-.animal-grid__icon-item--female .fa {
-  color: #363d47 !important;
-}
-
 .mendoo_paars_path {
   fill: #5e284a !important;
 }
@@ -2100,6 +2084,10 @@ body {
   font-family: 'Comfortaa', cursive;
   font-weight: 700;
   line-height: 1;
+}
+
+.guest-wrapper--deregistered {
+  filter: blur(0.5px) grayscale(80%);
 }
 
 /*# sourceMappingURL=app.css.map */

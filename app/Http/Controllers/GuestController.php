@@ -21,7 +21,8 @@ class GuestController extends AbstractController
         'city',
         'house_number',
         'street',
-        'postal_code'
+        'postal_code',
+        'deregistered'
     ];
 
 
@@ -285,6 +286,7 @@ class GuestController extends AbstractController
         }
         $guest->address_id = $address_id;
         $guest->disabled = Input::get('disabled') === 'on' ? 1 : 0;
+        $guest->deregistered = Input::get('deregistered') === 'on' ? 1 : 0;
 
         $guest->disabled_from = empty($guest->disabled_from) ? "2021-01-01" : $guest->disabled_from;
         $guest->disabled_untill = empty($guest->disabled_untill) ? "2021-01-01" : $guest->disabled_untill;

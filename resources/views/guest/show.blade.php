@@ -1,9 +1,17 @@
 @extends('layout')
 
 @section('content')
-	<div class="col-md-9">
+
+
+
+	<div class="col-md-9 guest-wrapper <?=$guest->is_deregistered() ? "guest-wrapper--deregistered" : ''?>">
 		<h3 class='titel-letter'>Overzicht gastgezin</h3>
 		<h5><a href="{{ URL::to('guests/' . $guest->id . '/edit') }}" class="btn btn-primary">Wijzigen</a> <a href="{{ URL::to('guests') }}" class="btn btn-default">Terug naar overzicht</a></h5> 
+
+
+        @if($guest->is_deregistered())
+        <div class="alert alert-info">Dit gastgezin is uitgeschreven. Het doet niet meer mee.</div>    
+        @else 
 
         @if ($guest->disabled)
             @if ($guest->today_disabled())
@@ -11,6 +19,7 @@
             @else
             <div class="alert alert-info">Dit gastgezin is niet beschikbaar van <?=$guest->disabled_from_friendly()?> tot <?=$guest->disabled_untill_friendly()?></div>    
             @endif
+        @endif
         @endif        
 
         @if (Session::has('message'))
