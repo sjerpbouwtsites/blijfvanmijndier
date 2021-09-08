@@ -46,17 +46,17 @@ sudo rm -rf app bootstrap config database dummystartdb nbproject node_modules re
 Je vervangt ze met de staging variant. Dit is niet gekozen om efficient te zijn (node_modules bv) maar om begrijpelijk en controleerbaar te zijn.
 
 ```bash
-cp -R ~/ifawnl_staging/app ~/ifawnl/app; 
-cp -R ~/ifawnl_staging/bootstrap ~/ifawnl/bootstrap; 
-cp -R ~/ifawnl_staging/config ~/ifawnl/config; 
-cp -R ~/ifawnl_staging/database ~/ifawnl/database; 
-cp -R ~/ifawnl_staging/dummystartdb ~/ifawnl/dummystartdb; 
-cp -R ~/ifawnl_staging/nbproject ~/ifawnl/nbproject; 
-cp -R ~/ifawnl_staging/node_modules ~/ifawnl/node_modules; 
-cp -R ~/ifawnl_staging/resources ~/ifawnl/resources;  
-cp -R ~/ifawnl_staging/routes ~/ifawnl/routes; 
-cp -R ~/ifawnl_staging/storage ~/ifawnl/storage; 
-cp -R ~/ifawnl_staging/tests ~/ifawnl/tests;
+cp -rp ~/ifawnl_staging/app ~/ifawnl/app; 
+cp -rp ~/ifawnl_staging/bootstrap ~/ifawnl/bootstrap; 
+cp -rp ~/ifawnl_staging/config ~/ifawnl/config; 
+cp -rp ~/ifawnl_staging/database ~/ifawnl/database; 
+cp -rp ~/ifawnl_staging/dummystartdb ~/ifawnl/dummystartdb; 
+cp -rp ~/ifawnl_staging/nbproject ~/ifawnl/nbproject; 
+cp -rp ~/ifawnl_staging/node_modules ~/ifawnl/node_modules; 
+cp -rp ~/ifawnl_staging/resources ~/ifawnl/resources;  
+cp -rp ~/ifawnl_staging/routes ~/ifawnl/routes; 
+cp -rp ~/ifawnl_staging/storage ~/ifawnl/storage; 
+cp -rp ~/ifawnl_staging/tests ~/ifawnl/tests;
 ```
 
 ## 5. specifieke dingen uit public weggooien. 
@@ -70,11 +70,11 @@ Hier staat ook los frut tussen, controleer met de hand of dat geupdate moet 💀
 👉PAS OPNIEUW OP!👈 🙏 
 
 ```bash 
-cp -R ~/ifawnl_staging/public/css ~/ifawnl/public/css;
-cp -R ~/ifawnl_staging/public/font-awesome ~/ifawnl/public/font-awesome;
-cp -R ~/ifawnl_staging/public/fonts ~/ifawnl/public/fonts; 
-cp -R ~/ifawnl_staging/public/img/markers ~/ifawnl/public/markers;
-cp -R ~/ifawnl_staging/public/js ~/ifawnl/public/js;
+cp -rp ~/ifawnl_staging/public/css ~/ifawnl/public/css;
+cp -rp ~/ifawnl_staging/public/font-awesome ~/ifawnl/public/font-awesome;
+cp -rp ~/ifawnl_staging/public/fonts ~/ifawnl/public/fonts; 
+cp -rp ~/ifawnl_staging/public/img/markers ~/ifawnl/public/markers;
+cp -rp ~/ifawnl_staging/public/js ~/ifawnl/public/js;
 ```
 
 ## 7. Database migraties. 
