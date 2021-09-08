@@ -240,7 +240,7 @@
  }
  
  .animal-grid__prompts {
-    color: #555;
+    color: #555; 
     font-size: .75em;
     line-height:1.15;
     margin-left: 1.5em;
@@ -250,3 +250,24 @@
  .animal-grid__prompt-item {
  
  }
+
+ .animal-grid__image-weetikveelhoedatinhetengelsheetpotvolkoffie {
+   position: relative;
+   overflow: hidden;
+}
+.animal-grid__image-heart-ribbon {
+   position: absolute;
+   top: 0px;
+   left: -30px;
+   transform: rotate(-45deg);
+   background-color: #eba2af;
+   width: 80px;
+   height: 20px;
+   display: flex;
+   align-items: center;
+   justify-content: space-around;
+}
+.animal-grid__image-heart-ribbon .fa-heart {
+   color: $mendoo_rood;
+font-size: 1em; 
+}
