@@ -88,6 +88,17 @@ class Animal extends Model
 		$animal_id = $animal->id;
 		$animal_registered_date = $animal->registration_date;
 
+		/**
+		 * that oddball of a checkbox that decides together with 'is the animal 
+		 * coupled to a shelter or guest' wheter or not the OWNER receives messages 
+		 * called updates regarding his pet
+		 * As this would sygnify that the pet is with the owner
+		 */
+		$animal_updates_checkbox_bool = $animal['attributes']['updates'];
+		$animal_is_with_owner = !\is_null($animal['attributes']['owner_id']) || !\is_null($animal['attributes']['guest_id']);
+
+		$needs_owner_updates = $animal_updates_checkbox_bool && !$animal_is_with_owner;
+
 		// gastgezin
 		// hulpverlening
 		// pension
@@ -114,6 +125,7 @@ class Animal extends Model
 			'has_jaarevaluatie_update' => false,
 			'jaarevaluatie_on_time' => false,
 			'update_prompts' => '',
+			'is_with_owner'=> $animal_is_with_owner,
 			'has_prompts'	=> false,
 			'days_behind_to_max' => [0], // push en dan max
 			'days_behind'	=> 0,
@@ -129,12 +141,7 @@ class Animal extends Model
 			$uc['needs_updates'] = true;
 		}
 
-		// WATCH OUT BYZANTINE SPAGHETTI (it wasnt me)
-		// there is a 'updates' property which actually means the animal
-		// is in a vrouwenopvang together with the owner thus there are no 'updates'
-		// required but updates does not mean updates it means owners' updates
-		// so read 'updates' as 'needs owners updates'
-		if ($uc['needs_updates'] && $animal->updates == 1) {
+		if ($uc['needs_updates'] && $needs_owner_updates) {
 			$uc['needs_owner_update'] = true;
 		}
 

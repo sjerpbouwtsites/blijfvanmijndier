@@ -4,6 +4,11 @@
         
         <div class='animal-grid__image-outer'>
             <div class='animal-grid__image-weetikveelhoedatinhetengelsheetpotvolkoffie' data-sigh='jeez' data-lang-pref='FRL'>
+                @if ($animal->updates_checked['is_with_owner'])
+                    <div class='animal-grid__image-heart-ribbon'>
+                        <i class="fa fa-heart fa-heart-icon"></i>
+                    </div>
+                @endif
                 <img loading='lazy' class="animal-grid__image" src="{{ $animal->animalImage }}" alt="{{ $animal->name }}" width="180" height="180">
             </div>
           

@@ -1774,6 +1774,29 @@ input:checked ~ .map__filter-fake-box--radio .svg-icon-checked path + path {
   font-weight: 500;
 }
 
+.animal-grid__image-weetikveelhoedatinhetengelsheetpotvolkoffie {
+  position: relative;
+  overflow: hidden;
+}
+
+.animal-grid__image-heart-ribbon {
+  position: absolute;
+  top: 0px;
+  left: -30px;
+  transform: rotate(-45deg);
+  background-color: #eba2af;
+  width: 80px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.animal-grid__image-heart-ribbon .fa-heart {
+  color: #e94f35;
+  font-size: 1em;
+}
+
 /*animal grid voor guest aangepast*/
 .animal-grid--guest-index .animal-grid__block-footer {
   display: flex;
