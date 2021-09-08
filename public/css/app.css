@@ -1613,6 +1613,22 @@ input:checked ~ .map__filter-fake-box--radio .svg-icon-checked path + path {
   color: #e94f35;
 }
 
+.animal-grid__icon-item--users .fa {
+  color: #e94f35;
+}
+
+.animal-grid__icon-item--female .fa {
+  color: #363d47;
+}
+
+.animal-grid__icon-item--sign-out .fa {
+  color: #f7a600;
+}
+
+.animal-grid__icon-item--home .fa {
+  color: #5e284a;
+}
+
 .checkerboard-white {
   background-image: linear-gradient(to bottom right, #ffffff, #f3efea);
 }

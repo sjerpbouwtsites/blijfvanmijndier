@@ -75,6 +75,24 @@
  
  }
  
+
+ .animal-grid__icon-item {
+    &--users .fa {
+      color: $mendoo_rood;
+      
+    }
+    &--female .fa{
+      color: $mendoo_blauw; 
+   }
+   &--sign-out .fa{
+      color: $mendoo_oranje;
+   }
+   &--home .fa {
+      color: $mendoo_paars;
+      
+   }          
+ }
+
  .checkerboard-white {
    background-image: linear-gradient(to bottom right, #ffffff, $mendoo_lichtzand);
 }
