@@ -30,4 +30,5 @@ echo "fixed permissions to safe setting"
 # retrieve
 sudo mv ~/.env-staging-temp ~/ifawnl_staging/.env
 #yes
-echo "post merge done.\n\nSee migration-readme.MD for the encore.";
+echo "post merge done.";
+echo "See migration-readme.MD for the encore.";
