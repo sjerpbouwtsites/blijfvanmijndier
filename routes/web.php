@@ -43,6 +43,7 @@ Route::get('owners/{id}/match', 'OwnerController@match');
 Route::get('shelters/{id}/match', 'ShelterController@match');
 Route::get('guests/available', 'GuestController@available');
 Route::get('guests/unavailable', 'GuestController@unavailable');
+Route::get('guests/deregistered', 'GuestController@deregistered');
 
 Route::get('map', 'MapController@index');
 Route::get('map/data', 'MapController@map_data');

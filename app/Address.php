@@ -189,12 +189,17 @@ class Address extends Model
 
     /**
      * This is rather messy. It smashed the Address relation onto the Owner.
+     * Filter is no good. But hey. Sure beats having to read Laravels docs
      * @param string $model_name for PHP, models are also strings 😕
+     * @param null|array array keys as property and accepted_value, assuming '=' operator
      */
-    public static function allWithAddress($model_name)
+    public static function allWithAddress($model_name, $where_clauses = null)
     {
 
-        $naked = $model_name::all();
+        $naked = \is_null($where_clauses)
+            ? $model_name::all()
+            : $model_name::where($where_clauses['property'], $where_clauses['accepted_value'])->get();
+
         return $naked->map(function ($nude) {
             return Address::hydrateWithAddress($nude);
         });
