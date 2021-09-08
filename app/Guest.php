@@ -37,6 +37,7 @@ class Guest extends Model
         'disabled',
         'disabled_from',
         'disabled_untill',
+        'deregistered',
         'text'
     ];
 
