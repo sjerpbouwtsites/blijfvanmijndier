@@ -44,8 +44,15 @@
             </div>
    
         </div><div class="col-md-6">
-            <h4 class='titel-letter'>Beschikbaarheid</h4>
+            <h4 class='titel-letter'>Beschikbaarheid & afmelden</h4>
+            <div class="form-group">
+                <label for="deregistered" class="control-label col-md-4">Uitgeschreven</label>
+                <div class="col-md-8">
+                    <input name="deregistered" type="checkbox" id="deregistered" <?=$guest->is_deregistered() ? 'checked="checked"':''?>>
+                </div>
+            </div>
             @include('form_checkbox', ['field' => 'disabled', 'label' => 'Niet beschikbaar'])
+            
             
             @include('form_date', [
                 'value' => $guest['disabled_from'],

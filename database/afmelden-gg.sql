@@ -1,0 +1,1 @@
+ALTER TABLE guests ADD deregistered tinyint DEFAULT 0;

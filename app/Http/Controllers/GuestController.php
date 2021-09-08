@@ -21,7 +21,8 @@ class GuestController extends AbstractController
         'city',
         'house_number',
         'street',
-        'postal_code'
+        'postal_code',
+        'deregistered'
     ];
 
 
@@ -36,20 +37,28 @@ class GuestController extends AbstractController
     }
 
     public function available(){
-        return $this->index(true);
+        return $this->index("beschikbaar");
     }
 
     public function unavailable(){
-        return $this->index(false);
+        return $this->index("onbeschikbaar");
     }
-    /**
-     * @param beschikbaarheid. Mogelijk als null (index), true (beschikbare gg) en false (onbeschikbaren)
-     */
-    public function index($beschikbaarheid = null)
-    {
-        $guests = \App\Address::allWithAddress("App\\Guest");
+    public function deregistered(){
+        return $this->index("uitgeschreven");
+    }
 
-        if ($beschikbaarheid === null) {
+    /**
+     * @param gast_status. kan zijn ingeschreven, uitgeschreven, beschikbaar, onbeschikbaar.
+     */
+    public function index($gast_status = 'ingeschreven')
+    {
+       
+        $guests = \App\Address::allWithAddress("App\\Guest", [
+            'property'              => 'deregistered',
+            'accepted_value'        => $gast_status === 'uitgeschreven' ? 1 : 0
+        ]);
+
+        if ($gast_status === 'ingeschreven' || $gast_status === 'uitgeschreven') {
             // sorteren op naam
             $guests = $guests->sort(function ($a,$b) {
                 $name_a = preg_replace('/\s/', '', strtolower($a->name));
@@ -57,45 +66,19 @@ class GuestController extends AbstractController
                 return $name_a <=> $name_b; 
          });
          
-        } else if ($beschikbaarheid === true) {
+        } else if ($gast_status === 'beschikbaar') {
             $guests = $guests->sort(function ($a,$b) {
                 return ($a->days_till_disabled() || 0) <=> ($b->days_till_disabled() || 0);
         });
         
-    }else if ($beschikbaarheid === false) {
+    } else if ($gast_status === 'onbeschikbaar') {
         $guests = $guests->sort(function ($a,$b) {
             return ($a->days_till_available() ||0 ) <=> ($b->days_till_available() || 0);
     });
     // straks nog omdraaien.
 }
 
-        $guests_to_grid = [];
-        foreach ($guests as $guest) {
-            
-            $guest->create_prompts($beschikbaarheid);
-            $guest->create_icons($beschikbaarheid);
-
-            if ($beschikbaarheid === null) {
-                // normale index
-                $guests_to_grid[]=$guest;
-            } else if ($beschikbaarheid === true){
-                if (!$guest->today_disabled()) {
-                    $guests_to_grid[]=$guest;
-                }
-            } else if ($beschikbaarheid === false) {
-                if ($guest->today_disabled()) {
-                    $guests_to_grid[]=$guest;
-                }                
-            } else {
-                throw new \Exception('something weird with the availability param in index');
-            }
-        }
-
-        if ($beschikbaarheid === false) {
-            $guests_to_grid = \array_reverse($guests_to_grid);
-        }
-        
-        $guests_to_grid = Checkerboard::set_checkerboard($guests_to_grid);
+       $guests_to_grid = $this->create_guests_to_grid($guests, $gast_status);
 
         $guest_grid = $this->get_view('guest.tabbed-grid', [
             'animal_grid_modifier' => 'guest-index',
@@ -110,6 +93,45 @@ class GuestController extends AbstractController
           'tabs' => $this->tabs,
         ]);
 
+    }
+
+    /**
+     * helper van index method.
+     */
+    public function create_guests_to_grid($guests, $gast_status){
+
+        if ($gast_status ==='uitgeschreven'){
+            return Checkerboard::set_checkerboard($guests);
+        }
+
+        $guests_to_grid = [];
+        foreach ($guests as $guest) {
+            
+            $guest->create_prompts($gast_status);
+            $guest->create_icons($gast_status);
+
+            if ($gast_status === 'ingeschreven') {
+                // normale index
+                $guests_to_grid[]=$guest;
+            } else if ($gast_status === 'beschikbaar'){
+                if (!$guest->today_disabled()) {
+                    $guests_to_grid[]=$guest;
+                }
+            } else if ($gast_status === 'onbeschikbaar') {
+                if ($guest->today_disabled()) {
+                    $guests_to_grid[]=$guest;
+                }                
+            } else {
+                throw new \Exception('something weird with the availability param in index');
+            }
+        }
+
+        if ($gast_status === false) {
+            $guests_to_grid = \array_reverse($guests_to_grid);
+        }
+        
+        $guests_to_grid = Checkerboard::set_checkerboard($guests_to_grid);
+        return $guests_to_grid;
     }
 
     public function create_index_rows($models){
@@ -181,27 +203,33 @@ class GuestController extends AbstractController
         $all_guests_url = \url('/guests/');
         $available_guests_url = \url("/guests/available");
         $unavailable_guests_url = \url("/guests/unavailable");
+        $deregistered_guests_url = \url("/guests/deregistered");
         $new_guest_url =  \url("/guests/create");
 
         $tabs_data = [
             'all'   => [
                 'url'=> $all_guests_url,
-                'text'  => 'Alle GG',
+                'text'  => 'Ingeschreven',
                 'active' => $all_guests_url === $current_url
             ],
             'available'   => [
                 'url'=> $available_guests_url,
-                'text'=> 'Beschikbare GG',
+                'text'=> 'Beschikbaar',
                 'active' => $available_guests_url === $current_url
             ],
             'unavailable'   => [
                 'url'=> $unavailable_guests_url,
-                'text'=> 'Onbeschikbare GG',
+                'text'=> 'Onbeschikbaar',
                 'active' => $unavailable_guests_url === $current_url
             ],
+            'uitgeschreven'   => [
+                'url'=> $deregistered_guests_url,
+                'text'=> 'Uitgeschreven',
+                'active' => $deregistered_guests_url === $current_url
+            ],            
             'create'   => [
                 'url'=> $new_guest_url,
-                'text'=> 'Nieuwe GG',
+                'text'=> 'Nieuw',
                 'active' => $new_guest_url === $current_url
             ],
                      
@@ -285,6 +313,7 @@ class GuestController extends AbstractController
         }
         $guest->address_id = $address_id;
         $guest->disabled = Input::get('disabled') === 'on' ? 1 : 0;
+        $guest->deregistered = Input::get('deregistered') === 'on' ? 1 : 0;
 
         $guest->disabled_from = empty($guest->disabled_from) ? "2021-01-01" : $guest->disabled_from;
         $guest->disabled_untill = empty($guest->disabled_untill) ? "2021-01-01" : $guest->disabled_untill;

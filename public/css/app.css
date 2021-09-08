@@ -2086,4 +2086,8 @@ body {
   line-height: 1;
 }
 
+.guest-wrapper--deregistered {
+  filter: blur(0.5px) grayscale(80%);
+}
+
 /*# sourceMappingURL=app.css.map */

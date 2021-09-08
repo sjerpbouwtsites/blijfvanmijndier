@@ -25,3 +25,7 @@ body {
     font-weight: 700;
     line-height: 1;
   }
+
+ .guest-wrapper--deregistered {
+    filter: blur(0.5px) grayscale(80%);
+  }

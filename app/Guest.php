@@ -18,6 +18,7 @@ class Guest extends Model
     private static $_today_datetime = null; // 'caching'
     private $_days_till_disabled = null;
     private $_days_till_available = null;
+    //public $deregistered = false;
 
     private static function get_today_datetime(){
         if (Guest::$_today_datetime === null) {
@@ -37,8 +38,13 @@ class Guest extends Model
         'disabled',
         'disabled_from',
         'disabled_untill',
+        'deregistered',
         'text'
     ];
+
+    public function is_deregistered(){
+        return $this->attributes['deregistered'];
+    }
 
     public function get_first_name(){
         return explode(' ', $this->name)[0];
