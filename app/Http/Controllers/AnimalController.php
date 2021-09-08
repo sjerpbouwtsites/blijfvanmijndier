@@ -58,12 +58,12 @@ class AnimalController extends Controller
         $tabs_data = [
             'all'   => [
                 'url'=> $all_animals_url,
-                'text'  => 'Alle dieren',
+                'text'  => 'Dieren in project',
                 'active' => $all_animals_url === $current_url
             ],
             'todo'   => [
                 'url'=> $animals_requiring_update_url,
-                'text'=> 'Dieren todo',
+                'text'=> 'Dieren to do',
                 'active' => $animals_requiring_update_url === $current_url
             ],
             'create'   => [
@@ -73,7 +73,7 @@ class AnimalController extends Controller
             ],
             'old'   => [
                 'url'=> $out_of_project_url,
-                'text'=> 'Alumni',
+                'text'=> 'Dieren uit project',
                 'active' => $out_of_project_url === $current_url
             ]                        
         ];        
