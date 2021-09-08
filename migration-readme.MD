@@ -7,6 +7,8 @@ Mocht je een gigantische en/of onbegrijpelijke migratiemiskleun hebben: bel mij 
 
 Je gaat map voor map productie met staging overschrijven. Dit is het stappenplan. Er is een merge script voor staging, maar vanwege de ooit gekozen en nooit op dit vlak gecorrigeerde architectuur was een productie merge script me te complex en foutgevoelig voor wat het opleverde. Dit is ook waarom de *master* tak niet gebruikt wordt. Het idee was dev naar staging en master naar productie. Dit liep stuk op de public folder, zie onder, en hier niet de tijd in willen investeren. Dus... alles met de hand scripten. Doe dit werk als je potentieel urenlang ongestoord door wie dan ook je aandacht er bij kan houden. Ja, dit kan alleen snachts. Niet schrikken als de server omvalt! Dat gebeurd. Je shell wordt halverwege je stress onresponsief. Tijd wachten, mogelijk paar uur, mogelijk dan paniekniveau omhoog bijstellen. Klaar voor? Zin in? Dit wordt leuk! 🤪 
 
+Er zitten hier vele stappen in die overbodig of omslachtig zijn. Zo noteer je de config uit een bestand dat niet gebruikt wordt... denk ik. Veel natte vinger werk.
+
 
 ## 0. Maak backups van staging, productie en beide databases in ~/backups. 
 ```bash
@@ -44,17 +46,17 @@ sudo rm -rf app bootstrap config database dummystartdb nbproject node_modules re
 Je vervangt ze met de staging variant. Dit is niet gekozen om efficient te zijn (node_modules bv) maar om begrijpelijk en controleerbaar te zijn.
 
 ```bash
-cp ~/ifawnl_staging/app ~/ifawnl/app; 
-cp ~/ifawnl_staging/bootstrap ~/ifawnl/bootstrap; 
-cp ~/ifawnl_staging/config ~/ifawnl/config; 
-cp ~/ifawnl_staging/database ~/ifawnl/database; 
-cp ~/ifawnl_staging/dummystartdb ~/ifawnl/dummystartdb; 
-cp ~/ifawnl_staging/nbproject ~/ifawnl/nbproject; 
-cp ~/ifawnl_staging/node_modules ~/ifawnl/node_modules; 
-cp ~/ifawnl_staging/resources ~/ifawnl/resources;  
-cp ~/ifawnl_staging/routes ~/ifawnl/routes; 
-cp ~/ifawnl_staging/storage ~/ifawnl/storage; 
-cp ~/ifawnl_staging/tests ~/ifawnl/tests;
+cp -R ~/ifawnl_staging/app ~/ifawnl/app; 
+cp -R ~/ifawnl_staging/bootstrap ~/ifawnl/bootstrap; 
+cp -R ~/ifawnl_staging/config ~/ifawnl/config; 
+cp -R ~/ifawnl_staging/database ~/ifawnl/database; 
+cp -R ~/ifawnl_staging/dummystartdb ~/ifawnl/dummystartdb; 
+cp -R ~/ifawnl_staging/nbproject ~/ifawnl/nbproject; 
+cp -R ~/ifawnl_staging/node_modules ~/ifawnl/node_modules; 
+cp -R ~/ifawnl_staging/resources ~/ifawnl/resources;  
+cp -R ~/ifawnl_staging/routes ~/ifawnl/routes; 
+cp -R ~/ifawnl_staging/storage ~/ifawnl/storage; 
+cp -R ~/ifawnl_staging/tests ~/ifawnl/tests;
 ```
 
 ## 5. specifieke dingen uit public weggooien. 
@@ -68,11 +70,11 @@ Hier staat ook los frut tussen, controleer met de hand of dat geupdate moet 💀
 👉PAS OPNIEUW OP!👈 🙏 
 
 ```bash 
-cp ~/ifawnl_staging/public/css ~/ifawnl/public/css;
-cp ~/ifawnl_staging/public/font-awesome ~/ifawnl/public/font-awesome;
-cp ~/ifawnl_staging/public/fonts ~/ifawnl/public/fonts; 
-cp ~/ifawnl_staging/public/img/markers ~/ifawnl/public/markers;
-cp ~/ifawnl_staging/public/js ~/ifawnl/public/js;
+cp -R ~/ifawnl_staging/public/css ~/ifawnl/public/css;
+cp -R ~/ifawnl_staging/public/font-awesome ~/ifawnl/public/font-awesome;
+cp -R ~/ifawnl_staging/public/fonts ~/ifawnl/public/fonts; 
+cp -R ~/ifawnl_staging/public/img/markers ~/ifawnl/public/markers;
+cp -R ~/ifawnl_staging/public/js ~/ifawnl/public/js;
 ```
 
 ## 7. Database migraties. 
