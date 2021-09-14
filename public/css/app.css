@@ -1790,6 +1790,7 @@ input:checked ~ .map__filter-fake-box--radio .svg-icon-checked path + path {
   display: flex;
   align-items: center;
   justify-content: space-around;
+  z-index: 5;
 }
 
 .animal-grid__image-heart-ribbon .fa-heart {
