@@ -73,7 +73,7 @@ Hier staat ook los frut tussen, controleer met de hand of dat geupdate moet 💀
 cp -rp ~/ifawnl_staging/public/css ~/ifawnl/public/css;
 cp -rp ~/ifawnl_staging/public/font-awesome ~/ifawnl/public/font-awesome;
 cp -rp ~/ifawnl_staging/public/fonts ~/ifawnl/public/fonts; 
-cp -rp ~/ifawnl_staging/public/img/markers ~/ifawnl/public/markers;
+cp -rp ~/ifawnl_staging/public/img/markers ~/ifawnl/public/img/markers;
 cp -rp ~/ifawnl_staging/public/js ~/ifawnl/public/js;
 ```
 
