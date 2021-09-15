@@ -219,7 +219,7 @@ class GuestController extends AbstractController
             ],
             'unavailable'   => [
                 'url'=> $unavailable_guests_url,
-                'text'=> 'Onbeschikbaar',
+                'text'=> 'Niet beschikbaar',
                 'active' => $unavailable_guests_url === $current_url
             ],
             'uitgeschreven'   => [
