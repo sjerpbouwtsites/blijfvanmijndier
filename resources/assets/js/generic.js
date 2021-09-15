@@ -32,11 +32,26 @@ switch (location.port) {
   default:
 }
 
+const dontScrollOnKlik = {
+  _x: null,
+  _y: null,
+  init (){
+    this._x = Number(window.pageXOffset);
+    this._y = Number(window.pageYOffset);
+    
+  },
+  backToEarlierScroll(){
+    if (this._x === null || this._y === null) {
+      throw Error('scroll klik prevent data not saved / unretrieveable');
+    }
+    window.scroll(this._x, this._y);
+
+  }
+}
 
 document.querySelectorAll('.kopieer-adres-knop').forEach(knop => {
   knop.addEventListener('click', (e)=>{
-    let scrollPositionY = Number(window.pageYOffset);
-    let scrollPositionX = Number(window.pageXOffset);
+    dontScrollOnKlik.init();
     e.preventDefault();
     e.stopPropagation();
     const target = e.target;
@@ -57,14 +72,54 @@ document.querySelectorAll('.kopieer-adres-knop').forEach(knop => {
    }, 1000)    
   
 
-   window.scroll(scrollPositionX, scrollPositionY);
-
+   dontScrollOnKlik.backToEarlierScroll();
 
    return false;
    
   });
 });
 
+
+if (document.getElementById('animal-grid')) {
+  document.getElementById('animal-grid').addEventListener('click', (e)=>{
+
+    if (e.target.className.includes('fa')) {
+        dontScrollOnKlik.init();
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+  
+    let knop;
+    if (e.target.classList.contains('fake-anchor')) {
+        knop = e.target;
+    } else if (e.target.parentNode.classList.contains('fake-anchor')) {
+        knop = e.target.parentNode;
+    } else {
+        return
+    }
+    
+  
+   const r = knop.getAttribute('data-href');
+  
+   if (knop.classList.contains('clipboard')) {
+    copyToClipboard(r)
+    knop.classList.add('enable-button-blink');
+    setTimeout(()=>{
+        knop.classList.add('button-blink');
+    }, 50)            
+    setTimeout(()=>{
+        knop.classList.remove('button-blink');
+    }, 1000)    
+  
+   } else {
+       location.href = r;
+   }
+   dontScrollOnKlik.backToEarlierScroll();
+   return false;
+   
+  });
+}
 
 
 function copyToClipboard(text) {
