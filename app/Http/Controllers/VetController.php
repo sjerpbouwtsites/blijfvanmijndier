@@ -45,10 +45,12 @@ class VetController extends AbstractController
     public function create_index_rows($vets){
         $index_rows = '';
         foreach ($vets as $vet) {
+
+            $copy_address_html = $this->get_copy_address($vet);
             $index_rows .= "<tr>";
 
             $index_rows .= $this->wrap_in_show_link($vet->id, $vet->name);
-            $index_rows .= $this->wrap_in_show_link($vet->id, "$vet->street $vet->house_number $vet->city");
+            $index_rows .= $this->wrap_without_show_link($vet->id, $copy_address_html);
             $index_rows .= $this->wrap_in_show_link($vet->id, "$vet->phone_number");
 
             $index_rows .= "<td><a href='/".$this->plural."/".$vet->id."/edit'>🖊</a></td>";

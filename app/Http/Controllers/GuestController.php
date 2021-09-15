@@ -80,9 +80,16 @@ class GuestController extends AbstractController
 
        $guests_to_grid = $this->create_guests_to_grid($guests, $gast_status);
 
+       // kopieerknoppen array
+       $copy_address_buttons = [];
+       foreach($guests_to_grid as $guest){
+        $copy_address_buttons_html[$guest->id] = $this->get_copy_address($guest);
+       }
+
         $guest_grid = $this->get_view('guest.tabbed-grid', [
             'animal_grid_modifier' => 'guest-index',
-            'guests' => $guests_to_grid
+            'guests' => $guests_to_grid,
+            'copy_address_buttons_html' => $copy_address_buttons_html
         ]);
 
         // function op main controller
@@ -219,7 +226,7 @@ class GuestController extends AbstractController
             ],
             'unavailable'   => [
                 'url'=> $unavailable_guests_url,
-                'text'=> 'Onbeschikbaar',
+                'text'=> 'Niet beschikbaar',
                 'active' => $unavailable_guests_url === $current_url
             ],
             'uitgeschreven'   => [

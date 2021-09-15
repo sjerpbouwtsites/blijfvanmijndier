@@ -1602,6 +1602,26 @@ input:checked ~ .map__filter-fake-box--radio .svg-icon-checked path + path {
   padding: 0;
 }
 
+.animal-grid__prompts-item .kopieer-adres {
+  padding: 0;
+  margin-top: 10px;
+  justify-content: start;
+}
+
+.animal-grid__prompts-item .kopieer-adres-knop {
+  font-size: 1.15em;
+  color: #8a7575;
+  margin-left: 0px;
+  -ms-grid-row-align: start;
+  align-self: start;
+  position: relative;
+  right: -10px;
+}
+
+.animal-grid__prompts-item .kopieer-adres-mogelijke-break {
+  display: block;
+}
+
 .animal-grid__icons {
   margin: 0;
   padding: 0;
@@ -1905,15 +1925,6 @@ input:checked ~ .map__filter-fake-box--radio .svg-icon-checked path + path {
   color: #e94f35;
 }
 
-.animal-grid--guest-index .fake-anchor.enable-button-blink {
-  transition: 0.2s ease-in-out 0.2s;
-  filter: saturate(100%) brightness(100%);
-}
-
-.animal-grid--guest-index .fake-anchor.button-blink {
-  filter: saturate(200%) brightness(200%);
-}
-
 .animal-grid--guest-index .fake-anchor.fake-tel {
   position: relative;
   top: 1px;
@@ -2128,6 +2139,38 @@ body {
 
 .guest-wrapper--deregistered {
   filter: blur(0.5px) grayscale(80%);
+}
+
+.kopieer-adres {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  padding: 8px;
+  justify-content: space-between;
+  margin-right: 20px;
+}
+
+.kopieer-adres-knop {
+  padding: 0 !important;
+  background: transparent;
+  border: 0;
+}
+
+.kopieer-adres-knop:hover {
+  filter: brightness(120%);
+}
+
+.kopieer-adres-mogelijke-break {
+  display: none;
+}
+
+.enable-button-blink {
+  transition: 0.2s ease-in-out 0.2s;
+  filter: saturate(100%) brightness(100%);
+}
+
+.button-blink {
+  filter: saturate(200%) brightness(200%);
 }
 
 /*# sourceMappingURL=app.css.map */

@@ -42,11 +42,10 @@
                     
 
                 </li>   
+   
                 <li class='animal-grid__contact-data-item animal-grid__prompts-item'>
-                    <span><?=$guest->street?> <?=$guest->house_number?></span>
-                </li>   
-                <li class='animal-grid__contact-data-item animal-grid__prompts-item'>
-                    <span><?=$guest->city?> </span>
+                    <?=$copy_address_buttons_html[$guest->id]?>
+
                 </li>   
             </ul>
         </div>
@@ -74,51 +73,3 @@ min-height: 180px;
 }
 
 </style>
-    <script>
-        document.getElementById('animal-grid').addEventListener('click', (e)=>{
-
-            if (e.target.className.includes('fa')) {
-
-                e.preventDefault();
-                e.stopPropagation();
-            
-            }
-
-            let knop;
-            if (e.target.classList.contains('fake-anchor')) {
-                knop = e.target;
-            } else if (e.target.parentNode.classList.contains('fake-anchor')) {
-                knop = e.target.parentNode;
-            } else {
-                return
-            }
-
-           const r = knop.getAttribute('data-href');
-
-           if (knop.classList.contains('clipboard')) {
-            copyToClipboard(r)
-            knop.classList.add('enable-button-blink');
-            setTimeout(()=>{
-                knop.classList.add('button-blink');
-            }, 50)            
-            setTimeout(()=>{
-                knop.classList.remove('button-blink');
-            }, 1000)    
-
-           } else {
-               location.href = r;
-           }
-           return false;
-           
-        });
-    
-        function copyToClipboard(text) {
-  var input = document.body.appendChild(document.createElement("input"));
-  input.value = text;
-  input.focus();
-  input.select();
-  document.execCommand('copy');
-  input.parentNode.removeChild(input);
-}
-    
-    </script>
