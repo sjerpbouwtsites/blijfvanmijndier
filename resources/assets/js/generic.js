@@ -31,3 +31,47 @@ switch (location.port) {
     break;
   default:
 }
+
+
+document.querySelectorAll('.kopieer-adres-knop').forEach(knop => {
+  knop.addEventListener('click', (e)=>{
+    let scrollPositionY = Number(window.pageYOffset);
+    let scrollPositionX = Number(window.pageXOffset);
+    e.preventDefault();
+    e.stopPropagation();
+    const target = e.target;
+    
+    const knop = target.className.includes('kopieer-adres-knop-ikoon') 
+      ? target.parentNode 
+      : target;
+  
+   const teKopieeren = `${knop.dataset.street} ${knop.dataset.house_number} \n${knop.dataset.postal_code} ${knop.dataset.city}`;
+    
+   copyToClipboard(teKopieeren)
+   knop.classList.add('enable-button-blink');
+   setTimeout(()=>{
+       knop.classList.add('button-blink');
+   }, 50)            
+   setTimeout(()=>{
+       knop.classList.remove('button-blink');
+   }, 1000)    
+  
+
+   window.scroll(scrollPositionX, scrollPositionY);
+
+
+   return false;
+   
+  });
+});
+
+
+
+function copyToClipboard(text) {
+var input = document.body.appendChild(document.createElement("input"));
+input.value = text;
+input.focus();
+input.select();
+document.execCommand('copy');
+input.parentNode.removeChild(input);
+}

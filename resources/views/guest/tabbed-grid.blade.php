@@ -42,11 +42,10 @@
                     
 
                 </li>   
+   
                 <li class='animal-grid__contact-data-item animal-grid__prompts-item'>
-                    <span><?=$guest->street?> <?=$guest->house_number?></span>
-                </li>   
-                <li class='animal-grid__contact-data-item animal-grid__prompts-item'>
-                    <span><?=$guest->city?> </span>
+                    <?=$copy_address_buttons_html[$guest->id]?>
+
                 </li>   
             </ul>
         </div>
@@ -111,14 +110,5 @@ min-height: 180px;
            return false;
            
         });
-    
-        function copyToClipboard(text) {
-  var input = document.body.appendChild(document.createElement("input"));
-  input.value = text;
-  input.focus();
-  input.select();
-  document.execCommand('copy');
-  input.parentNode.removeChild(input);
-}
     
     </script>

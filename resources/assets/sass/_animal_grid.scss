@@ -59,8 +59,22 @@
     margin-left: 1.5em;
     padding: 0;
  }
- .animal-grid__prompt-item {
  
+ .animal-grid__prompts-item .kopieer-adres {
+    padding: 0;
+    margin-top: 10px;
+    justify-content: start;
+ }
+ .animal-grid__prompts-item .kopieer-adres-knop {
+   font-size: 1.15em;
+   color: #8a7575;
+   margin-left: 0px;
+   align-self: start;
+   position: relative;
+   right: -10px;
+ }
+ .animal-grid__prompts-item .kopieer-adres-mogelijke-break  {
+    display: block;
  }
  .animal-grid__icons {
    //  position: absolute;

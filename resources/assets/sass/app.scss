@@ -29,3 +29,34 @@ body {
  .guest-wrapper--deregistered {
     filter: blur(0.5px) grayscale(80%);
   }
+
+  .kopieer-adres {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    padding: 8px;
+    justify-content: space-between;
+    margin-right: 20px;
+
+
+}
+  .kopieer-adres-knop {
+    padding: 0 !important;
+    background: transparent;
+    border: 0;
+  }
+  .kopieer-adres-knop:hover {
+    filter: brightness(120%);        
+  } 
+
+  .kopieer-adres-mogelijke-break {
+    display: none;
+  }
+
+  .enable-button-blink {
+    transition: 0.2s ease-in-out 0.2s;
+  filter: saturate(100%) brightness(100%);        
+}
+.button-blink {
+filter:        saturate(200%) brightness(200%)
+}

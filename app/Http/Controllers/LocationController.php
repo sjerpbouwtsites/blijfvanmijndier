@@ -33,10 +33,13 @@ class LocationController extends AbstractController
     public function create_index_rows($models){
         $index_rows = '';
         foreach ($models as $model) {
+
+            $copy_address_html = $this->get_copy_address($model);
+
             $index_rows .= "<tr>";
 
             $index_rows .= $this->wrap_in_show_link($model->id, $model->name);
-            $index_rows .= $this->wrap_in_show_link($model->id, "$model->street $model->house_number $model->city");
+            $index_rows .= $this->wrap_without_show_link($model->id, $copy_address_html);
             $index_rows .= $this->wrap_in_show_link($model->id, "$model->phone_number");
 
             $index_rows .= "<td><a href='/".$this->plural."/".$model->id."/edit'>🖊</a></td>";

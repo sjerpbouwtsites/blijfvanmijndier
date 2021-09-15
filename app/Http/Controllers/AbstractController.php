@@ -62,6 +62,18 @@ abstract class AbstractController extends Controller
     return $wrapped;
 }
 
+/**
+ * used to create table rows in index
+ */
+public function wrap_without_show_link($id, $to_wrap){
+  $wrapped = '';
+  $wrapped .= "<td class='bootstrap-ga-weg-ajb'>";
+  $wrapped .= $to_wrap;
+  $wrapped .= "</td>";
+  return $wrapped;
+}
+
+
   /**
    * opens map and opens relevant marker
    */
@@ -193,6 +205,31 @@ abstract class AbstractController extends Controller
     $this->create_or_save($request, $add_res['address_id']);
     Session::flash('message', 'Succesvol gewijzigd!');
     return redirect()->action($this->model_name . 'Controller@show', $request->id);
+  }
+
+  /**
+   * takes the generic.address-copy bladefile 
+   * and fills with model data. 
+   */
+  public function get_copy_address($model){
+
+    $check_for = ['street', 'house_number', 'city', 'postal_code'];
+    $attr = $model['attributes'];
+    foreach ($check_for as $check_key) {
+      if (!array_key_exists($check_key, $attr)) {
+        echo "<pre>";
+        var_dump($attr);
+        echo "</pre>";
+        throw new \Exception('probeer adres kopie te printen maar '.$check_key.' is niet aanwezig op model attributes');
+      }
+    }
+
+    return $this->get_view('generic.address-copy', [
+      'street' => $attr['street'],
+      'postal_code' => $attr['postal_code'],
+      'city' => $attr['city'],
+      'house_number' => $attr['house_number'],
+    ]);
   }
 
   /**
