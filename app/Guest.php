@@ -43,7 +43,8 @@ class Guest extends Model
     ];
 
     public function is_deregistered(){
-        return $this->attributes['deregistered'];
+
+        return array_key_exists('deregistered', $this->attributes) && $this->attributes['deregistered'];
     }
 
     public function get_first_name(){
