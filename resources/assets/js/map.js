@@ -1,9 +1,16 @@
+/**
+ * @file map.js the entry file for the map
+ */
+
 const models = require("./map/models");
 const leafletShell = require("./map/leaflet-shell");
 const sidebar = require("./map/sidebar");
 const postLeafletFixes = require("./map/post-leaflet-fixes");
 const popups = require("./map/popups");
 
+/**
+ * Add close/open functionalities to popups
+ */
 function addInteractive() {
   //debug.overwriteEventListener();
   popups.buttonHandlers.init();
@@ -13,6 +20,7 @@ function addInteractive() {
 
 /**
  * intialises map on roelofarendsveen and returns leaflet map instance.
+ * takes the #leaflet-map element
  */
 function createMap() {
   const goudaMapConfig = {
@@ -43,8 +51,9 @@ function createMap() {
 }
 
 /**
- * getMapAPIData
- * @returns Promise
+ * Sets of the request to the backend API for the map
+ * sends data through models
+ * @returns {Promise} whole datamodel
  */
 function getMapAPIData() {
   return fetch("/map/data")
@@ -71,17 +80,24 @@ function initMap() {
   }
 
   globalLeafletMap = createMap();
-  const globalInfobtn = popups.textBtn('algemeen', 'absoluut-op-kaart');
-  const emptyDiv = document.createElement('div');
-  emptyDiv.innerHTML = globalInfobtn;  
-  document.getElementById('leaflet-map').appendChild(emptyDiv)
 
-  getMapAPIData().then((dataModels) => {
+  // UNCLEAR ?! @TODO
+  // const globalInfobtn = popups.textBtn('algemeen', 'absoluut-op-kaart');
+  // const emptyDiv = document.createElement('div');
+  // emptyDiv.innerHTML = globalInfobtn;  
+  // document.getElementById('leaflet-map').appendChild(emptyDiv)
+
+  const dataModels = getMapAPIData();
+  
+  dataModels.then((dataModels) => {
 
     const meta = dataModels.meta;
     return new Promise((resolve, reject) => {
       _globalModels = dataModels;
 
+      /**
+       * contains all models AND the locations EXCEPT animals 
+       */
       const locatedEntities = []
         .concat(dataModels.guests)
         .concat(dataModels.vets)
@@ -89,6 +105,7 @@ function initMap() {
         .concat(dataModels.owners)
         .concat(dataModels.locations);
       
+      // plots the respective markers on the map
       locatedEntities.forEach(function (model) {
         try {
           return leafletShell.locationMapper(model, globalLeafletMap);
@@ -100,9 +117,13 @@ function initMap() {
       });
   
       addInteractive();
+
       postLeafletFixes(locatedEntities);
+
       sidebar.init(meta, locatedEntities);
+
       resolve({dataModels, locatedEntities})
+
     }).then(({dataModels, locatedEntities}) =>{
       //leafletShell.setLeafletEventListeners(globalLeafletMap, dataModels);
 
@@ -123,7 +144,6 @@ function initMap() {
     }).catch(err => {
       console.error('error aan einde initMap', err);
     })
-
 
   });
 }

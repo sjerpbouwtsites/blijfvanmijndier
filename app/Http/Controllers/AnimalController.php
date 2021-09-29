@@ -46,6 +46,10 @@ class AnimalController extends Controller
 
     }
 
+    /**
+     * Data for the tabs above the grid
+     * @returns view
+     */
     private function create_tabs(){
 
         $current_url = \url()->current();
@@ -84,12 +88,10 @@ class AnimalController extends Controller
 
     }
 
-    // START GENERAL VIEWS
     /**
-     * @param todo of dit de volle lijst of de todo lijst is
+     * returns animals appropriate for this view
      */
-    public function index($todo = false)
-    {
+    private function create_animals_to_grid($todo){
         // TODO BETERE QUERY SCHRIJVEN
         $animals = Animal::all()->where('end_date', null)->sortBy('name');
         $update_map = $this->get_update_ids_descriptions();
@@ -108,15 +110,19 @@ class AnimalController extends Controller
             usort($animals_to_grid, function($a, $b) {
                 return $b['updates_checked']['days_behind'] - $a['updates_checked']['days_behind'];
             });
-            // foreach($animals_to_grid as $a) {
-            //     echo "<pre>";
-            //     var_dump($a->name);
-            //     var_dump($a['updates_checked']['days_behind']);
-            //     echo "</pre>";
-            // }
-
         }
-        $animals_to_grid = Checkerboard::set_checkerboard($animals_to_grid);
+        $animals_to_grid = Checkerboard::set_checkerboard($animals_to_grid);        
+        return $animals_to_grid;
+    }
+
+    // START GENERAL VIEWS
+    /**
+     * @param todo of dit de volle lijst of de todo lijst is
+     */
+    public function index($todo = false)
+    {
+
+        $animals_to_grid = $this->create_animals_to_grid($todo);
 
         // function op main controller
         $this->add_app_body_css('tabbed-grid');
@@ -129,11 +135,22 @@ class AnimalController extends Controller
         ]);
 
         return $this->get_view("animal.tabbed", [
-            'tabs'      => $tabs,
+            'tabs'          => $tabs,
             'animal_grid'   => $animal_grid 
         ]);
     }
 
+    /**
+     * Redirects to index with todo param.
+     */
+    public function todo(){
+        return $this->index(true);
+    }    
+
+    /**
+     * View function for all animals out of project.
+     * gets animals with an end_date
+     */
     public function old(){
         $animals = Animal::all();
         $update_map = $this->get_update_ids_descriptions();
@@ -161,9 +178,7 @@ class AnimalController extends Controller
             ]);    
     }
 
-    public function todo(){
-        return $this->index(true);
-    }
+
 
     /**
      * single view.
@@ -248,6 +263,8 @@ class AnimalController extends Controller
 
     /**
      * wrapper function to wrap $this->shelter and $this->owner
+     * if the animals' owner_id or shelter_id is null or 0, this function redirects to a matching. 
+     * Otherwise, single view.
      */
     private function match_or_show($animal_id, $model_name)
     {

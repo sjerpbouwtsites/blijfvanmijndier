@@ -1,3 +1,20 @@
+/**
+ * contains the classes of guest, shelter, animal etc for the frontend.
+ * create function runs through all models and creates respective instances.
+ * when the models are hydrated and instantiated, they 'can know' eachothers locations
+ * and then the locations are decided.
+ * 
+ * Please note that JS is a 'by reference' language unlike PHP. Thus it makes perfect sense 
+ * and is performant to hold all these models in memory and having them reference eachother
+ * by getters, creating a spider-web of models in which you can go like owner-animal-vet-location. 
+ * So we can sort of dump allmost the entire database straight into the browsers' memory.
+ * 
+ * Above is, with some DOM methods for markers, basically how the data relates to eachother.
+ * 
+ * @file models.js
+ */
+
+
 const models = {};
 
 /**
@@ -26,12 +43,11 @@ function create(baseData) {
   models.owners = baseData.owners.map((baseOwner) => {
     return new Owner(baseOwner, addresses);
   });
+
+  // this has to be last because the models have to 'know' eachother
   models.locations = baseData.locations.map((baseLocation) => {
     return new Location(baseLocation, addresses);
   });  
-
-  console.log(models)
-
   return models;
 }
 
@@ -103,6 +119,7 @@ class MayaModel {
 
 /**
  * Abstract Class. Only use as base Class.
+ * applies to all accept animal.
  */
 class LocatedEntity extends MayaModel {
   constructor(type, config, addresses) {
@@ -118,6 +135,7 @@ class LocatedEntity extends MayaModel {
       "contact_person",
     ];
 
+    // contains data used by filters
     this.meta = {
       own_animals: [] // TODO dit is omdat de filters niet onderscheid maken
     }
@@ -134,6 +152,11 @@ class LocatedEntity extends MayaModel {
     }
   } // end constructor
 
+  /**
+   * The config object is 'flat'. processConfig sorts it on this.
+   * @param {*} addressKeys 
+   * @param {*} config 
+   */
   processConfig(addressKeys, config){
     Object.keys(config).forEach((key) => {
       if (key === "address_id") return;

@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Input;
  * has the basic controller functions
  * index, show, edit, create, store, update, get_hydrated, create_or_save
  * to be overwritten by the not abstract class when required.
+ * Has index page view functions.
  */
 abstract class AbstractController extends Controller
 {
@@ -142,6 +143,9 @@ public function wrap_without_show_link($id, $to_wrap){
     ]);
   }
 
+  /**
+   * This function is NOT IN USE really. Input by team is too random - they dont want checks.
+   */
   public function setValidator(): void
   {
 

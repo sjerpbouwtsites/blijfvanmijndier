@@ -1,4 +1,6 @@
 /**
+ * ONLY USED DURING DEBUG. NOT DURING PRODUCTION
+ * 
  * This script will capture all events in the DOM by overriding the Event Listener.
  * Prints a table with all events to the top of the page.
  * based on: https://css-tricks.com/capturing-all-events/

@@ -6,8 +6,6 @@ document.querySelectorAll('input[type="number"]').forEach((numberInput) => {
 });
 
 function noLettersInNumbers(event) {
-  // the french call this
-  // le approach fuck you
   event.target.value = Number(event.target.value);
 }
 

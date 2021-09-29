@@ -81,7 +81,7 @@ class GuestController extends AbstractController
        $guests_to_grid = $this->create_guests_to_grid($guests, $gast_status);
 
        // kopieerknoppen array
-       $copy_address_buttons = [];
+       $copy_address_buttons_html = [];
        foreach($guests_to_grid as $guest){
         $copy_address_buttons_html[$guest->id] = $this->get_copy_address($guest);
        }

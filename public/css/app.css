@@ -1826,7 +1826,7 @@ input:checked ~ .map__filter-fake-box--radio .svg-icon-checked path + path {
 }
 
 .animal-grid--guest-index .animal-grid__block-footer-left {
-  width: 60%;
+  width: 70%;
   padding: .5em;
   padding-top: 0;
 }
