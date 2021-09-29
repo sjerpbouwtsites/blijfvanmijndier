@@ -1,16 +1,34 @@
 @extends('layout')
 
 @section('content')
-	<div class="col-md-9">
-		<h3>Overzicht gastgezin</h3>
+
+
+
+	<div class="col-md-9 guest-wrapper <?=$guest->is_deregistered() ? "guest-wrapper--deregistered" : ''?>">
+		<h3 class='titel-letter'>Overzicht gastgezin</h3>
 		<h5><a href="{{ URL::to('guests/' . $guest->id . '/edit') }}" class="btn btn-primary">Wijzigen</a> <a href="{{ URL::to('guests') }}" class="btn btn-default">Terug naar overzicht</a></h5> 
+
+
+        @if($guest->is_deregistered())
+        <div class="alert alert-info">Dit gastgezin is uitgeschreven. Het doet niet meer mee.</div>    
+        @else 
+
+        @if ($guest->disabled)
+            @if ($guest->today_disabled())
+            <div class="alert alert-danger">Dit gastgezin is niet beschikbaar van <?=$guest->disabled_from_friendly()?> tot <?=$guest->disabled_untill_friendly()?></div>
+            @else
+            <div class="alert alert-info">Dit gastgezin is niet beschikbaar van <?=$guest->disabled_from_friendly()?> tot <?=$guest->disabled_untill_friendly()?></div>    
+            @endif
+        @endif
+        @endif        
 
         @if (Session::has('message'))
             <div class="alert alert-info">{{ Session::get('message') }}</div>
-        @endif
+        @endif        
+            
 
         <div class="col-md-6  form-horizontal">
-            <h4>Details</h4>
+            <h4 class='titel-letter'>Details</h4>
 
             @include('show_row', ['label' => 'Naam', 'value' => $guest->name])
             @include('show_row', ['label' => 'Status', 'value' => $guest->gueststatusDesc])
@@ -31,6 +49,7 @@
             </div>
             <div class="col-md-6">
                 @include('show_checkbox_list', ['title' => 'Gedrag', 'list' => $behaviourList])
+                @include('show_checkbox_list', ['title' => 'Eigen dieren', 'list' => $ownAnimaltypeList])
             </div>
             <div class="col-md-12">
                 @include('show_link_list', ['title' => 'Opvangdieren', 'list' => $animals, 'link' => 'unconnectguest'])

@@ -18,26 +18,30 @@ use \Illuminate\View\View;
 use Illuminate\Database\Eloquent\Model;
 use Symfony\Component\HttpFoundation\Request;
 use Illuminate\Support\Collection;
+use App\Tablegroup;
+use App\Map;
 
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
     // ids of table table
-    public $breedId = 1;
-    public $behaviourId = 2;
-    public $vaccinationId = 3;
-    public $animaltypeId = 4;
-    public $hometypeId = 5;
-    public $gendertypeId = 6;
-    public $employeeId = 7;
-    public $doctypeId = 8;
-    public $endtypeId = 9;
+    // public $breedId = 1;
+    // public $behaviourId = 2;
+    // public $vaccinationId = 3;
+    // public $animaltypeId = 4;
+    // public $hometypeId = 5;
+    // public $gendertypeId = 6;
+    // public $employeeId = 7;
+    // public $doctypeId = 8;
+    // public $endtypeId = 9;
     public $updatetypeId = 10;
     public $updatetypeOwner = 179;
 
     public $model_name;
     public $menuItems = null;
+
+    private $_app_body_css;
 
     /**
      * @param string model_name. Naam van de model.... wordt gebruikt om de menu items te zetten.
@@ -47,6 +51,13 @@ class Controller extends BaseController
     {
         $this->init_model_name($model_name);
         $this->init_menu_items($model_name, $menu_items_source);
+
+       // dd(Map::map_data());
+
+    }
+
+    public function add_app_body_css($string = ''){
+        $this->_app_body_css .= " $string";
     }
 
     private function init_model_name($model_name)
@@ -77,7 +88,8 @@ class Controller extends BaseController
             throw new \Exception('menu items leeg', E_NOTICE);
         }
         return view($view_name)->with(array_merge($data, [
-            'menuItems' => $this->menuItems
+            'menuItems' => $this->menuItems,
+            'app_body_css' => $this->_app_body_css,
         ]));
     }
 
@@ -103,6 +115,10 @@ class Controller extends BaseController
         return $date->format('Y-m-d H:i:s');
     }
 
+    /**
+     * waarom staat dit op de algemene controller... is animal model
+     * TODO
+     */
     public function animalNeedUpdate($id)
     {
         $animal = Animal::find($id);

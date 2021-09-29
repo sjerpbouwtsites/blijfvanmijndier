@@ -10,7 +10,7 @@
   transition: cubic-bezier(0.075, 0.82, 0.165, 1);
   display: inline-flex;
   &:focus {
-    outline: 2px solid rgb(81, 81, 211);
+    outline: 2px solid $mendoo_paars;
   }
   &::after {
     display: inline-block;
@@ -25,22 +25,22 @@
     }
   }
   &--real-anchor {
-    color: rgb(81, 81, 211);
+    color: $mendoo_paars;
     &:hover {
-      color: #51a8d3;
+      color: $mendoo_lichtblauw;
       cursor: pointer;
     }
     &::after {
       content: "";
     }
     &.map__link-style-button--tel {
-      color: #333;
+      color: $mendoo_donkerblauw;
       &::after {
         content: "📱";
       }
     }
     &.map__link-style-button--mail {
-      color: #333;
+      color: $mendoo_donkerblauw;
       &::after {
         content: "📧";
       }

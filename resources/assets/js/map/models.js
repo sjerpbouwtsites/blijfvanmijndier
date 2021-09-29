@@ -8,7 +8,6 @@ const models = {};
  */
 function create(baseData) {
 
-  console.log(baseData)
   const addresses = baseData.addresses;
 
   models.animals = baseData.animals.map((baseAnimal) => {
@@ -16,7 +15,7 @@ function create(baseData) {
   });
 
   models.guests = baseData.guests.map((baseGuest) => {
-    return new Guest(baseGuest, addresses);
+    return new Guest(baseGuest, addresses, baseData.meta);
   });
   models.shelters = baseData.shelters.map((baseshelter) => {
     return new Shelter(baseshelter, addresses);
@@ -31,8 +30,11 @@ function create(baseData) {
     return new Location(baseLocation, addresses);
   });  
 
+  console.log(models)
+
   return models;
 }
+
 
 /**
  * Shared methods of LocatedEntity and Animal.
@@ -116,8 +118,23 @@ class LocatedEntity extends MayaModel {
       "contact_person",
     ];
 
+    this.meta = {
+      own_animals: [] // TODO dit is omdat de filters niet onderscheid maken
+    }
+
     this.name = config.name;
     this.contact = {};
+
+    this.processConfig(addressKeys, config)
+
+    this.located = this.tryToFindLocation(addresses, config); 
+
+    if (config.text) {
+      this.text = config.text;
+    }
+  } // end constructor
+
+  processConfig(addressKeys, config){
     Object.keys(config).forEach((key) => {
       if (key === "address_id") return;
       if (addressKeys.includes(key)) {
@@ -127,6 +144,16 @@ class LocatedEntity extends MayaModel {
       this[key] = config[key];
     });
 
+  }
+  /**
+   * Goes through the addresses (from the db->addresses)  and tries to find the location.
+   * If the address is assigned the label 'faulty_address' a north sea alternative is used and the 
+   * return value sets the located prop in the  constructor.
+   * @param {*} addresses 
+   * @param {*} config 
+   * @return bool of gelukt is
+   */
+  tryToFindLocation(addresses, config){
     try {
       const l = addresses.find((address) => address.uuid === config.address_id); // potential memory leak, messes with garbage collection?
       delete l.manual_geolocation;
@@ -136,11 +163,19 @@ class LocatedEntity extends MayaModel {
       throw new Error(
         `${config.name} location niet gevonden in _locations. ${error.message}`
       );
-    }
-    if (config.text) {
-      this.text = config.text;
-    }
-  } // end constructor
+    }   
+    // hup to the sea you rascal mwou hahaha
+    if (this.location.faulty_address === 1) {
+      this.location.city = "";
+      this.location.house_number = "";
+      this.location.postal_code = "";
+      this.location.street = "";
+      this.location.lattitude = "53.033";
+      this.location.longitude = "3.888";
+      return false;
+    } 
+    return true;
+  }
 
   get fullName() {
     const n = !!this.contact.name ? this.contact.name : "",
@@ -181,12 +216,19 @@ class LocatedEntity extends MayaModel {
 }
 
 class Guest extends LocatedEntity {
-  constructor(config, locations) {
+  constructor(config, locations, meta) {
     super("guest", config, locations);
+
+    const own_animals_absent_total_list = Object.values(meta.own_animals_absent);
     this.meta = {
       animal_preference: config.animal_preference.map(a => a.toLowerCase().replace(/\s/,'-')),
       behaviour: config.behaviour.map(a => a.toLowerCase().replace(/\s/,'-')),
-      residence: config.residence.map(a => a.toLowerCase().replace(/\s/,'-'))
+      residence: config.residence.map(a => a.toLowerCase().replace(/\s/,'-')),
+      own_animals: Array.isArray(config.own_animals) ? config.own_animals : [],
+      own_animals_absent: own_animals_absent_total_list.filter(mogelijkAfwezigDier =>{
+        return !config.own_animals.includes(mogelijkAfwezigDier)
+      })
+
     }
     this.verwijderOudeMeta();
   }
@@ -194,6 +236,13 @@ class Guest extends LocatedEntity {
     delete this.animal_preference;
     delete this.behaviour;
     delete this.residence;
+    delete this.own_animals;
+    delete this.own_animals_absent;
+  }
+
+  heeftEigenDier(dier) {
+    if (!dier) {throw new Error('params gemist Guest.heeftEigenDier')}
+    return this.meta.includes(dier);
   }
 
   get animalsOnSite() {

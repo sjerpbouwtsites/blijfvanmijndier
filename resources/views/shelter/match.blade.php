@@ -2,7 +2,7 @@
 
 @section('content')
 	<div class="col-md-12">
-   		<h3>Koppel pension aan <strong>{{ $animal->name }}</strong> (<small>{{ $animal->breedDesc }}</small>)</h3>
+   		<h3 class='titel-letter'>Koppel pension aan <strong>{{ $animal->name }}</strong> (<small>{{ $animal->breedDesc }}</small>)</h3>
 
 		<table class="table table-hover">
 			<thead>

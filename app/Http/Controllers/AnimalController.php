@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use App\Animal;
 use App\Table;
+use Illuminate\Support\Facades\DB;
+use App\Tablegroup;
+use App\Checkerboard;
 
 /**
  * Watch out this controller is an animal! 
@@ -24,31 +27,142 @@ class AnimalController extends Controller
         parent::__construct('animals');
     }
 
+    /**
+     * Helper die je een map maakt van welke update_type nu waar bij hoort.
+     */
+    private function get_update_ids_descriptions(){
+        $update_type_id = Tablegroup::type_to_id('update_type');
+        $update_res = array_values(DB::select("SELECT id, description FROM tables WHERE tablegroup_id = $update_type_id"));
+        
+        $update_map = [
+            'ids' => [],
+            'descriptions' => []
+        ];
+        foreach($update_res as $res) {
+            $update_map['ids'][$res->id] = $res->description;
+            $update_map['descriptions'][$res->description] = $res->id;
+        }
+        return $update_map;
+
+    }
+
+    private function create_tabs(){
+
+        $current_url = \url()->current();
+
+        $all_animals_url = \url('/animals/');
+        $animals_requiring_update_url = \url("/animals/todo");
+        $new_animal_url =  \url("/animals/create");
+        $out_of_project_url =  \url("/animals/old");
+
+        $tabs_data = [
+            'all'   => [
+                'url'=> $all_animals_url,
+                'text'  => 'Dieren in project',
+                'active' => $all_animals_url === $current_url
+            ],
+            'todo'   => [
+                'url'=> $animals_requiring_update_url,
+                'text'=> 'Dieren to do',
+                'active' => $animals_requiring_update_url === $current_url
+            ],
+            'create'   => [
+                'url'=> $new_animal_url,
+                'text'=> 'Nieuw dier',
+                'active' => $new_animal_url === $current_url
+            ],
+            'old'   => [
+                'url'=> $out_of_project_url,
+                'text'=> 'Dieren uit project',
+                'active' => $out_of_project_url === $current_url
+            ]                        
+        ];        
+
+        return $this->get_view("generic.tabs", [
+            'tabs_data' => $tabs_data
+        ]);
+
+    }
+
     // START GENERAL VIEWS
-    public function index()
+    /**
+     * @param todo of dit de volle lijst of de todo lijst is
+     */
+    public function index($todo = false)
     {
-        $animals = Animal::all();
+        // TODO BETERE QUERY SCHRIJVEN
+        $animals = Animal::all()->where('end_date', null)->sortBy('name');
+        $update_map = $this->get_update_ids_descriptions();
+        $animals_to_grid = [];
+
         foreach ($animals as $animal) {
-            $animal = $this->index_show_hydrate_animal($animal);
+            $animal = $this->index_show_hydrate_animal($animal,$update_map);
+            if (!$todo) {
+                $animals_to_grid[]=$animal;
+            } else if ($animal['updates_checked']['in_todo_list']) {
+                $animals_to_grid[]=$animal;
+            }
+        }
+
+        if ($todo) {
+            usort($animals_to_grid, function($a, $b) {
+                return $b['updates_checked']['days_behind'] - $a['updates_checked']['days_behind'];
+            });
+            // foreach($animals_to_grid as $a) {
+            //     echo "<pre>";
+            //     var_dump($a->name);
+            //     var_dump($a['updates_checked']['days_behind']);
+            //     echo "</pre>";
+            // }
+
+        }
+        $animals_to_grid = Checkerboard::set_checkerboard($animals_to_grid);
+
+        // function op main controller
+        $this->add_app_body_css('tabbed-grid');
+
+        $tabs = $this->create_tabs();
+
+        $animal_grid = $this->get_view('animal.tabbed-grid', [
+            'animal_grid_modifier' => 'animal-index',
+            'animals' => $animals_to_grid
+        ]);
+
+        return $this->get_view("animal.tabbed", [
+            'tabs'      => $tabs,
+            'animal_grid'   => $animal_grid 
+        ]);
+    }
+
+    public function old(){
+        $animals = Animal::all();
+        $update_map = $this->get_update_ids_descriptions();
+
+        foreach ($animals as $animal) {
+            $animal = $this->index_show_hydrate_animal($animal,$update_map);
         }
         $animals = $animals->sortBy('name');
         // animals old apparaently from 'project'?
         $animalsOld = array();
-        $animalsNew = array();
         foreach ($animals as $animal) {
             if ($animal->end_date != null) {
                 $animalsOld[] = $animal;
-            } else {
-                $animalsNew[] = $animal;
             }
         }
-        $animals_old_view = count($animalsOld) > 0
+        $tabs = $this->create_tabs();
+            
+        $animal_grid = count($animalsOld) > 0
             ? $this->get_view('animal.old', ['old_animals' => $animalsOld])
             : '';
-        return $this->get_view("animal.index", [
-            'animals' => $animalsNew,
-            'animalsOldView' => $animals_old_view,
-        ]);
+                
+            return $this->get_view("animal.tabbed", [
+                'tabs'      => $tabs,
+                'animal_grid' => $animal_grid
+            ]);    
+    }
+
+    public function todo(){
+        return $this->index(true);
     }
 
     /**
@@ -56,7 +170,8 @@ class AnimalController extends Controller
      */
     public function show($id)
     {
-        $animal = $this->index_show_hydrate_animal(Animal::find($id));
+        $update_map = $this->get_update_ids_descriptions();
+        $animal = $this->index_show_hydrate_animal(Animal::find($id), $update_map);
 
         $updates = UpdateController::getUpdatesByLinkType('animals', $animal->id, 2);
 
@@ -71,13 +186,20 @@ class AnimalController extends Controller
     /**
      * helper to show / index views. 
      */
-    private function index_show_hydrate_animal(Animal $animal): Animal
+    private function index_show_hydrate_animal(Animal $animal, $update_table_id): Animal
     {
+
+
         $animal->breedDesc = $this->getDescription($animal->breed_id);
         $animal->animaltypeDesc = $this->getDescription($animal->animaltype_id);
         $animal->gendertypeDesc = $this->getDescription($animal->gendertype_id);
         $animal->endtypeDesc = $this->getDescription($animal->endtype_id);
-        $animal->needUpdate = $this->animalNeedUpdate($animal->id);
+        
+        
+        $animal->updates_checked = Animal::update_check($animal, $update_table_id); 
+        
+        
+        //$animal->needUpdate = $this->animalNeedUpdate($animal->id);
         $animal->setAnimalImage();
         return $animal;
     }
@@ -217,7 +339,7 @@ class AnimalController extends Controller
         $animal = Animal::find($id);
         $animal->end_date = date('Y-m-d');
 
-        $endtypes = $this->GetTableList($this->endtypeId);
+        $endtypes = $this->GetTableList(Tablegroup::type_to_id('end_type'));
         $endtypes->prepend('Selecteer afmeldreden', '0');
 
         return $this->get_view("animal.outofproject", [
@@ -266,9 +388,10 @@ class AnimalController extends Controller
             $checked_hometypes = Input::has('hometypeList') ? Input::get('hometypeList') : [];
             $checked_behaviours = Input::has('behaviourList') ? Input::get('behaviourList') : [];
         } else {
-            $checked_hometypes = $animal->tables()->where('tablegroup_id', $this->hometypeId)->pluck('tables.id')->toArray();
-            $checked_behaviours = $animal->tables()->where('tablegroup_id', $this->behaviourId)->pluck('tables.id')->toArray();
+            $checked_hometypes = $animal->tables()->where('tablegroup_id', Tablegroup::type_to_id('home_type'))->pluck('tables.id')->toArray();
+            $checked_behaviours = $animal->tables()->where('tablegroup_id', Tablegroup::type_to_id('behaviour'))->pluck('tables.id')->toArray();
         }
+
 
         foreach ($animal_meta['behaviourList'] as $table) {
             if (in_array($table->id, $checked_behaviours)) {
@@ -278,7 +401,7 @@ class AnimalController extends Controller
             }
         }
 
-        foreach ($animal_meta['hometypeList'] as $table) {
+        foreach ($animal_meta['home_typeList'] as $table) {
             if (in_array($table->id, $checked_hometypes)) {
                 foreach ($table->guests as $guest) {
                     $tmpGuestList[] = $guest;
@@ -355,20 +478,19 @@ class AnimalController extends Controller
     private function animal_meta(Animal $animal, $skip = array()): array
     {
         $to_return = [];
-        foreach (['behaviour', 'vaccination', 'hometype'] as $group) {
+        foreach (['behaviour', 'vaccination', 'home_type'] as $group) {
             if (in_array($group, $skip)) continue;
             $list_name = $group . "List";
-            $id_name = $group . "Id";
-
+            $table_group_id = Tablegroup::type_to_id($group);
             // all in this group.
             $all_in_group = Table::All()->where(
                 'tablegroup_id',
-                $this->$id_name
+                $table_group_id
             );
             $to_return[$list_name] = $all_in_group;
 
             // all in this group checked, complete objects
-            $all_checked_ids = $animal->tables->where('tablegroup_id', $this->$id_name)->pluck('id')->toArray();
+            $all_checked_ids = $animal->tables->where('tablegroup_id', $table_group_id)->pluck('id')->toArray();
             $complete_and_checked = [];
             foreach ($all_in_group as $one_of_all) {
                 if (in_array($one_of_all['attributes']['id'], $all_checked_ids)) {
@@ -392,9 +514,9 @@ class AnimalController extends Controller
     {
         // lijsten uit tables tabel met id => description data.
         // prepend lege optie zodat geen optie ook kan. 
-        $breeds = $this->GetTableList($this->breedId);
-        $animaltypes = $this->GetTableList($this->animaltypeId);
-        $gendertypes = $this->GetTableList($this->gendertypeId);
+        $breeds = $this->GetTableList(Tablegroup::type_to_id('breed'));
+        $animaltypes = $this->GetTableList(Tablegroup::type_to_id('animal_type'));
+        $gendertypes = $this->GetTableList(Tablegroup::type_to_id('gender_type'));
         $breeds->prepend('Selecteer ras', '0');
         $animaltypes->prepend('Selecteer soort dier', '0');
         $gendertypes->prepend('Selecteer geslacht', '0');

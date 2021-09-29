@@ -1,0 +1,123 @@
+/*animal grid voor guest aangepast*/
+ 
+ 
+ .animal-grid--guest-index {
+
+    .animal-grid__block-footer {
+       display: flex;
+       flex-direction: row;
+       padding: 0;
+   }
+   .animal-grid__block-footer-left {
+       width: 70%;
+ padding: .5em;
+ padding-top: 0;
+   }
+   .animal-grid__prompt-item {
+       margin-bottom: .33em;
+   }
+   .animal-grid__prompt-item:last-child {
+ margin-bottom: 0;
+ 
+   }
+   .animal-grid__block {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+   }
+   .animal-grid__block-footer-right {
+       display: flex;
+       flex-direction: column;
+       flex-grow: 1;
+       justify-content: space-around;
+       align-items: center;
+   }
+   .animal-grid__block-footer-right--no-content {
+       visibility: hidden;
+   }
+   .animal-grid__block-footer-right .animal-grid__icons {
+   width: initial;
+   display: flex;
+   flex-direction: column;
+   flex-grow: 1;
+   justify-content: space-around;
+   align-items: center;
+   width: 100%;
+ }
+   .animal-grid__block-footer .animal-grid__icon-item {
+   flex-basis: 100%;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   flex-grow: 1;
+   min-width: 100%;
+ }
+ .animal-grid__icon-item {
+   background: transparent;
+ }
+ 
+ .animal-grid__icon-item.animal-grid__icon-item--clock-o.animal-grid__icon-item--heart-o .fa{
+  //  background-color: #56234c;
+    color: $mendoo_oranje;
+   
+ 
+ }
+ 
+ .animal-grid__icon-item.animal-grid__icon-item--chain-broken {
+//    background-color: #322929c9;
+  color: $mendoo_rood;
+ }
+ 
+ 
+   .animal-grid__contact-data.animal-grid__prompts {
+       list-style-type: none;
+       margin-bottom: 0;
+       margin-top: 1.25em;
+   }
+   .animal-grid__contact-data-item--spaced {
+       margin: .50em 0 .50em -.25em;
+       padding: .25em;
+   }
+   .fake-anchor-part {
+       margin-right: 1em;
+   }
+   .fake-anchor {
+       background-color: transparent;
+ border: 0;
+ padding: 0;
+ text-decoration: none;
+ font-weight: bold;
+ font-size: 1.5em;
+ vertical-align: bottom;
+ 
+ }
+ .fake-anchor:first-child {  
+   margin-right: .5rem;
+   }
+   a:hover .fake-anchor {
+       text-decoration: none;
+   }
+   .fake-anchor:hover {
+       color: $mendoo_rood;
+       
+   }
+
+   .fake-anchor.fake-tel {
+       position: relative;
+       top: 1px;
+   }
+   .fake-anchor.clipboard{
+       position: relative;
+   }
+   
+   .fake-anchor.clipboard .fa-save{
+       position: absolute;
+ left: 8px;
+ top: -3px;
+ font-size: .75em;
+ color:#8a7575;
+   }
+   .fake-anchor.clipboard .fa-save + .fa {
+       font-size: .75em;
+   }    
+  }

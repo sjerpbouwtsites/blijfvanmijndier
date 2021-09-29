@@ -35,13 +35,15 @@ styling for both the leaflet popup and the own dialog
   position: relative;
   padding: 1em;
   border-radius: 0;
+  max-height: 80vh;
+  overflow: auto;
 }
 
 .map__dialog-close,
 .leaflet-container a.leaflet-popup-close-button {
   background-attachment: scroll;
   background-clip: border-box;
-  background-color: rgb(81, 81, 211);
+  background-color: $mendoo_paars;
   background-image: none;
   background-origin: padding-box;
   background-position: 0% 0%;
@@ -69,7 +71,7 @@ styling for both the leaflet popup and the own dialog
   box-sizing: border-box;
 
   cursor: pointer;
-  font-family: Tahoma, Verdana, sans-serif;
+  font-family: inherit;
   font-feature-settings: normal;
   font-kerning: auto;
   font-language-override: normal;
@@ -129,6 +131,10 @@ styling for both the leaflet popup and the own dialog
         line-height: 0.8em;
       }
       display: block;
+      &--small {
+        font-size: 1em;
+      }
+
     }
     &-subtitle {
       font-size: 0.66em;
@@ -156,6 +162,10 @@ styling for both the leaflet popup and the own dialog
     padding-top: 0.5em;
     padding-bottom: 0.5em;
     background-color: #f5f5f5;
+    &--ordered {
+      padding-left: 1.66em;
+      list-style-type: number;
+    }
     &-wrapper {
       & + .bvmd-popup__list-wrapper {
         margin-top: 2em;
@@ -173,6 +183,9 @@ styling for both the leaflet popup and the own dialog
       text-align: left;
       width: 50%;
     }
+  }
+  &list-item + .bvmd-popup__list-item {
+    margin-top: .5em;
   }
   &data-row {
     line-height: 1em;

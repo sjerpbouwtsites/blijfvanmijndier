@@ -7,6 +7,9 @@ use App\TableGroup;
 
 class Table extends Model
 {
+
+
+
     private $tableGroupDesc;
 
     public function animals()

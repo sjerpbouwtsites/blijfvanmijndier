@@ -63,6 +63,7 @@ function getMapAPIData() {
     });
 }
 
+
 function initMap() {
   if (!location.href.includes("/map")) {
     console.log("no map here");
@@ -99,8 +100,8 @@ function initMap() {
       });
   
       addInteractive();
-      postLeafletFixes();
-      sidebar.init(meta);
+      postLeafletFixes(locatedEntities);
+      sidebar.init(meta, locatedEntities);
       resolve({dataModels, locatedEntities})
     }).then(({dataModels, locatedEntities}) =>{
       //leafletShell.setLeafletEventListeners(globalLeafletMap, dataModels);
@@ -112,13 +113,12 @@ function initMap() {
           globalLeafletMap.invalidateSize();
         }, 500)
         
-        console.log('map invalidated')
-
           leafletShell.checkAndFixMarkersToClose(locatedEntities);
           globalLeafletMap.on('zoomend', ()=>{
             leafletShell.checkAndFixMarkersToClose(locatedEntities);
           })
-        }, 50)
+
+        }, 50)  
       
     }).catch(err => {
       console.error('error aan einde initMap', err);

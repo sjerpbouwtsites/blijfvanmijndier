@@ -2,7 +2,7 @@
 
 @section('content')
 	<div class="col-md-9">
-		<h3>Overzicht dier</h3>
+		<h3 class='titel-letter'>Overzicht dier</h3>
 		<h5><a href="{{ URL::to('animals/' . $animal->id . '/edit') }}" class="btn btn-primary">Wijzigen</a> <a href="{{ URL::to('animals') }}" class="btn btn-default">Terug naar overzicht</a></h5> 
 
         @if (Session::has('message'))
@@ -36,9 +36,15 @@
             <?php if ($animal->witnessed_abuse) {?>
                 @include('show_row', ['label' => 'Getuige van mishandeling', 'value' => "ja"])
             <?php } ?>
-            <?php if ($animal->updates) {?>
-                @include('show_row', ['label' => 'Updates', 'value' => "Ja"])
-            <?php } ?>            
+            
+            
+            @include('show_row', ['label' => 'Updates', 'value' => "Ja"])
+            <p title='Dit aanvinkvakje betreft de twee-wekelijkse berichten naar de eigenaar over diens dier. Iemand in de opvang kan het dier bij hebben en heeft dan geen updates nodig. Dit vinkje is deel 1. Deel 2 is: indien een dier tegelijk niet gekoppeld is aan een opvang of pension, dan wordt niet gecontroleerd op het tijdig verzenden van deze berichten aan de eigenaar. Deze data synchroniseert niet met elkaar en moet je apart uit/aanvinken.'><strong><span style='color: rgb(81, 81, 212);
+                font-size: 2em;
+                line-height: 1em;
+                position: relative;
+                top: 4px;
+                right: 3px;'>ℹ</span> duiding van 'updates'</strong> </P>
 
 
         </div>
@@ -51,12 +57,12 @@
                 @include('show_checkbox_list', ['title' => 'Vaccinaties', 'list' => $vaccinationListChecked])
             </div>
             <div class="col-md-6">
-                @include('show_checkbox_list', ['title' => 'Wonen', 'list' => $hometypeListChecked])
+                @include('show_checkbox_list', ['title' => 'Wonen', 'list' => $home_typeListChecked])
             </div>
         
         </div>
 	</div>    	
 
-	@include('animal.sidemenu', ['animal_id' => $animal->id, 'update' => $animal->needUpdate, 'owner_id' => $animal->owner_id, 'guest_id' => $animal->guest_id, 'shelter_id' => $animal->shelter_id, 'updates' => $updates])
+	@include('animal.sidemenu', ['animal_id' => $animal->id, 'updates_checked' => $animal->updates_checked, 'owner_id' => $animal->owner_id, 'guest_id' => $animal->guest_id, 'shelter_id' => $animal->shelter_id, 'updates' => $updates])
 
 @stop

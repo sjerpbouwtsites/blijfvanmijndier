@@ -27,18 +27,18 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: #383893;
+  background-color: $mendoo_paars;
   transition: 0.2s ease-in-out 0.1s;
   box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
   margin: 0 0.33em;
   padding: 4px;
   color: white;
   font-size: 0.75em;
-  width: calc(25% - 1.05em);
+  width: 33%;
   flex-shrink: 1;
 
   &:hover {
-    background-color: #4848bd;
+    background-color: $mendoo_lichtpaars;
     cursor: pointer;
   }
   svg {

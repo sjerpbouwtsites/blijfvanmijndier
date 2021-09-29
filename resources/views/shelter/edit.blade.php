@@ -3,9 +3,9 @@
 @section('content')
 	<div class="col-md-12">
 		@if( $shelter->id > 0 )
-			<h3>Wijzigen pension</h3>
+			<h3 class='titel-letter'>Wijzigen pension</h3>
 		@else
-			<h3>Nieuw pension</h3>
+			<h3 class='titel-letter'>Nieuw pension</h3>
 		@endif
 		@include('session_messages')
 		{{ Html::ul($errors->all()) }}
@@ -16,16 +16,17 @@
 		@else
 			{{ Form::open(array('url' => 'shelters', 'class'=>'form-horizontal')) }}
 		@endif
-	
+		@include('generic.address-edit', [
+			'model' => $shelter,
+			'model_name' => 'shelter'
+			])
 		<div class="col-md-6">
-			<h4>Details</h4>
+			<h4 class='titel-letter'>Details</h4>
 
-			<input type='hidden' name='address_id' value="<?=$shelter['address_id']?>" >
+			
             @include('form_text', ['field' => 'name', 'label' => 'Naam'])
 						
-						@include('form_group_address' ,							['lattitude' => $shelter['lattitude'],
-						'longitude' => $shelter['longitude']
-						])
+					
             @include('form_text', ['field' => 'phone_number', 'label' => 'Telefoonnummer'])
             @include('form_text', ['field' => 'email_address', 'label' => 'Emailadres'])
             @include('form_text', ['field' => 'website', 'label' => 'Website'])

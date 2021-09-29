@@ -26,6 +26,8 @@ abstract class AbstractController extends Controller
   // set in setValidator
   public $validator_config = [];
   public $geolocation_failure = false;
+  public $uses_generic_index = false;
+
 
   // please override.
   public $required = [];
@@ -44,13 +46,68 @@ abstract class AbstractController extends Controller
     $this->model_name = ucfirst($this->singular);
   }
 
+
+
+
+/**
+ * used to create table rows in index
+ */
+  public function wrap_in_show_link($id, $to_wrap){
+    $wrapped = '';
+    $wrapped .= "<td class='bootstrap-ga-weg-ajb'>";
+    $wrapped .= "<a href='/".$this->plural."/".$id." '>";
+    $wrapped .= $to_wrap;
+    $wrapped .= "</a>";
+    $wrapped .= "</td>";
+    return $wrapped;
+}
+
+/**
+ * used to create table rows in index
+ */
+public function wrap_without_show_link($id, $to_wrap){
+  $wrapped = '';
+  $wrapped .= "<td class='bootstrap-ga-weg-ajb'>";
+  $wrapped .= $to_wrap;
+  $wrapped .= "</td>";
+  return $wrapped;
+}
+
+
+  /**
+   * opens map and opens relevant marker
+   */
+  public function focus_in_maya_cell($id){
+    $wrapped = '';
+    $wrapped .= "<td>";
+    $wrapped .= "<a href='/map?focus=true&focus-type=".$this->singular."&focus-id=".$id."'>";
+    $wrapped .= "🗺";
+    $wrapped .= "</a>";
+    $wrapped .= "</td>";
+    return $wrapped;
+  }
+
+
   /**
    * plenary view & root endpoint
    */
   public function index()
   {
+
+    $models = \App\Address::allWithAddress("App\\" . $this->model_name)->sortBy('name');
+
+    if ($this->uses_generic_index) {
+      return $this->get_view("generic.index", [
+        $this->plural => $models,
+        'index_columns' => $this->index_columns,
+        'index_rows' => $this->create_index_rows($models),
+        'index_title'=> $this->singular,
+        'plural_name'=> $this->plural,
+        
+      ]);
+    }
     return $this->get_view($this->view_prefix . ".index", [
-      $this->plural => \App\Address::allWithAddress("App\\" . $this->model_name)->sortBy('name'),
+      $this->plural => $models,
     ]);
   }
 
@@ -148,6 +205,31 @@ abstract class AbstractController extends Controller
     $this->create_or_save($request, $add_res['address_id']);
     Session::flash('message', 'Succesvol gewijzigd!');
     return redirect()->action($this->model_name . 'Controller@show', $request->id);
+  }
+
+  /**
+   * takes the generic.address-copy bladefile 
+   * and fills with model data. 
+   */
+  public function get_copy_address($model){
+
+    $check_for = ['street', 'house_number', 'city', 'postal_code'];
+    $attr = $model['attributes'];
+    foreach ($check_for as $check_key) {
+      if (!array_key_exists($check_key, $attr)) {
+        echo "<pre>";
+        var_dump($attr);
+        echo "</pre>";
+        throw new \Exception('probeer adres kopie te printen maar '.$check_key.' is niet aanwezig op model attributes');
+      }
+    }
+
+    return $this->get_view('generic.address-copy', [
+      'street' => $attr['street'],
+      'postal_code' => $attr['postal_code'],
+      'city' => $attr['city'],
+      'house_number' => $attr['house_number'],
+    ]);
   }
 
   /**

@@ -19,17 +19,18 @@
 			{{ Form::open(array('url' => 'locations', 'class'=>'form-horizontal')) }}
 		@endif
 	
+		@include('generic.address-edit', [
+			'model' => $location,
+			'model_name' => 'location'
+		])
 		<div class="col-md-6">
-			<h4>Details</h4>
+			<h4>Naam</h4>
 
-			<input type='hidden' name='address_id' value="<?=$location['address_id']?>" >
             @include('form_text', ['field' => 'name', 'label' => 'Naam'])
-            @include('form_group_address', [
-							'lattitude' => $location['lattitude'],
-							'longitude' => $location['longitude']
-						])
-            @include('form_text', ['field' => 'phone_number', 'label' => 'Telefoonnummer'])
-            @include('form_text', ['field' => 'email_address', 'label' => 'Emailadres'])
+			@include('form_text', ['field' => 'phone_number', 'label' => 'Telefoonnummer'])
+			@include('form_text', ['field' => 'email_address', 'label' => 'Emailadres'])
+		</div>
+
 
 		    <div class="form-group form_buttons">
 		    	{{ Form::submit('Opslaan', array('class' => 'btn btn-primary')) }}

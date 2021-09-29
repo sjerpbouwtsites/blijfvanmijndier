@@ -3,10 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Input;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Session;
 use App\Owner;
 use App\Animal;
 use App\Address;
@@ -23,11 +19,35 @@ class OwnerController extends AbstractController
         'street',
         'postal_code'
     ];
+    
+    public $uses_generic_index = true;
+    public $index_columns = ['Naam', 'Adres', 'Telefoonnummer'];
+    
 
     function __construct()
     {
         parent::__construct('owners');
     }
+
+    public function create_index_rows($owners){
+        $index_rows = '';
+        foreach ($owners as $owner) {
+
+            $copy_address_html = $this->get_copy_address($owner);
+
+            $index_rows .= "<tr>";
+
+            $index_rows .= $this->wrap_in_show_link($owner->id, "$owner->name $owner->prefix $owner->surname");
+            $index_rows .= $this->wrap_without_show_link($owner->id, $copy_address_html);
+            $index_rows .= $this->wrap_in_show_link($owner->id, "$owner->phone_number");
+
+            $index_rows .= "<td><a href='/".$this->plural."/".$owner->id."/edit'>🖊</a></td>";
+            $index_rows .= $this->focus_in_maya_cell($owner->id);            
+            $index_rows .= "</tr>";
+        }
+        return $index_rows;
+    }
+
 
     /**
      * single match & endpoint
@@ -53,6 +73,7 @@ class OwnerController extends AbstractController
 
         return $this->get_view("owner.show", [
             'owner' => $owner,
+            'updates' => UpdateController::getUpdatesByLinkType('owners', $owner->id, 2),
             'animals' => $animals,
         ]);
     }

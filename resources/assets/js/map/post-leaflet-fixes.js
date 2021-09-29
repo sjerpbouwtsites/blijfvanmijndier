@@ -1,5 +1,3 @@
-const { ownerBtn } = require("./popups");
-
 const markerSrcConfig = {
   guest: {
     "animals-on-site": "guest/marker-groen.png",
@@ -35,7 +33,10 @@ const markerSrcConfig = {
  *
  *
  */
-function postLeafletWork() {
+function postLeafletWork(locatedEntities) {
+
+  
+
   const markerImages = Array.from(
     document.querySelectorAll(".leaflet-marker-pane img")
   );
@@ -56,7 +57,7 @@ function postLeafletWork() {
     if (!markerId) {
       throw new Error(`marker Id unknown ${marker} postLeafletWork func`);
     }
-    //  markerAltData.splice(markerAltData.indexOf(markerId), 1); // just delete alt in the end.
+
 
     const markerTempType = markerAltData
       .find((altPiece) => {
@@ -73,7 +74,7 @@ function postLeafletWork() {
       "data-marker-id",
       `marker-${markerTempType}-${markerId}`
     );
-    
+ 
     //    marker.setAttribute("alt", markerAltData.join(" "));
     
     // CUT INLINE STYLES TO STYLESHEET
@@ -111,13 +112,26 @@ function postLeafletWork() {
     if (markerColor) {
       marker.classList.add(markerColor);
     }
-    
+
+    // markers not on the map are in the north sea
+    const onTheMap = markerAltData.find((altPiece) => {
+      return altPiece.includes("on-the-map");
+    });
+    if (!onTheMap) {
+      marker.classList.add('blurred');
+      marker.setAttribute("data-on-the-map", 'in the north sea');
+    } else {
+      marker.setAttribute("data-on-the-map", 'damn right');
+    }  
+    // then hide the shadow markers
+    document.getElementById(marker.getAttribute('data-shadow-id')).classList.add('blurred')
+
     // MOVE TYPE ALT ENTRY TO DATA-TYPE
     const type = markerAltData.find((altPiece) => {
       return altPiece.includes("is-");
     });
     marker.setAttribute("data-type", type.replace("is-", ""));
-    marker.setAttribute('title', type.replace("is-", ""));
+
     //    marker.setAttribute("alt", marker.alt.replace(type, ""));
     
     // MOVE ANIMAL QUANTITY TO DATA ATTR
@@ -154,6 +168,45 @@ function postLeafletWork() {
   styleEl.id = "handmade-marker-styles";
   styleEl.innerHTML = stylesheetHTMLArray.join("");
   document.head.appendChild(styleEl);
+
+  writeTitleToMarkers(locatedEntities)
+  focusOpMarkerIndienNodig();
 }
+/**
+ * vanuit backend kan via GETs gefocust worden op een marker.
+ *
+ * @returns
+ */
+function focusOpMarkerIndienNodig(){
+  if (!location.search) return;
+  const searchRes = location.search.substring(1, location.search.length).split('&')
+  if (!searchRes.includes('focus=true')) return;
+  const searchObj = {};
+  searchRes.forEach(searchR =>{
+      const s = searchR.split('=');
+      searchObj[s[0]] = s[1];
+  });
+
+const markerId = `marker-${searchObj['focus-type']}-id-${searchObj['focus-id']}`;
+  const marker = document.getElementById(markerId)
+  if (!marker) {
+    throw new Error(`tracht te focussen op niet bestaande marker ${markerId}`)
+  }
+  marker.click();
+}
+
+/**
+ * loops over markers via models and sets appropriate title.
+ *
+ */
+function writeTitleToMarkers(locatedEntities){
+  locatedEntities.forEach((entity, index) => {
+    const prefix = !!entity.contact.prefix ? " "+entity.contact.prefix : '';
+    const surname = !!entity.contact.surname ? " "+entity.contact.surname : '';
+    entity.marker.setAttribute('title', `${entity.type} ${entity.contact.name}${prefix}${surname}`)
+    
+  })
+}
+
 
 module.exports = postLeafletWork;

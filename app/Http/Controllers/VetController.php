@@ -20,6 +20,9 @@ class VetController extends AbstractController
         'postal_code'
     ];
 
+    public $uses_generic_index = true;
+    public $index_columns = ['Naam', 'Adres', 'Telefoonnummer'];
+
     function __construct()
     {
         parent::__construct('vets');
@@ -37,6 +40,25 @@ class VetController extends AbstractController
         $hydrated = Address::hydrateWithAddress($nudy);
         return $hydrated;
     }
+
+
+    public function create_index_rows($vets){
+        $index_rows = '';
+        foreach ($vets as $vet) {
+
+            $copy_address_html = $this->get_copy_address($vet);
+            $index_rows .= "<tr>";
+
+            $index_rows .= $this->wrap_in_show_link($vet->id, $vet->name);
+            $index_rows .= $this->wrap_without_show_link($vet->id, $copy_address_html);
+            $index_rows .= $this->wrap_in_show_link($vet->id, "$vet->phone_number");
+
+            $index_rows .= "<td><a href='/".$this->plural."/".$vet->id."/edit'>🖊</a></td>";
+            $index_rows .= $this->focus_in_maya_cell($vet->id);
+            $index_rows .= "</tr>";
+        }
+        return $index_rows;
+    } 
 
     /**
      * override but dont know why. didnt find Vet in abstracts class.

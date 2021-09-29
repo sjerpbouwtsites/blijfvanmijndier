@@ -46,7 +46,7 @@ function buttonBase(buttonData, modifiers, action) {
       data-type='${buttonData._type}'
       class='${buttonCss}'>
       ${buttonData.name}
-      ${svgs.marker("rgb(81, 81, 211)")}
+      ${svgs.marker("", 'mendoo_donkerblauw_path')}
       </a>
     </span>`;
 }
@@ -91,7 +91,7 @@ function textBtn(slug, modifier = "") {
   return `<a 
     class="map__link-style-button map__link-style-button--text-btn ${modifier}" 
     data-action='open-explanation' data-text-id='${slug.toLowerCase()}' href="#">${svgs.info(
-    "#5151d3"
+    "", 'mendoo_paars_path'
   )}</a>`;
 }
 
@@ -140,7 +140,6 @@ const buttonHandlers = {
         return;
       }
       event.preventDefault();
-      console.log(actionBtn);
       this.callbacks[toCamelCase(actionBtn.getAttribute("data-action"))](
         actionBtn
       );
@@ -263,6 +262,7 @@ function popupFooter(entity, rijen = []) {
         })
       : "";
 
+
   return `<footer class="bvmd-popup__footer">
   ${popupDataList(
     [
@@ -294,13 +294,13 @@ function popupHeader(title, subtitle = null) {
   const maxWidthCh = `max-width: calc(${25}ch + 1em);`; // no too long titles.
   const subtitleHTML = !subtitle
     ? ``
-    : `<small class='bvmd-popup__header-subtitle'>${subtitle}</small>`;
+    : `<small class='bvmd-popup__header-subtitle titel-letter'>${subtitle}</small>`;
 
   return `<header 
     class='bvmd-popup__header'
     style='${widthCh}${maxWidthCh}'
   >
-  <h3 class='bvmd-popup__header-title'>
+  <h3 class='bvmd-popup__header-title titel-letter'>
     <span class='bvmd-popup__header-title-inner'>${title}</span>
     ${subtitleHTML}
   </h3>
@@ -350,7 +350,6 @@ function populateDialogWithAnimal(animal) {
 
 function populateDialogWithText(textId) {
   const textCollection = texts[textId];
-  console.log(textCollection);
   document.getElementById(
     "dialog-print-target"
   ).innerHTML = `<div class='bvmd-popup'>
@@ -461,6 +460,7 @@ const markerHTML = {
     const bodyFuncName = `${locatedEntity._type}Body`;
     return this[bodyFuncName](locatedEntity);
   },
+
   ownerBody(locatedEntity) {
     return ``;
   },
@@ -506,11 +506,22 @@ const markerHTML = {
   },
 
   guestBody(locatedEntity) {
+   
+    const huisdierenDataRows = 
+    locatedEntity.meta.own_animals.map((ownAnimal) => {
+      // links for all animals to maya.
+      return popupDataRow(
+        `Huisdier`,
+        `${ownAnimal}`
+        );
+      })
+
+
     return popupDataList(
       this.guestBodyData.map(({ key, nl }) => {
         if (!locatedEntity[key]) return "";
         return popupDataRow(nl, locatedEntity[key]);
-      }),
+      }).concat(huisdierenDataRows),
       "Aantekingen",
       "guest-info"
     );

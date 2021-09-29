@@ -3,9 +3,9 @@
 @section('content')
 	<div class="col-md-12">
 		@if( $vet->id > 0 )
-			<h3>Wijzigen dierenarts</h3>
+			<h3 class='titel-letter'>Wijzigen dierenarts</h3>
 		@else
-			<h3>Nieuwe dierenarts</h3>
+			<h3 class='titel-letter'>Nieuwe dierenarts</h3>
 		@endif
 		@include('session_messages')
 		{{ Html::ul($errors->all()) }}
@@ -16,15 +16,14 @@
 		@else
 			{{ Form::open(array('url' => 'vets', 'class'=>'form-horizontal')) }}
 		@endif
-	
+		@include('generic.address-edit', [
+			'model' => $vet,
+			'model_name' => 'vet'
+			])
 		<div class="col-md-6">
-			<h4>Details</h4>
-			<input type='hidden' name='address_id' value="<?=$vet['address_id']?>" >
+			<h4 class='titel-letter'>Details</h4>
+
             @include('form_text', ['field' => 'name', 'label' => 'Naam'])
-            @include('form_group_address', [
-							'lattitude' => $vet['lattitude'],
-							'longitude' => $vet['longitude']
-						])
             @include('form_text', ['field' => 'phone_number', 'label' => 'Telefoonnummer'])
             @include('form_text', ['field' => 'email_address', 'label' => 'Emailadres'])
             @include('form_text', ['field' => 'website', 'label' => 'Website'])

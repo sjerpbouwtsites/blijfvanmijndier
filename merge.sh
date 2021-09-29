@@ -1,3 +1,5 @@
+# save the .env
+sudo mv ~/ifawnl_staging/.env ~/.env-staging-temp
 # stash away earlier postfixes
 git stash
 # pull current work
@@ -8,7 +10,7 @@ sudo chgrp -R www-data ~/ifawnl_staging
 echo "chowned and chgrped"
 # change .htaccess in public folder
 sudo rm -rf ~/ifawnl_staging/public/.htaccess
-sudo mv ~/ifawnl_staging/public/.htaccess-remote public/.htaccess
+sudo cp ~/ifawnl_staging/public/.htaccess-remote public/.htaccess
 echo "fixed htaccess"
 # make writeable for npm
 sudo find ~/ifawnl_staging -type d -exec chmod 777 {} \;
@@ -25,5 +27,8 @@ echo "ran gulp"
 sudo find ~/ifawnl_staging -type d -exec chmod 775 {} \;
 sudo find ~/ifawnl_staging -type f -exec chmod 664 {} \;
 echo "fixed permissions to safe setting"
+# retrieve
+sudo mv ~/.env-staging-temp ~/ifawnl_staging/.env
 #yes
-echo "post merge done"
+echo "post merge done.";
+echo "See migration-readme.MD for the encore.";

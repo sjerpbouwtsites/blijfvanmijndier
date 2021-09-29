@@ -1,5 +1,3 @@
-const { readyException } = require("jquery");
-const { LocatedEntity } = require("./models");
 const popups = require("./popups");
 
 /**
@@ -61,12 +59,19 @@ function maakAlt(locatedEntity) {
         res: "multiple-animals",
       },
       {
+        key: "located",
+        check: (located) => {
+          return located;
+        },
+        res: "on-the-map",
+      },
+      {
         key: "animalsOnSite",
         check: (animalsOnSite) => {
           return animalsOnSite.length > 1;
         },
         res: "animals-on-site",
-      },
+      }, 
       {
         key: "animalsOnSite",
         check: (animalsOnSite) => {
@@ -80,7 +85,7 @@ function maakAlt(locatedEntity) {
         return condition.check(locationVal) ? condition.res : "";
       })
       .filter((a) => a)
-      .join(" ") + ` is-${locatedEntity.type} id-${locatedEntity.id}`
+      .join(" ") + ` is-${locatedEntity.type} id-${locatedEntity.id} name-${locatedEntity.name}`
   );
 }
 
@@ -114,8 +119,9 @@ function locationMapper(locatedEntity, globalLeafletMap) {
 }
 
 function checkAndFixMarkersToClose(locatedEntities) {
-  console.log("check and fix markers");
-  const markers = locatedEntities.map((locatedEntity) => {
+  const markers = locatedEntities.filter((locatedEntity)=>{
+    return locatedEntity.shown;
+  }).map((locatedEntity) => {
     return locatedEntity.marker;
   });
 
@@ -267,14 +273,6 @@ observer.observe(targetNode, config);
 //observer.disconnect();
 }
 
-function runMarkerRotateFixes(locatedEntities, event = null) {
-
-  if (event) {
-    console.log("afkomstig van event", event);
-  }
-
-  checkAndFixMarkersToClose(locatedEntities);
-}
 
 module.exports = {
   maakAlt,

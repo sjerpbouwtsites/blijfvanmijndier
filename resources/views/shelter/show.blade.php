@@ -2,7 +2,7 @@
 
 @section('content')
 	<div class="col-md-9">
-		<h3>Overzicht pension</h3>
+		<h3 class='titel-letter'>Overzicht pension</h3>
 		<h5><a href="{{ URL::to('shelters/' . $shelter->id . '/edit') }}" class="btn btn-primary">Wijzigen</a> <a href="{{ URL::to('shelters') }}" class="btn btn-default">Terug naar overzicht</a></h5> 
 
         @include('session_messages')

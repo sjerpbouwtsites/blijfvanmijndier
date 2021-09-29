@@ -12,7 +12,9 @@ use App\Update;
 use App\Animal;
 use App\Guest;
 use App\Shelter;
+use App\Owner;
 use DateTime;
+use App\Tablegroup;
 
 class UpdateController extends Controller
 {
@@ -106,7 +108,6 @@ class UpdateController extends Controller
     {
 
         $link_type = $this->GetLinkType($request);
-
         $update = new Update;
         $update->link_id = $link_id;
         $update->link_type = $link_type;
@@ -202,15 +203,23 @@ class UpdateController extends Controller
         // KEEP THIS BUT MODERNIZE
         $menuItems = $this->GetMenuItems($object['link_type']);
 
-        $employees = $this->GetTableList($this->employeeId);
+        $employees = $this->GetTableList(Tablegroup::type_to_id('employee'));
         $employees->prepend('Selecteer medewerker', '0');
 
         $updatetypes = $this->GetTableList($this->updatetypeId);
         $updatetypes->prepend('Selecteer soort update', '0');
 
+        $animal_multiselects = null;
+        
+        if ($has_animal_multiselects = $update->link_type === 'animals') {
+            $animal_multiselects = $this->create_animal_update_metadata($update);
+        } 
+
         $data = array(
             'update' => $update,
             'menuItems' => $menuItems,
+            'has_animal_multiselects'=> $has_animal_multiselects,
+            'animal_multiselects'=> $animal_multiselects,
             'updatetypes' => $updatetypes,
             'name' => $object['name'],
             'link_type' => $object['link_type'],
@@ -219,6 +228,79 @@ class UpdateController extends Controller
         );
 
         return $data;
+    }
+
+    private function create_multiselect_data_structure(){
+        $names = ['owner', 'shelter', 'guest'];
+        $structure = [];
+        foreach($names as $name) {
+            $structure[$name] = [
+                'model' => null,
+                'exists'=> false,
+                'qualifies_for_multiselect' => false,
+                'animals' => null,
+            ];
+        }
+        return $structure;
+    }
+
+    /**
+     * A helpers' helper... 'fills' the multiselects for relating updates to eachother.
+     */
+    private function create_animal_update_metadata($update){
+        // if animal type create multiselect to clone the update to those animals
+        
+        $prime_animal = Animal::find($update->link_id);
+        $multiselect_data = $this->create_multiselect_data_structure();
+        $prime_animals_owner = null;
+        $prime_animals_guest = null;
+        $prime_animals_shelter = null;
+
+        if (is_numeric($prime_animal->owner_id)) {
+            $prime_animals_owner = Owner::find($prime_animal->owner_id);
+            $multiselect_data['owner']['model'] = $prime_animals_owner;
+            $multiselect_data['owner']['exists'] = true;
+            $multiselect_data['owner']['animals'] = DB::select("
+            SELECT * FROM animals WHERE owner_id = $prime_animal->owner_id AND id != $prime_animal->id
+            ");
+            if (count($multiselect_data['owner']['animals']) > 0) {
+                $multiselect_data['owner']['qualifies_for_multiselect'] = true;
+            } else {
+                $multiselect_data['owner']['model'] = null;
+            }
+        }
+        if (is_numeric($prime_animal->guest_id)) {
+            $prime_animals_guest = Guest::find($prime_animal->guest_id);
+            $multiselect_data['guest']['model'] = $prime_animals_guest;
+            $multiselect_data['guest']['exists'] = true;
+            $multiselect_data['guest']['animals'] = DB::select("
+            SELECT * FROM animals WHERE guest_id = $prime_animal->guest_id AND id != $prime_animal->id
+            ");
+            if (count($multiselect_data['guest']['animals']) > 0) {
+                $multiselect_data['guest']['qualifies_for_multiselect'] = true;
+            } else {
+                $multiselect_data['guest']['model'] = null;
+            }
+            
+        }
+        
+        if (is_numeric($prime_animal->shelter_id)) {
+            $prime_animals_shelter = Shelter::find($prime_animal->shelter_id);
+            $multiselect_data['shelter']['model'] = $prime_animals_shelter;
+            $multiselect_data['shelter']['exists'] = true;
+            $multiselect_data['shelter']['animals'] = DB::select("
+            SELECT * FROM animals WHERE shelter_id = $prime_animal->shelter_id AND id != $prime_animal->id
+            ");
+            if (count($multiselect_data['shelter']['animals']) > 0) {
+                $multiselect_data['shelter']['qualifies_for_multiselect'] = true;
+            } else {
+                $multiselect_data['shelter']['model'] = null;
+            }
+        }
+            
+    return $multiselect_data;
+            
+            
     }
 
     private function validateUpdate()
@@ -258,6 +340,13 @@ class UpdateController extends Controller
                 $link_type = $link_type;
                 $link_id = $link_id;
                 break;
+            case 'owners':
+                $owner = Owner::find($link_id);
+                $name_label = 'Eigenaar';
+                $name = $owner->name;
+                $link_type = $link_type;
+                $link_id = $link_id;
+                break;
         }
 
         $data = array(
@@ -285,7 +374,7 @@ class UpdateController extends Controller
             $update = new Update;
         }
 
-        $update->link_id = $link_id;
+        $update->link_id = !empty($link_id) ? $link_id : $request->link_id;
         $update->link_type = $request->link_type;
         $update->start_date = $request->start_date;
         $update->employee_id = $request->employee_id;
@@ -293,5 +382,20 @@ class UpdateController extends Controller
         $update->text = $request->text;
 
         $update->save();
+
+        if (empty($request->secret_animal_distribution_id_list)) return;
+        //distribute! 
+        $distribution_animal_id_list = explode(',', $request->secret_animal_distribution_id_list);
+        foreach ($distribution_animal_id_list as $animal_id) {
+            $update = new Update;
+            $update->link_id = $animal_id;
+            $update->link_type = $request->link_type;
+            $update->start_date = $request->start_date;
+            $update->employee_id = $request->employee_id;
+            $update->updatetype_id = $request->updatetype_id;
+            $update->text = $request->text;            
+            $update->save();
+        }
+
     }
 }

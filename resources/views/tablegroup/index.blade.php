@@ -1,7 +1,7 @@
 @extends('layout')
 
 @section('content')
-	<h3>Overzicht met tabellen</h3>
+	<h3 class='titel-letter'>Overzicht met tabellen</h3>
 
 	@include('session_messages')
 	

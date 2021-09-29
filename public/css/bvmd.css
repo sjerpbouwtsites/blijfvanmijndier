@@ -3,6 +3,27 @@ body {
    color: #4a4f5e;
 }
 
+[data-locatie="development"] #marquee-holder,
+[data-locatie="staging"] #marquee-holder {
+   height: 65px;
+}
+
+
+
+.staging-marquee {
+   position: fixed;
+   bottom: 0;
+   left: 0;
+   background-color: purple;
+   color: white;
+   text-align: center;
+   font-size: 1em;
+   font-weight: 900;
+   font-variant: small-caps;
+   height: 30px;
+   width: 100%;
+   line-height: 30px;
+ }
 a {
    color: #4a4f5e;
 }
@@ -31,22 +52,8 @@ h7{
    cursor: not-allowed
  }
 
-.img_margin_bottom{
-   margin-bottom: 15px;
-}
 
-.header a {
-   font-size: 16px;
-   font-family: Lato,sans-serif;
-}
 
-.header img {
-   margin-left: 20px;
-}
-
-.nav {
-   margin-top: 35px;
-}
 
 .box {
    float: left;
@@ -131,9 +138,6 @@ h3 {
    margin-top: 20px;
 }
 
-.nav>li>a {
-   padding: 10px;
-}
 
 .navbar-nav>li>a:hover {
    color: #288cbd;

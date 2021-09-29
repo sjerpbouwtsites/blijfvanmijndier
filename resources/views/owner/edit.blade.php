@@ -17,28 +17,23 @@
 			{{ Form::open(array('url' => 'owners', 'class'=>'form-horizontal')) }}
 		@endif
 	
-		<div class="col-md-6">
-			<h4>Details</h4>
-
-            <input type='hidden' name='address_id' value="<?=$owner['address_id']?>" >
-            @include('form_text', ['field' => 'name', 'label' => 'Voornaam'])
-            @include('form_text', ['field' => 'prefix', 'label' => 'Tussenvoegsel'])
-						@include('form_text', ['field' => 'surname', 'label' => 'Achternaam'])
-						
-						@include('form_group_address' ,	
-							['lattitude' => $owner['lattitude'],
-							'longitude' => $owner['longitude']
-							])
-
-            @include('form_text', ['field' => 'phone_number', 'label' => 'Telefoonnummer'])
-            @include('form_text', ['field' => 'email_address', 'label' => 'Emailadres'])
-
-		    <div class="form-group form_buttons">
-		    	{{ Form::submit('Opslaan', array('class' => 'btn btn-primary')) }}
-		    	<a href="{{ URL::to('owners/' . $owner->id) }}" class="btn btn-default">Annuleren</a>
-		    </div>
-		</div>
 		
+		@include('generic.address-edit', [
+			'model' => $owner,
+			'model_name' => 'owner'
+			])
+			<div class="col-md-6">
+				<h4>Details</h4>
+			@include('form_text', ['field' => 'name', 'label' => 'Voornaam'])
+			@include('form_text', ['field' => 'prefix', 'label' => 'Tussenvoegsel'])
+						@include('form_text', ['field' => 'surname', 'label' => 'Achternaam'])
+						@include('form_text', ['field' => 'phone_number', 'label' => 'Telefoonnummer'])
+						@include('form_text', ['field' => 'email_address', 'label' => 'Emailadres'])
+			</div>
+			<div class="form-group form_buttons">
+				{{ Form::submit('Opslaan', array('class' => 'btn btn-primary')) }}
+				<a href="{{ URL::to('owner/' . $owner->id) }}" class="btn btn-default">Annuleren</a>
+			</div>
 		<div class="col-md-6">
 			<div class="col-md-2">
 			</div>

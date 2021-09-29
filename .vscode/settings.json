@@ -7,25 +7,12 @@
       "previewLimit": 50,
       "server": "localhost",
       "port": 3306,
-      "askForPassword": true,
-      "driver": "MySQL",
-      "name": "bvmd-local",
-      "database": "bvmd",
-      "username": "sjerp"
-    },
-    {
-      "mysqlOptions": {
-        "authProtocol": "default"
-      },
-      "previewLimit": 50,
-      "server": "localhost",
-      "port": 3306,
-      "driver": "MySQL",
-      "name": "bvmd-2",
+      "driver": "MariaDB",
+      "name": "bvmd-lokaal",
       "group": "bvmd",
-      "database": "bvmd_2",
-      "username": "sjerp",
-      "password": "sjerp"
+      "database": "bvmd",
+      "username": "root",
+      "password": "root"
     }
   ],
   "git.ignoreLimitWarning": true

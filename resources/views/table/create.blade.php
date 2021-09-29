@@ -2,9 +2,9 @@
 
 @section('content')
 	<div class="col-md-9">
-		<h3>Nieuwe tabelregel</h3>
+		<h3 class='titel-letter'>Nieuwe tabelregel</h3>
 		<hr>
-		<h4>Details</h4>
+		<h4 class='titel-letter'>Details</h4>
 		
 		{{ Html::ul($errors->all()) }}
 
@@ -22,13 +22,6 @@
 		        {{ Form::label('description', 'Omschrijving', array('class' => 'control-label col-md-4')) }}
 		        <div class="col-sm-8">
 		        	{{ Form::text('description', Input::old('description'), array('class' => 'form-control')) }}
-		        </div>
-		    </div>
-
-		    <div class="form-group">
-		        {{ Form::label('description2', 'Omschrijving 2', array('class' => 'control-label col-md-4')) }}
-		        <div class="col-sm-8">
-		        	{{ Form::text('description2', Input::old('description2'), array('class' => 'form-control')) }}
 		        </div>
 		    </div>
 

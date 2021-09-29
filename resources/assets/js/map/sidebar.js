@@ -15,7 +15,7 @@ function createMapSection(title, contents) {
   return (section = `
     <section id='section-${sluggedTitle}' class='map-aside__section'>
       <header class='map-aside__header'>
-        <h2 class='${BEMMapper("map-aside__heading", "2")}'>
+        <h2 class='titel-letter ${BEMMapper("map-aside__heading", "2")}'>
           ${title} ${popups.textBtn(title)}
         </h2>
       </header>        
@@ -34,12 +34,12 @@ function prepareAsideHTML() {
   `;
 }
 
-function init(meta) {
+function init(meta, locatedEntities) {
   prepareAsideHTML();
   const animals = Animal.all;
   populateAnimalList(animals);
   addAnimalListEventHandlers(animals);
-  filterInit(meta);
+  filterInit(meta, locatedEntities);
 }
 
 /**

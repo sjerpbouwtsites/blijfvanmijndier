@@ -22,6 +22,7 @@ Route::resource('guests.histories', 'HistoryController');
 Route::resource('shelters.updates', 'UpdateController');
 Route::resource('shelters.histories', 'HistoryController');
 Route::resource('owners.histories', 'HistoryController');
+Route::resource('owners.updates', 'UpdateController');
 
 Route::get('animals/{id}/histories', 'HistoryController@indexanimals');
 
@@ -36,8 +37,13 @@ Route::get('animals/{id}/matchshelter/{shelter_id}', 'AnimalController@matchshel
 Route::get('animals/{id}/matchguest/{guest_id}', 'AnimalController@matchguest');
 Route::get('animals/{id}/shelter', 'AnimalController@shelter');
 Route::get('animals/{id}/owner', 'AnimalController@owner');
+Route::get('animals/old', 'AnimalController@old');
+Route::get('animals/todo', 'AnimalController@todo');
 Route::get('owners/{id}/match', 'OwnerController@match');
 Route::get('shelters/{id}/match', 'ShelterController@match');
+Route::get('guests/available', 'GuestController@available');
+Route::get('guests/unavailable', 'GuestController@unavailable');
+Route::get('guests/deregistered', 'GuestController@deregistered');
 
 Route::get('map', 'MapController@index');
 Route::get('map/data', 'MapController@map_data');
