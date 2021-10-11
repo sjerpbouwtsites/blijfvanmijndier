@@ -37,8 +37,8 @@
                 @include('show_row', ['label' => 'Getuige van mishandeling', 'value' => "ja"])
             <?php } ?>
             
-            
-            @include('show_row', ['label' => 'Updates', 'value' => "Ja"])
+            <?php $updates_value = $animal->updates == 1 ? "Ja" : "Nee"; ?>
+            @include('show_row', ['label' => 'Updates', 'value' => $updates_value])
             <p title='Dit aanvinkvakje betreft de twee-wekelijkse berichten naar de eigenaar over diens dier. Iemand in de opvang kan het dier bij hebben en heeft dan geen updates nodig. Dit vinkje is deel 1. Deel 2 is: indien een dier tegelijk niet gekoppeld is aan een opvang of pension, dan wordt niet gecontroleerd op het tijdig verzenden van deze berichten aan de eigenaar. Deze data synchroniseert niet met elkaar en moet je apart uit/aanvinken.'><strong><span style='color: rgb(81, 81, 212);
                 font-size: 2em;
                 line-height: 1em;
