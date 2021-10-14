@@ -91,11 +91,11 @@ class Animal extends Model
 		/**
 		 * that oddball of a checkbox that decides together with 'is the animal 
 		 * coupled to a shelter or guest' wheter or not the OWNER receives messages 
-		 * called updates regarding his pet
+		 * called updates regarding his pet``
 		 * As this would sygnify that the pet is with the owner
 		 */
 		$animal_updates_checkbox_bool = $animal['attributes']['updates'];
-		$animal_is_with_owner = (!\is_null($animal['attributes']['owner_id'])) && \is_null($animal['attributes']['guest_id']);
+		$animal_is_with_owner = (!\is_null($animal['attributes']['owner_id'])) && \is_null($animal['attributes']['guest_id']) && \is_null($animal['attributes']['shelter_id']);
 		$needs_owner_updates = $animal_updates_checkbox_bool && !$animal_is_with_owner;
 
 		// dd([
